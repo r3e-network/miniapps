@@ -11,7 +11,7 @@
     "@dcloudio/uni-app": "catalog:",
     "@dcloudio/uni-components": "catalog:",
     "@dcloudio/uni-h5": "catalog:",
-    "@neo/uniapp-sdk": "^1.0.0",
+    "@r3e/uniapp-sdk": "^1.0.0",
     "vue": "catalog:",
     "lucide-vue-next": "^0.363.0"
   },
