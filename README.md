@@ -95,9 +95,9 @@ node scripts/auto-discover-miniapps.js
 
 That's it! Your MiniApp will be automatically registered.
 
-**Auto-registration:** The host app runs `scripts/export_host_miniapps.sh` on `predev` and `prebuild`,
-which copies built MiniApps and runs auto-discovery. You can still call
-`node scripts/auto-discover-miniapps.js` directly if you need to refresh the registry.
+**Auto-registration:** The miniapps build pipeline runs `node scripts/auto-discover-miniapps.js`
+after builds and publishes `public/miniapps/` to the CDN. The platform host app loads
+MiniApps by CDN path and does not depend on local assets in the platform repo.
 
 **Note:** The `build-all.sh` script automatically runs auto-discover after building, so you don't need to run it manually when building.
 
