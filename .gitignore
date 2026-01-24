@@ -5,6 +5,8 @@ dist/
 build/
 coverage/
 .cache/
+bin/
+obj/
 .env
 .env.*
 *.log
