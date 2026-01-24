@@ -11,7 +11,7 @@
     "@dcloudio/uni-app": "catalog:",
     "@dcloudio/uni-components": "catalog:",
     "@dcloudio/uni-h5": "catalog:",
-    "@neo/uniapp-sdk": "^1.0.0",
+    "@neo/uniapp-sdk": "file:../../packages/@neo/uniapp-sdk",
     "vue": "catalog:",
     "vue-i18n": "^9.1.9"
   },

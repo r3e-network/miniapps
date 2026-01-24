@@ -103,7 +103,7 @@ which copies built MiniApps and runs auto-discovery. You can still call
 
 ## SDK Usage
 
-The `@neo/uniapp-sdk` (installed from npm) provides Vue 3 composables for wallet access, platform services, and contract invocations:
+The `@r3e/uniapp-sdk` (installed from npm) provides Vue 3 composables for wallet access, platform services, and contract invocations:
 
 ```vue
 <script setup lang="ts">
@@ -113,7 +113,7 @@ import {
   useRNG,
   useDatafeed,
   useEvents,
-} from "@neo/uniapp-sdk";
+} from "@r3e/uniapp-sdk";
 
 const APP_ID = "miniapp-my-app";
 
