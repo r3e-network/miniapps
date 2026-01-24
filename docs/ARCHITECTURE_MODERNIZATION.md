@@ -4,12 +4,13 @@
 
 ### 1.1 Current Structure
 ```
-miniapps/
+miniapps-uniapp/
 ├── apps/                    # 41 miniapps
 │   ├── breakup-contract/
 │   ├── burn-league/
 │   └── ...
-├── packages/               # Shared packages (config/types/multichain-sdk)
+├── packages/
+│   └── @neo/uniapp-sdk/    # SDK package
 ├── shared/                  # Shared code (NOT a package)
 │   ├── components/
 │   ├── composables/
@@ -25,7 +26,7 @@ miniapps/
 - pnpm workspaces for package management
 - Shared Vite configuration (vite.shared.ts)
 - Unified shared/ directory for common code
-- @neo/uniapp-sdk consumed as an external npm dependency
+- @neo/uniapp-sdk as a proper package
 
 ### 1.3 Current Weaknesses ❌
 - No Turborepo for build caching
@@ -42,7 +43,7 @@ miniapps/
 
 ### 2.1 Proposed Structure
 ```
-miniapps/
+miniapps-uniapp/
 ├── apps/
 │   ├── breakup-contract/
 │   ├── burn-league/
@@ -51,8 +52,8 @@ miniapps/
 │   ├── @neo/ui/              # Shared UI components (NEW)
 │   ├── @neo/api/             # Type-safe API client (NEW)
 │   ├── @neo/types/           # Shared types + Zod schemas (NEW)
-│   └── @neo/config/          # ESLint, Prettier, TSConfig (NEW)
-├── (external) @neo/uniapp-sdk  # SDK published to npm (consumed by apps)
+│   ├── @neo/config/          # ESLint, Prettier, TSConfig (NEW)
+│   └── @neo/uniapp-sdk/      # SDK (existing, enhanced)
 ├── turbo.json                # Turborepo config (NEW)
 ├── tsconfig.base.json        # Base TS config (NEW)
 ├── .changeset/               # Changesets config (NEW)
@@ -69,7 +70,7 @@ miniapps/
 | `@neo/api` | Type-safe API client with Zod validation |
 | `@neo/types` | Shared TypeScript types + Zod schemas |
 | `@neo/config` | Centralized ESLint, Prettier, TSConfig |
-| `@neo/uniapp-sdk` | MiniApp SDK (wallet, payments, etc.), consumed from npm |
+| `@neo/uniapp-sdk` | MiniApp SDK (wallet, payments, etc.) |
 
 ---
 
@@ -189,7 +190,8 @@ export default {
       "@neo/ui": ["packages/@neo/ui/src"],
       "@neo/api": ["packages/@neo/api/src"],
       "@neo/types": ["packages/@neo/types/src"],
-      "@neo/config": ["packages/@neo/config/src"]
+      "@neo/config": ["packages/@neo/config/src"],
+      "@neo/uniapp-sdk": ["packages/@neo/uniapp-sdk/src"]
     }
   }
 }

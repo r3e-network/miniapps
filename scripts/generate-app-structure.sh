@@ -1,9 +1,8 @@
 #!/bin/bash
 # Generate complete uni-app project structure for all MiniApps
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APPS_DIR="$ROOT_DIR/apps"
-SHARED_DIR="$ROOT_DIR/shared"
+APPS_DIR="/home/neo/git/service_layer/miniapps-uniapp/apps"
+SHARED_DIR="/home/neo/git/service_layer/miniapps-uniapp/shared"
 
 # App metadata: app-name|title|category|description
 declare -a APPS=(

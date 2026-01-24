@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Define app directories
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APPS_DIR="$ROOT_DIR/apps"
-UNI_BIN="$ROOT_DIR/node_modules/.bin/uni"
+APPS_DIR="/home/neo/git/service_layer/miniapps-uniapp/apps"
 
 # Counter
 count=0
@@ -21,7 +19,7 @@ for app_path in $APPS_DIR/*; do
     # Run build in background to parallelize (groups of 4)
     (
       cd "$app_path" && \
-      "$UNI_BIN" build -p h5 > /dev/null 2>&1
+      ../../node_modules/.bin/uni build -p h5 > /dev/null 2>&1
     ) &
     
     # Wait every 4 jobs

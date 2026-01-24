@@ -13,7 +13,7 @@
     "@dcloudio/uni-components": "catalog:",
     "@dcloudio/uni-h5": "catalog:",
     "@dcloudio/uni-ui": "^1.5.11",
-    "@neo/uniapp-sdk": "^1.0.0",
+    "@neo/uniapp-sdk": "file:../../packages/@neo/uniapp-sdk",
     "vue": "catalog:"
   },
   "devDependencies": {
