@@ -10,3 +10,6 @@ coverage/
 *.log
 *.pid
 .DS_Store
+
+# Worktrees
+/.worktrees/
