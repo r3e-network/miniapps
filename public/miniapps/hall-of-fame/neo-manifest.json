@@ -1,0 +1,45 @@
+{
+  "app_id": "miniapp-hall-of-fame",
+  "name": "Neo Hall of Fame",
+  "name_zh": "Neo 名人堂",
+  "description": "Neo Hall of Fame - Neo MiniApp",
+  "description_zh": "使用 GAS 交易量为 Neo 传奇人物、社区和开发者投票。通过付费赢得排名的系统。",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/hall-of-fame/index.html",
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/hall-of-fame/static/logo.png",
+  "banner": "/miniapps/hall-of-fame/static/banner.png",
+  "category": "social",
+  "status": "active",
+  "tags": [],
+  "permissions": {
+    "payments": true
+  },
+  "assets_allowed": [
+    "GAS"
+  ],
+  "governance_assets_allowed": [
+    "NEO"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "0xfdfd94a2a0819d97c0c681ddef4dbcad25973940"
+    },
+    "neo-n3-mainnet": {
+      "address": "0x3c00cbea1c4e502bafae4c6ce7a56237a7d71ded"
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  }
+}

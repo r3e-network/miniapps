@@ -1,0 +1,45 @@
+{
+  "app_id": "miniapp-redenvelope",
+  "name": "Red Envelope",
+  "name_zh": "红包",
+  "description": "Red Envelope - Neo MiniApp",
+  "description_zh": "发送幸运 GAS 红包给朋友。创建红包，分享链接，让朋友们抢红包！",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/red-envelope/index.html",
+  "category": "social",
+  "status": "active",
+  "tags": [],
+  "permissions": {
+    "payments": true
+  },
+  "assets_allowed": [
+    "GAS"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "0xf2649c2b6312d8c7b4982c0c597c9772a2595b1e"
+    },
+    "neo-n3-mainnet": {
+      "address": "0x5f371cc50116bb13d79554d96ccdd6e246cd5d59"
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/red-envelope/static/logo.png",
+  "banner": "/miniapps/red-envelope/static/banner.png",
+  "governance_assets_allowed": [
+    "NEO"
+  ]
+}

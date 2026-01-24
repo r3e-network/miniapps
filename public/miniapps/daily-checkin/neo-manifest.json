@@ -1,0 +1,49 @@
+{
+  "app_id": "miniapp-dailycheckin",
+  "name": "Daily Check-in",
+  "name_zh": "每日签到",
+  "description": "Daily check-in rewards and streak tracking",
+  "description_zh": "每日签到奖励和连续签到追踪",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/daily-checkin/index.html",
+  "category": "gaming",
+  "status": "active",
+  "tags": [
+    "rewards",
+    "daily",
+    "streak"
+  ],
+  "permissions": {
+    "payments": true
+  },
+  "assets_allowed": [
+    "GAS"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "0x47be6b7caa014c5879ac3eab3b246d5302f9f8cc"
+    },
+    "neo-n3-mainnet": {
+      "address": "0x908867b23ab551a598723ceeaaedd70c54e10c76"
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/daily-checkin/static/logo.png",
+  "banner": "/miniapps/daily-checkin/static/banner.png",
+  "governance_assets_allowed": [
+    "NEO"
+  ]
+}

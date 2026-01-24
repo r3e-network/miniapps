@@ -1,0 +1,45 @@
+{
+  "app_id": "miniapp-millionpiecemap",
+  "name": "Million Piece Map",
+  "name_zh": "百万像素地图",
+  "description": "Million Piece Map - Neo MiniApp",
+  "description_zh": "在大型协作画布上拥有和自定义像素。",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/million-piece-map/index.html",
+  "category": "gaming",
+  "status": "active",
+  "tags": [],
+  "permissions": {
+    "payments": true
+  },
+  "assets_allowed": [
+    "GAS"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "0xf4ab0fa6f245427482cb5c693a5f40baf6d58c71"
+    },
+    "neo-n3-mainnet": {
+      "address": "0xdae609b67e51634a95badea92bae585459fe83a4"
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/million-piece-map/static/logo.png",
+  "banner": "/miniapps/million-piece-map/static/banner.png",
+  "governance_assets_allowed": [
+    "NEO"
+  ]
+}

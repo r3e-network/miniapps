@@ -1,0 +1,41 @@
+{
+  "name": "meshminiapp-uniapp",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.27.0",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "build:all": "node scripts/generate-templates.js && bash scripts/build-all.sh",
+    "generate": "node scripts/generate-templates.js",
+    "test": "turbo test",
+    "test:run": "turbo test:run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean && rm -rf node_modules/.cache",
+    "format": "prettier --write \"**/*.{ts,tsx,vue,json,md}\""
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.4.28",
+    "@vitejs/plugin-vue": "^5.1.0",
+    "@vitest/coverage-v8": "^2.1.0",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^25.0.0",
+    "miniprogram-api-typings": "^4.1.2",
+    "terser": "^5.46.0",
+    "turbo": "^2.7.5",
+    "typescript": "^5.4.5",
+    "vitest": "^2.1.0",
+    "vue": "^3.5.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@intlify/core-base": ">=9.14.0",
+      "@intlify/message-resolver": ">=9.1.11",
+      "@intlify/shared": ">=9.14.0",
+      "qs": ">=6.13.0",
+      "esbuild": ">=0.25.0"
+    }
+  }
+}

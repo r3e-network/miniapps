@@ -1,0 +1,12 @@
+node_modules/
+.turbo/
+.pnpm-store/
+dist/
+build/
+coverage/
+.cache/
+.env
+.env.*
+*.log
+*.pid
+.DS_Store

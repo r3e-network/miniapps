@@ -1,0 +1,49 @@
+{
+  "app_id": "miniapp-neo-gacha",
+  "name": "Neo Gacha",
+  "name_zh": "Neo 盲盒机",
+  "description": "Create and play decentralized blind box games",
+  "description_zh": "创建和游玩去中心化盲盒游戏",
+  "version": "2.0.0",
+  "entry_url": "/miniapps/neo-gacha/index.html",
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/neo-gacha/static/logo.png",
+  "banner": "/miniapps/neo-gacha/static/banner.png",
+  "category": "gaming",
+  "status": "active",
+  "tags": [
+    "game",
+    "nft",
+    "fun"
+  ],
+  "permissions": {
+    "payments": true
+  },
+  "assets_allowed": [
+    "GAS"
+  ],
+  "governance_assets_allowed": [
+    "NEO"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "0x38f050f88deab96ac6bf5d1f197dd8f5d71182fc"
+    },
+    "neo-n3-mainnet": {
+      "address": "0xc9af7c9de5b0963e6514b6462b293f0179eb3798"
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  }
+}

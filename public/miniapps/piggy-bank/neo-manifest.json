@@ -1,0 +1,43 @@
+{
+  "app_id": "miniapp-piggy-bank",
+  "name": "ZK Piggy Bank",
+  "name_zh": "零知识存钱罐",
+  "description": "A privacy-focused savings account using Zero-Knowledge proofs. Supports any ERC-20 token.",
+  "description_zh": "基于零知识证明的隐私储蓄账户。支持任意ERC-20代币。",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/piggy-bank/index.html",
+  "category": "defi",
+  "status": "active",
+  "tags": [
+    "privacy",
+    "savings",
+    "zk",
+    "erc20",
+    "piggy-bank"
+  ],
+  "permissions": {},
+  "assets_allowed": [
+    "GAS"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {},
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/piggy-bank/static/logo.png",
+  "banner": "/miniapps/piggy-bank/static/banner.png",
+  "governance_assets_allowed": [
+    "NEO"
+  ],
+  "news_integration": false
+}

@@ -1,0 +1,49 @@
+{
+  "app_id": "miniapp-dev-tipping",
+  "name": "Dev Tipping",
+  "name_zh": "开发者打赏",
+  "description": "Tip and appreciate developers with crypto",
+  "description_zh": "用加密货币打赏和感谢开发者",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/dev-tipping/index.html",
+  "category": "social",
+  "status": "active",
+  "tags": [
+    "tipping",
+    "developers",
+    "appreciation"
+  ],
+  "permissions": {
+    "payments": true
+  },
+  "assets_allowed": [
+    "GAS"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "0x93d2406a73e060d43cbe28fb26d863e5ac4744a2"
+    },
+    "neo-n3-mainnet": {
+      "address": "0x1d476b067a180bc54ee4f90c91489ffa123759a4"
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/dev-tipping/static/logo.png",
+  "banner": "/miniapps/dev-tipping/static/banner.png",
+  "governance_assets_allowed": [
+    "NEO"
+  ]
+}

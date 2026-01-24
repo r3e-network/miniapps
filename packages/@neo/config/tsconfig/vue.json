@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "display": "Vue + UniApp TypeScript Configuration",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "types": ["@dcloudio/types", "vite/client"]
+  }
+}

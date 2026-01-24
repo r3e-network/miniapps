@@ -1,0 +1,50 @@
+{
+  "app_id": "miniapp-soulbound-certificate",
+  "name": "Soulbound Certificate",
+  "name_zh": "灵魂绑定证书",
+  "description": "Issue non-transferable NEP-11 certificates.",
+  "description_zh": "签发不可转让的 NEP-11 证书。",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/soulbound-certificate/index.html",
+  "category": "utility",
+  "status": "active",
+  "tags": [
+    "soulbound",
+    "certificate",
+    "nft"
+  ],
+  "permissions": {},
+  "assets_allowed": [
+    "GAS"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "",
+      "active": false
+    },
+    "neo-n3-mainnet": {
+      "address": "",
+      "active": false
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/soulbound-certificate/static/logo.png",
+  "banner": "/miniapps/soulbound-certificate/static/banner.png",
+  "governance_assets_allowed": [
+    "NEO"
+  ],
+  "news_integration": false
+}

@@ -1,0 +1,50 @@
+{
+  "app_id": "miniapp-event-ticket-pass",
+  "name": "Event Ticket Pass",
+  "name_zh": "活动门票通行证",
+  "description": "Issue NEP-11 event tickets with QR check-in.",
+  "description_zh": "签发 NEP-11 活动门票并支持二维码核验。",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/event-ticket-pass/index.html",
+  "category": "utility",
+  "status": "active",
+  "tags": [
+    "tickets",
+    "events",
+    "qr"
+  ],
+  "permissions": {},
+  "assets_allowed": [
+    "GAS"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "",
+      "active": false
+    },
+    "neo-n3-mainnet": {
+      "address": "",
+      "active": false
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/event-ticket-pass/static/logo.png",
+  "banner": "/miniapps/event-ticket-pass/static/banner.png",
+  "governance_assets_allowed": [
+    "NEO"
+  ],
+  "news_integration": false
+}

@@ -1,0 +1,49 @@
+{
+  "app_id": "miniapp-graveyard",
+  "name": "Graveyard",
+  "name_zh": "数字墓地",
+  "description": "On-chain encrypted memory burial with paid forgetting",
+  "description_zh": "链上加密记忆埋葬与付费遗忘",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/graveyard/index.html",
+  "category": "utility",
+  "status": "active",
+  "tags": [
+    "memories",
+    "privacy",
+    "history"
+  ],
+  "permissions": {
+    "payments": true
+  },
+  "assets_allowed": [
+    "GAS"
+  ],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "0x8cf45cdc1d879710c2b88fd8705696fe6f5aacb5"
+    },
+    "neo-n3-mainnet": {
+      "address": "0x0195e668f7a2a41ef4a0200c5b9c2cc1c02e24d1"
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/static/banner.png"
+    },
+    "info": {
+      "logo": "/static/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/graveyard/static/logo.png",
+  "banner": "/miniapps/graveyard/static/banner.png",
+  "governance_assets_allowed": [
+    "NEO"
+  ]
+}
