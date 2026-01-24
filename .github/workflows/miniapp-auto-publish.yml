@@ -1,0 +1,205 @@
+# ============================================================================
+# Internal MiniApps Auto-Build & Publish Workflow
+# ============================================================================
+# Automatically builds and publishes internal MiniApps when source code changes
+#
+# Triggered by:
+# - Push to main branch with changes in apps/*
+# - Manual workflow dispatch
+#
+# Process:
+# 1. Detect which MiniApps have changed
+# 2. Build each changed MiniApp
+# 3. Upload to Vercel Blob Storage
+# 4. Update miniapp_internal table in Supabase
+# ============================================================================
+
+name: Internal MiniApps Auto-Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/**"
+      - ".github/workflows/miniapp-auto-publish.yml"
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
+
+jobs:
+  # Job 1: Detect changed MiniApps
+  detect:
+    name: Detect Changed Apps
+    runs-on: ubuntu-latest
+    outputs:
+      changed-apps: ${{ steps.detect.outputs.changed-apps }}
+      has-changes: ${{ steps.detect.outputs.has-changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Only need last 2 commits for diff
+
+      - name: Detect changed MiniApps
+        id: detect
+        run: |
+          # Get list of changed apps (safe, no untrusted input)
+          changed_apps=$(git diff --name-only HEAD~1 HEAD | \
+            rg '^apps/([^/]+)' --only-matching --replace '$1' | \
+            sort -u | \
+            jq -R -s -c 'split("\n")[:-1]')
+
+          # Check if any apps changed
+          if [ -z "$changed_apps" ] || [ "$changed_apps" = "[]" ]; then
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+            echo "changed-apps=[]" >> $GITHUB_OUTPUT
+            echo "No MiniApp changes detected"
+          else
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+            echo "changed-apps=$changed_apps" >> $GITHUB_OUTPUT
+            echo "Changed MiniApps: $changed_apps"
+          fi
+
+  # Job 2: Build and publish each changed app
+  build:
+    name: Build & Publish ${{ matrix.app }}
+    needs: detect
+    if: needs.detect.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: ${{ fromJson(needs.detect.outputs.changed-apps) }}
+      max-parallel: 3 # Build up to 3 apps in parallel
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get app info
+        id: app-info
+        run: |
+          app_path="apps/${{ matrix.app }}"
+
+          # Read manifest (safe, only reading our own files)
+          if [ -f "$app_path/neo-manifest.json" ]; then
+            manifest=$(cat "$app_path/neo-manifest.json")
+            app_id=$(echo "$manifest" | jq -r '.app_id')
+            app_name=$(echo "$manifest" | jq -r '.name // "'${{ matrix.app }}'"')
+            category=$(echo "$manifest" | jq -r '.category // "uncategorized"')
+            echo "app_id=$app_id" >> $GITHUB_OUTPUT
+            echo "app_name=$app_name" >> $GITHUB_OUTPUT
+            echo "category=$category" >> $GITHUB_OUTPUT
+            echo "Detected app_id: $app_id"
+          else
+            echo "error=neo-manifest.json not found" >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        working-directory: apps/${{ matrix.app }}
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Build MiniApp
+        id: build
+        working-directory: apps/${{ matrix.app }}
+        run: |
+          pnpm build
+
+          # Check if build succeeded
+          if [ ! -d "dist" ] && [ ! -d "build" ]; then
+            echo "error=Build failed - no dist/build directory found" >&2
+            exit 1
+          fi
+
+      - name: Prepare build output
+        id: prepare
+        run: |
+          app_path="apps/${{ matrix.app }}"
+          app_id="${{ steps.app-info.outputs.app_id }}"
+          output_dir="output/$app_id"
+
+          # Create output directory
+          mkdir -p "$output_dir"
+
+          # Copy build output
+          if [ -d "$app_path/dist" ]; then
+            cp -r "$app_path/dist/"* "$output_dir/"
+          elif [ -d "$app_path/build" ]; then
+            cp -r "$app_path/build/"* "$output_dir/"
+          fi
+
+          # Copy manifest
+          cp "$app_path/neo-manifest.json" "$output_dir/neo-manifest.json"
+
+          # Create metadata file
+          cat > "$output_dir/metadata.json" << EOF
+          {
+            "app_id": "$app_id",
+            "app_name": "${{ steps.app-info.outputs.app_name }}",
+            "category": "${{ steps.app-info.outputs.category }}",
+            "build_time": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "git_commit": "${{ github.sha }}"
+          }
+          EOF
+
+      - name: Upload to Vercel Blob Storage
+        id: upload
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        run: |
+          if [ -z "$BLOB_READ_WRITE_TOKEN" ]; then
+            echo "error=Missing Vercel Blob token" >&2
+            exit 1
+          fi
+
+          # Upload directory to Vercel Blob
+          app_id="${{ steps.app-info.outputs.app_id }}"
+          output_dir="output/$app_id"
+
+          # Use npx to install vercel-blob client
+          npx @vercel/blob@latest upload "$output_dir" "miniapps/$app_id" --token "$BLOB_READ_WRITE_TOKEN"
+
+          echo "upload_path=miniapps/$app_id" >> $GITHUB_OUTPUT
+
+      - name: Update Supabase miniapp_internal table
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_KEY" ]; then
+            echo "error=Missing Supabase credentials" >&2
+            exit 1
+          fi
+
+          app_id="${{ steps.app-info.outputs.app_id }}"
+          app_name="${{ steps.app-info.outputs.app_name }}"
+          category="${{ steps.app-info.outputs.category }}"
+          upload_path="${{ steps.upload.outputs.upload_path }}"
+
+          # Update miniapp_internal table
+          curl -X POST "$SUPABASE_URL/rest/v1/miniapp_internal" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: resolution=merge-duplicates" \
+            -d "{
+              \"app_id\": \"$app_id\",
+              \"name\": \"$app_name\",
+              \"category\": \"$category\",
+              \"cdn_path\": \"$upload_path\",
+              \"updated_at\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",
+              \"git_commit\": \"${{ github.sha }}\"
+            }"
+
+          echo "✅ Updated miniapp_internal for $app_id"
