@@ -12,9 +12,11 @@
     "./utils/*": "./utils/*",
     "./styles/*": "./styles/*"
   },
+  "dependencies": {
+    "@neo/uniapp-sdk": "workspace:*",
+    "@neo/types": "workspace:*"
+  },
   "peerDependencies": {
-    "vue": "^3.0.0",
-    "@neo/uniapp-sdk": "*",
-    "@neo/types": "*"
+    "vue": "^3.0.0"
   }
 }

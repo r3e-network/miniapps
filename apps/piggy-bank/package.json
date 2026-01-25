@@ -17,7 +17,7 @@
     "@noble/curves": "catalog:",
     "@noble/hashes": "catalog:",
     "@neo/uniapp-sdk": "file:../../sdk/packages/@neo/uniapp-sdk",
-    "@neo/types": "file:../../sdk/packages/@neo/types"
+    "@neo/types": "file:../../sdk/packages/@neo/types",
     "@reown/appkit": "^1.8.16",
     "@reown/appkit-common": "^1.8.16",
     "@reown/appkit-controllers": "^1.8.16",
