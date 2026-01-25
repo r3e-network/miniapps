@@ -8,8 +8,9 @@
 #   R2_SECRET_ACCESS_KEY - R2 secret key
 #   R2_BUCKET_STAGING  - Staging bucket name
 #   R2_BUCKET_PRODUCTION - Production bucket name
-#   CF_API_TOKEN       - Cloudflare API token (for cache purge)
+#   CF_API_TOKEN       - Cloudflare API token
 #   CF_ACCOUNT_ID      - Cloudflare account ID
+#   NEXT_PUBLIC_CDN_URL - Public CDN URL
 
 set -e
 
@@ -29,6 +30,7 @@ ENVIRONMENT="${2:-staging}"
 R2_BUCKET_VAR="R2_BUCKET_${ENVIRONMENT^^}"
 R2_BUCKET="${!R2_BUCKET_VAR}"
 R2_ENDPOINT="${R2_ENDPOINT:-https://bf0d7e814f69945157f30505e9fba9fe.r2.cloudflarestorage.com}"
+CDN_URL="${NEXT_PUBLIC_CDN_URL:-https://pub-9520e478cb93416898bc82d2aeb5db3f.r2.dev}"
 
 # ANSI colors
 RED='\033[0;31m'
@@ -76,27 +78,6 @@ upload_to_r2() {
         --no-progress
     
     log_info "Uploaded to R2: s3://$bucket/"
-}
-
-# Purge Cloudflare cache
-purge_cache() {
-    local project_name="$1"
-    
-    if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
-        log_warn "Cloudflare credentials not configured. Skipping cache purge."
-        return 0
-    fi
-    
-    log_step "Purging Cloudflare cache for: $project_name"
-    
-    # Using Cloudflare API directly
-    curl -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects/$project_name/deployments" \
-        -H "Authorization: Bearer $CF_API_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d '{"branch":"main","skipWait":true}' \
-        --silent --fail
-    
-    log_info "Cache purge initiated for $project_name"
 }
 
 # Function to publish single miniapp
@@ -167,12 +148,13 @@ publish_miniapp() {
     echo "  ║ Name:        $name / $name_zh"
     echo "  ║ Category:    $category"
     echo "  ║ Contract:    $mainnet"
-    echo "  ║ CDN URL:     https://cdn.yourdomain.com/$app_name/"
+    echo "  ║ CDN URL:     $CDN_URL/$app_name/"
     echo "  ║ Environment: $ENVIRONMENT"
     echo "  ╚════════════════════════════════════════╝"
     echo ""
     
     log_info "[$app_name] Published successfully!"
+    log_info "Access at: $CDN_URL/$app_name/"
 }
 
 # List of all miniapps
@@ -207,6 +189,7 @@ case "$1" in
         echo "  R2_BUCKET_PRODUCTION   - Production bucket name"
         echo "  CF_API_TOKEN           - Cloudflare API token"
         echo "  CF_ACCOUNT_ID          - Cloudflare account ID"
+        echo "  NEXT_PUBLIC_CDN_URL    - Public CDN URL"
         echo ""
         echo "Examples:"
         echo "  $0 lottery staging     # Publish lottery to staging"

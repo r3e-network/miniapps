@@ -4,28 +4,18 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Deployment environment'
+        description: "Deployment environment"
         required: true
-        default: 'staging'
+        default: "staging"
         type: choice
         options:
           - staging
           - production
 
-  push:
-    branches: ['main']
-    paths:
-      - 'apps/**'
-      - 'shared/**'
-      - 'sdk/**'
-      - 'scripts/**'
-      - '!scripts/*.pyc'
-      - 'neo-manifest.json'
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,8 +31,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'pnpm'
+          node-version: "22"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -64,9 +54,9 @@ jobs:
     needs: build
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
     runs-on: ubuntu-latest
-    
+
     environment: staging
-    
+
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -100,9 +90,9 @@ jobs:
     needs: build
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     runs-on: ubuntu-latest
-    
+
     environment: production
-    
+
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
