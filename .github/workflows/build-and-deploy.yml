@@ -1,0 +1,100 @@
+name: Build & Deploy Miniapps
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+  push:
+    branches: ['main']
+    paths:
+      - 'apps/**'
+      - 'shared/**'
+      - 'sdk/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate package.json
+        run: ./scripts/validate.sh
+
+      - name: Build all miniapps
+        run: ./scripts/build-all.sh
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: miniapps-build
+          path: public/miniapps/
+          retention-days: 7
+
+  deploy-staging:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    
+    environment: staging
+    
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: miniapps-build
+          path: public/miniapps/
+
+      - name: Deploy to S3 (Staging)
+        run: |
+          aws s3 sync public/miniapps/ s3://${{ secrets.S3_BUCKET_STAGING }} --delete
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_STAGING }} --paths "/*"
+
+      - name: Notify (optional)
+        if: ${{ always() }}
+        run: echo "Staging deployment complete"
+
+  deploy-production:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    
+    environment: production
+    
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: miniapps-build
+          path: public/miniapps/
+
+      - name: Deploy to S3 (Production)
+        run: |
+          aws s3 sync public/miniapps/ s3://${{ secrets.S3_BUCKET_PRODUCTION }} --delete
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_PRODUCTION }} --paths "/*"
