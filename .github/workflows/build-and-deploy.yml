@@ -19,9 +19,6 @@ on:
       - 'shared/**'
       - 'sdk/**'
 
-env:
-  R2_ENDPOINT: https://bf0d7e814f69945157f30505e9fba9fe.r2.cloudflarestorage.com
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -82,7 +79,7 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.R2_BUCKET_STAGING }}
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_ENDPOINT: ${{ env.R2_ENDPOINT }}
+          AWS_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           AWS_REGION: auto
           AWS_S3_FORCE_PATH_STYLE: "true"
 
@@ -90,8 +87,8 @@ jobs:
         uses: cloudflare/cloudflare-pages-action@v1
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: bf0d7e814f69945157f30505e9fba9fe
-          projectName: miniapps-staging
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: ${{ secrets.CF_PAGES_PROJECT_STAGING }}
           directory: public/miniapps
 
   deploy-production:
@@ -116,7 +113,7 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.R2_BUCKET_PRODUCTION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_ENDPOINT: ${{ env.R2_ENDPOINT }}
+          AWS_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           AWS_REGION: auto
           AWS_S3_FORCE_PATH_STYLE: "true"
 
@@ -124,6 +121,6 @@ jobs:
         uses: cloudflare/cloudflare-pages-action@v1
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: bf0d7e814f69945157f30505e9fba9fe
-          projectName: miniapps-production
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: ${{ secrets.CF_PAGES_PROJECT_PRODUCTION }}
           directory: public/miniapps
