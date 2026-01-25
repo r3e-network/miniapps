@@ -1,4 +1,4 @@
-name: Build & Deploy Miniapps
+name: Build & Deploy to Cloudflare R2
 
 on:
   workflow_dispatch:
@@ -18,6 +18,9 @@ on:
       - 'apps/**'
       - 'shared/**'
       - 'sdk/**'
+
+env:
+  R2_ENDPOINT: https://bf0d7e814f69945157f30505e9fba9fe.r2.cloudflarestorage.com
 
 jobs:
   build:
@@ -71,14 +74,25 @@ jobs:
           name: miniapps-build
           path: public/miniapps/
 
-      - name: Deploy to S3 (Staging)
-        run: |
-          aws s3 sync public/miniapps/ s3://${{ secrets.S3_BUCKET_STAGING }} --delete
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_STAGING }} --paths "/*"
+      - name: Deploy to R2 (Staging)
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET_STAGING }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT: ${{ env.R2_ENDPOINT }}
+          AWS_REGION: auto
+          AWS_S3_FORCE_PATH_STYLE: "true"
 
-      - name: Notify (optional)
-        if: ${{ always() }}
-        run: echo "Staging deployment complete"
+      - name: Purge Cloudflare Cache (Staging)
+        uses: cloudflare/cloudflare-pages-action@v1
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: bf0d7e814f69945157f30505e9fba9fe
+          projectName: miniapps-staging
+          directory: public/miniapps
 
   deploy-production:
     needs: build
@@ -94,7 +108,22 @@ jobs:
           name: miniapps-build
           path: public/miniapps/
 
-      - name: Deploy to S3 (Production)
-        run: |
-          aws s3 sync public/miniapps/ s3://${{ secrets.S3_BUCKET_PRODUCTION }} --delete
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CF_DISTRIBUTION_PRODUCTION }} --paths "/*"
+      - name: Deploy to R2 (Production)
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.R2_BUCKET_PRODUCTION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT: ${{ env.R2_ENDPOINT }}
+          AWS_REGION: auto
+          AWS_S3_FORCE_PATH_STYLE: "true"
+
+      - name: Purge Cloudflare Cache (Production)
+        uses: cloudflare/cloudflare-pages-action@v1
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: bf0d7e814f69945157f30505e9fba9fe
+          projectName: miniapps-production
+          directory: public/miniapps
