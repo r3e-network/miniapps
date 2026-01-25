@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-neo-ns",
   "name": "Neo Name Service",
+  "name_zh": "Neo 域名服务",
   "version": "1.0.0",
   "description": "Register and manage human-readable .neo domain names for your wallet",
+  "description_zh": "Neo 域名服务 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [
     "domains",
     "naming",
@@ -17,8 +21,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0x50ac1c37690cc2cfc594472833cf57505d5f46de"
+    "neo-n3-mainnet": "0x50ac1c37690cc2cfc594472833cf57505d5f46de",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/neo-ns/index.html",
     "icon": "/miniapps/neo-ns/logo.png",
@@ -47,5 +56,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

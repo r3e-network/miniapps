@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-unbreakablevault",
   "name": "Unbreakable Vault",
+  "name_zh": "无法破碎的金库",
   "version": "1.0.0",
   "description": "Hacker bounty vaults secured by secret hashes.",
+  "description_zh": "无法破碎的金库 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -12,8 +16,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0x198bfcccabb9b73181f23b5af22fe73afdc6c3aa"
+    "neo-n3-mainnet": "0x198bfcccabb9b73181f23b5af22fe73afdc6c3aa",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/unbreakable-vault/index.html",
     "icon": "/miniapps/unbreakable-vault/logo.png",
@@ -42,5 +51,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

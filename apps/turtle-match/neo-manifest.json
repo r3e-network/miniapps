@@ -1,10 +1,14 @@
 {
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-turtle-match",
-  "name": "\u4e4c\u9f9f\u5bf9\u5bf9\u78b0",
+  "name": "Turtle Match",
+  "name_zh": "乌龟匹配",
   "version": "1.0.0",
   "description": "Turtle Match - Neo MiniApp Game",
+  "description_zh": "乌龟匹配 - Neo N3 去中心化应用",
   "category": "games",
+  "category_name": "Games",
+  "category_name_zh": "游戏",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -12,8 +16,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0xac10b90f40c015da61c71e30533309760b75fec7"
+    "neo-n3-mainnet": "0xac10b90f40c015da61c71e30533309760b75fec7",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/turtle-match/index.html",
     "icon": "/miniapps/turtle-match/logo.png",
@@ -42,5 +51,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

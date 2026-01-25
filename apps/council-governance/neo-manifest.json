@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-council-governance",
   "name": "Council Governance",
+  "name_zh": "理事会治理",
   "version": "1.0.0",
   "description": "Participate in DAO governance and council voting",
+  "description_zh": "理事会治理 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [
     "dao",
     "governance",
@@ -16,8 +20,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0xc7e50e67589df63302cbea1a6b00beb649ee74d8"
+    "neo-n3-mainnet": "0xc7e50e67589df63302cbea1a6b00beb649ee74d8",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/council-governance/index.html",
     "icon": "/miniapps/council-governance/logo.png",
@@ -46,5 +55,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

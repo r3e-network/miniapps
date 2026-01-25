@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-garden-of-neo",
   "name": "Garden of Neo",
+  "name_zh": "Neo 花园",
   "version": "1.0.0",
   "description": "Plant elemental seeds, grow for 100 blocks, and harvest GAS rewards.",
+  "description_zh": "Neo 花园 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [
     "nft",
     "garden",
@@ -16,8 +20,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0x72aa16fd44305eabe8b85ca397b9bfcdc718dce8"
+    "neo-n3-mainnet": "0x72aa16fd44305eabe8b85ca397b9bfcdc718dce8",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/garden-of-neo/index.html",
     "icon": "/miniapps/garden-of-neo/logo.png",
@@ -46,5 +55,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

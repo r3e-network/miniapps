@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-doomsday-clock",
   "name": "Doomsday Clock",
+  "name_zh": "末日时钟",
   "version": "1.0.0",
   "description": "Set deadlines and countdown timers with on-chain consequences",
+  "description_zh": "末日时钟 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [
     "timer",
     "deadline",
@@ -16,8 +20,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0x8f46753fd7123bd276d77ef1100839004b9a3440"
+    "neo-n3-mainnet": "0x8f46753fd7123bd276d77ef1100839004b9a3440",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/doomsday-clock/index.html",
     "icon": "/miniapps/doomsday-clock/logo.png",
@@ -46,5 +55,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

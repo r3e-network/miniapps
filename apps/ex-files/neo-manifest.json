@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-exfiles",
   "name": "Ex Files",
+  "name_zh": "前任文件",
   "version": "1.0.0",
   "description": "Securely store and manage sensitive past relationship records",
+  "description_zh": "前任文件 - Neo N3 去中心化应用",
   "category": "social",
+  "category_name": "Social",
+  "category_name_zh": "社交",
   "tags": [
     "privacy",
     "storage",
@@ -16,8 +20,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0x9cfc02ad75691521cceb2ec0550e6a227251ad35"
+    "neo-n3-mainnet": "0x9cfc02ad75691521cceb2ec0550e6a227251ad35",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/ex-files/index.html",
     "icon": "/miniapps/ex-files/logo.png",
@@ -46,5 +55,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

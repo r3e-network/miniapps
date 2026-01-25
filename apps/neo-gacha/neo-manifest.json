@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-neo-gacha",
   "name": "Neo Gacha",
+  "name_zh": "Neo 盲盒",
   "version": "2.0.0",
   "description": "Create and play decentralized blind box games",
+  "description_zh": "Neo 盲盒 - Neo N3 去中心化应用",
   "category": "games",
+  "category_name": "Games",
+  "category_name_zh": "游戏",
   "tags": [
     "game",
     "nft",
@@ -16,8 +20,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0xc9af7c9de5b0963e6514b6462b293f0179eb3798"
+    "neo-n3-mainnet": "0xc9af7c9de5b0963e6514b6462b293f0179eb3798",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/neo-gacha/index.html",
     "icon": "/miniapps/neo-gacha/logo.png",
@@ -46,5 +55,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

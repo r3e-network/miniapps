@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-self-loan",
   "name": "Self Loan",
+  "name_zh": "自我借贷",
   "version": "1.0.0",
   "description": "Tiered LTV self-loans with auto-repayment",
+  "description_zh": "自我借贷 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -12,8 +16,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0x942da575b31f39cbb59e64b5813b128739b44c25"
+    "neo-n3-mainnet": "0x942da575b31f39cbb59e64b5813b128739b44c25",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/self-loan/index.html",
     "icon": "/miniapps/self-loan/logo.png",
@@ -42,5 +51,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

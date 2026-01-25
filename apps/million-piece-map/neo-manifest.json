@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-millionpiecemap",
   "name": "Million Piece Map",
+  "name_zh": "百万碎片地图",
   "version": "1.0.0",
   "description": "Million Piece Map - Neo MiniApp",
+  "description_zh": "百万碎片地图 - Neo N3 去中心化应用",
   "category": "games",
+  "category_name": "Games",
+  "category_name_zh": "游戏",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -12,8 +16,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0xdae609b67e51634a95badea92bae585459fe83a4"
+    "neo-n3-mainnet": "0xdae609b67e51634a95badea92bae585459fe83a4",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/million-piece-map/index.html",
     "icon": "/miniapps/million-piece-map/logo.png",
@@ -42,5 +51,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

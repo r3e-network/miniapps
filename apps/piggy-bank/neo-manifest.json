@@ -1,10 +1,14 @@
 {
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-piggy-bank",
-  "name": "ZK Piggy Bank",
+  "name": "Piggy Bank",
+  "name_zh": "存钱罐",
   "version": "1.0.0",
   "description": "A privacy-focused savings account using Zero-Knowledge proofs. Supports any ERC-20 token.",
+  "description_zh": "存钱罐 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [
     "privacy",
     "savings",
@@ -18,8 +22,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0x0000000000000000000000000000000000000000"
+    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/piggy-bank/index.html",
     "icon": "/miniapps/piggy-bank/logo.png",
@@ -48,5 +57,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

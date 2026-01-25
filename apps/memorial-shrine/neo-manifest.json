@@ -1,10 +1,14 @@
 {
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-memorial-shrine",
-  "name": "memorial-shrine",
+  "name": "Memorial Shrine",
+  "name_zh": "纪念堂",
   "version": "1.0.0",
-  "description": "\u533a\u5757\u94fe\u7075\u4f4d - \u6c38\u6052\u5b58\u5728\uff0c\u6c38\u6052\u8bb0\u5fc6",
+  "description": "区块链灵位 - 永恒存在，永恒记忆",
+  "description_zh": "纪念堂 - Neo N3 去中心化应用",
   "category": "social",
+  "category_name": "Social",
+  "category_name_zh": "社交",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -12,8 +16,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0xee7a548b71c69364fcb0e45a63a40f141b938e42"
+    "neo-n3-mainnet": "0xee7a548b71c69364fcb0e45a63a40f141b938e42",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/memorial-shrine/index.html",
     "icon": "/miniapps/memorial-shrine/logo.png",
@@ -42,5 +51,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

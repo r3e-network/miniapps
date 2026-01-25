@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "social-karma",
   "name": "Social Karma",
+  "name_zh": "社交因果",
   "version": "1.0.0",
   "description": "Social Karma miniapp on Neo N3",
+  "description_zh": "社交因果 - Neo N3 去中心化应用",
   "category": "social",
+  "category_name": "Social",
+  "category_name_zh": "社交",
   "tags": [
     "social"
   ],
@@ -14,8 +18,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0x0000000000000000000000000000000000000000"
+    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/index.html",
     "icon": "/logo.png",
@@ -44,5 +53,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-neo-swap",
   "name": "Neo Swap",
+  "name_zh": "Neo 兑换",
   "version": "1.0.0",
   "description": "Swap NEO and GAS with real-time quotes routed through Flamingo",
+  "description_zh": "Neo 兑换 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [
     "swap",
     "dex",
@@ -18,8 +22,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0xf970f4ccecd765b63732b821775dc38c25d74f23"
+    "neo-n3-mainnet": "0xf970f4ccecd765b63732b821775dc38c25d74f23",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/neo-swap/index.html",
     "icon": "/miniapps/neo-swap/logo.png",
@@ -48,5 +57,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

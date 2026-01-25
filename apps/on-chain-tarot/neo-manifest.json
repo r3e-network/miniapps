@@ -1,10 +1,14 @@
 {
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-onchaintarot",
-  "name": "On-Chain Tarot",
+  "name": "On-chain Tarot",
+  "name_zh": "链上塔罗牌",
   "version": "1.0.0",
   "description": "On-Chain Tarot - Neo MiniApp",
+  "description_zh": "链上塔罗牌 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -12,8 +16,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0xfb5d6b25c974a301e34c570dd038de8c25f3ae56"
+    "neo-n3-mainnet": "0xfb5d6b25c974a301e34c570dd038de8c25f3ae56",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/on-chain-tarot/index.html",
     "icon": "/miniapps/on-chain-tarot/logo.png",
@@ -42,5 +51,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

@@ -2,9 +2,13 @@
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
   "id": "miniapp-heritage-trust",
   "name": "Heritage Trust",
+  "name_zh": "遗产信托",
   "version": "2.0.0",
   "description": "Lock NEO/GAS, earn bNEO rewards, and release NEO + GAS, NEO + rewards, or rewards-only monthly.",
+  "description_zh": "遗产信托 - Neo N3 去中心化应用",
   "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -12,8 +16,13 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": "0xd260b66f646a49c15f572aa827e5eb36f7756563"
+    "neo-n3-mainnet": "0xd260b66f646a49c15f572aa827e5eb36f7756563",
+    "neo-n3-testnet": ""
   },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
   "urls": {
     "entry": "/miniapps/heritage-trust/index.html",
     "icon": "/miniapps/heritage-trust/logo.png",
@@ -42,5 +51,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T00:00:00Z"
+  "updatedAt": "2026-01-26T12:00:00Z"
 }
