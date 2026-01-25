@@ -8,42 +8,89 @@ Neo MiniApps are **stateless web applications** that:
 3. Are registered via `neo-manifest.json`
 4. Have analytics/tracking managed by the platform
 
-## Architecture Diagram
+## neo-manifest.json Schema
 
+The manifest is the **source of truth** for miniapp metadata.
+
+```json
+{
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  
+  "id": "lottery",
+  "name": "Lottery",
+  "name_zh": "彩票游戏",
+  "version": "1.0.0",
+  
+  "description": "Decentralized lottery game with transparent drawing",
+  "description_zh": "去中心化彩票游戏，透明开奖",
+  
+  "category": "games",
+  "category_name": "Games",
+  "category_name_zh": "游戏",
+  "tags": ["lottery", "gaming", "neo-n3"],
+  
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
+  },
+  
+  "contracts": {
+    "neo-n3-mainnet": "0x1234567890abcdef1234567890abcdef12345678",
+    "neo-n3-testnet": "0xabcdef1234567890abcdef1234567890abcdef12"
+  },
+  
+  "supported_networks": ["neo-n3-mainnet"],
+  "default_network": "neo-n3-mainnet",
+  
+  "urls": {
+    "entry": "/index.html",
+    "icon": "/logo.png",
+    "banner": "/banner.png"
+  },
+  
+  "permissions": ["invoke:primary", "read:blockchain"],
+  
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://lottery"
+  },
+  
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": ["https://neoxrpc1.blackholelabs.io"]
+  },
+  
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T12:00:00Z"
+}
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Neo MiniApp Platform                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐ │
-│  │ MiniApp     │    │ Analytics   │    │ CDN (R2)            │ │
-│  │ Registry    │    │ Service     │    │ - /lottery/         │ │
-│  │ - manifest  │    │ - views     │    │ - /neo-swap/        │ │
-│  │ - metadata  │    │ - ratings   │    │ - /neo-gacha/       │ │
-│  │ - CDN URL   │    │ - comments  │    │ - ...               │ │
-│  └─────────────┘    └─────────────┘    └─────────────────────┘ │
-│         │                   │                      │           │
-│         └───────────────────┴──────────────────────┘           │
-│                            │                                      │
-│                   ┌────────▼────────┐                            │
-│                   │  Frontend App   │                            │
-│                   │  - MiniApp list │                            │
-│                   │  - Details view │                            │
-│                   │  - User wallet  │                            │
-│                   └─────────────────┘                            │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      Smart Contracts                              │
-│  ┌─────────────────────────────────────────────────────────────┐│
-│  │ LotteryContract   │ SwapContract   │ GachaContract          ││
-│  │ - game state      │ - pools        │ - loot tables          ││
-│  │ - tickets         │ - swaps        │ - rng seed             ││
-│  │ - winners         │ - orders       │ - prizes               ││
-│  └─────────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────────┘
-```
+
+## Field Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique miniapp identifier |
+| `name` | string | English name |
+| `name_zh` | string | Chinese name |
+| `description` | string | English description |
+| `description_zh` | string | Chinese description |
+| `category` | string | Category code (games, governance, finance, social, tools, other) |
+| `category_name` | string | English category name |
+| `category_name_zh` | string | Chinese category name |
+| `contracts.neo-n3-mainnet` | address | Mainnet contract address |
+| `contracts.neo-n3-testnet` | address | Testnet contract address |
+| `supported_networks` | array | List of supported networks |
+| `default_network` | string | Default network to use |
 
 ## Stateless MiniApp Design
 
@@ -70,82 +117,6 @@ Neo MiniApps are **stateless web applications** that:
 └─────────────────────────────────────────┘
 ```
 
-### State Source Configuration
-
-```json
-{
-  "stateSource": {
-    "type": "smart-contract",
-    "chain": "neo-n3-mainnet",
-    "endpoints": ["https://neoxrpc1.blackholelabs.io"]
-  }
-}
-```
-
-Or for off-chain data:
-
-```json
-{
-  "stateSource": {
-    "type": "api",
-    "endpoint": "https://api.example.com/data",
-    "auth": "Bearer ${API_TOKEN}"
-  }
-}
-```
-
-## neo-manifest.json Schema
-
-The manifest is the **source of truth** for miniapp metadata.
-
-```json
-{
-  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
-  "id": "unique-app-id",
-  "name": "Human Readable Name",
-  "version": "1.0.0",
-  "description": "App description",
-  "category": "games|finance|social|tools|other",
-  "tags": ["tag1", "tag2"],
-  
-  "developer": {
-    "name": "Developer Name",
-    "email": "dev@example.com",
-    "website": "https://example.com"
-  },
-  
-  "contracts": {
-    "primary": "0x1234...",
-    "dependencies": ["0x5678..."]
-  },
-  
-  "urls": {
-    "entry": "/index.html",
-    "icon": "/logo.png",
-    "banner": "/banner.png"
-  },
-  
-  "features": {
-    "stateless": true,
-    "offlineSupport": false,
-    "deeplink": "neomainapp://app-id"
-  },
-  
-  "stateSource": {
-    "type": "smart-contract|api",
-    "chain": "neo-n3-mainnet",
-    "endpoints": ["https://..."]
-  },
-  
-  "platform": {
-    "analytics": true,
-    "comments": true,
-    "ratings": true,
-    "transactions": true
-  }
-}
-```
-
 ## Platform-Tracked Data
 
 The platform manages **analytics and metadata**, NOT miniapp logic.
@@ -155,49 +126,8 @@ The platform manages **analytics and metadata**, NOT miniapp logic.
 | Views | Page views, unique visitors | Platform DB |
 | Comments | User reviews & comments | Platform DB |
 | Ratings | Star ratings, scores | Platform DB |
-| Transactions | On-chain interactions (optional) | Platform DB + Blockchain |
+| Transactions | On-chain interactions | Platform DB + Blockchain |
 | Status | Published/draft/hidden | Platform DB |
-| Stats | Daily/weekly/monthly analytics | Platform DB |
-
-## Publish Workflow
-
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                        Publish Process                            │
-├──────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  1. Build MiniApp                                                │
-│     ./scripts/publish.sh lottery staging                         │
-│         │                                                        │
-│         ▼                                                        │
-│  2. Compile (Vite/Uni-app)                                       │
-│     - Generate dist/build/h5/                                    │
-│     - Minify assets                                              │
-│         │                                                        │
-│         ▼                                                        │
-│  3. Upload to CDN (R2)                                           │
-│     - S3 sync to R2 bucket                                       │
-│     - Set public-read ACL                                        │
-│         │                                                        │
-│         ▼                                                        │
-│  4. Register with Platform                                       │
-│     - POST manifest to platform API                              │
-│     - Platform stores: CDN URL + metadata                        │
-│     - Returns registered app ID                                  │
-│         │                                                        │
-│         ▼                                                        │
-│  5. Platform Updates MiniApp Registry                            │
-│     - App appears in listing                                     │
-│     - Analytics tracking enabled                                 │
-│         │                                                        │
-│         ▼                                                        │
-│  6. User Access                                                  │
-│     - Click miniapp in platform                                  │
-│     - Platform redirects to CDN URL                              │
-│     - Miniapp loads from CDN                                     │
-│                                                                  │
-└──────────────────────────────────────────────────────────────────┘
-```
 
 ## File Structure
 
@@ -219,66 +149,38 @@ miniapps/
 ├── scripts/
 │   ├── build-all.sh       # Build all miniapps
 │   ├── publish.sh         # Build + upload + register
-│   └── validate.sh        # Validate JSON/manifests
+│   ├── validate.sh        # Validate JSON/manifests
+│   ├── update-manifests.py # Update manifests schema
+│   └── create-manifests.py # Create missing manifests
 │
 └── public/
     └── miniapps/          # Local CDN mirror
         └── {miniapp-name}/
-            ├── index.html
-            └── static/
 ```
 
-## API Endpoints (Platform)
+## Publish Workflow
 
-### Register MiniApp
-```
-POST /api/miniapp/register
-Content-Type: application/json
+```bash
+# Publish single miniapp to staging
+./scripts/publish.sh lottery staging
 
-{
-  "manifest": { ...neo-manifest.json },
-  "cdnUrl": "https://cdn.r3e.network/lottery/",
-  "environment": "staging"
-}
-```
+# Publish all miniapps to production
+./scripts/publish.sh all production
 
-### Get MiniApp
-```
-GET /api/miniapp/{appId}
+# List all miniapps
+./scripts/publish.sh list
+
+# Update all manifests to latest schema
+python3 scripts/update-manifests.py
 ```
 
-### List MiniApps
-```
-GET /api/miniapp?category=games&status=published
-```
+## Category List
 
-### Update Analytics
-```
-POST /api/miniapp/{appId}/analytics
-{
-  "type": "view|comment|rating|transaction",
-  "data": { ... }
-}
-```
-
-## Benefits
-
-1. **Stateless = Portable**
-   - Same miniapp works on any platform
-   - No backend dependencies
-   - Easy to migrate or backup
-
-2. **CDN = Fast**
-   - Global edge caching
-   - Low latency access
-   - Scalable automatically
-
-3. **Platform = Analytics**
-   - Unified analytics
-   - User reviews & ratings
-   - Discovery & categorization
-
-4. **Smart Contract = Trustless**
-   - All game logic on-chain
-   - Transparent operations
-   - No central control
+| Code | English | Chinese |
+|------|---------|---------|
+| games | Games | 游戏 |
+| governance | Governance | 治理 |
+| finance | Finance | 金融 |
+| social | Social | 社交 |
+| tools | Tools | 工具 |
+| other | Other | 其他 |
