@@ -1,61 +1,51 @@
 {
-  "app_id": "miniapp-gas-sponsor",
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "miniapp-gas-sponsor",
   "name": "Gas Sponsor",
-  "name_zh": "Gas 代付",
-  "description": "Free gas sponsorship for new users with low balance",
-  "description_zh": "为低余额新用户提供免费 Gas 代付服务",
   "version": "1.0.0",
-  "entry_url": "/miniapps/gas-sponsor/index.html",
-  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/gas-sponsor/logo.png",
-  "banner": "/miniapps/gas-sponsor/banner.png",
-  "category": "utility",
-  "status": "active",
+  "description": "Free gas sponsorship for new users with low balance",
+  "category": "other",
   "tags": [
     "gas",
     "sponsor",
     "onboarding",
     "free"
   ],
-  "permissions": {},
-  "assets_allowed": [
-    "GAS"
-  ],
-  "governance_assets_allowed": [
-    "NEO"
-  ],
-  "supported_chains": [
-    "neo-n3-testnet",
-    "neo-n3-mainnet"
-  ],
-  "contracts": {
-    "neo-n3-testnet": {
-      "address": "0xae47f11a368ceb778839e80e3ad0ecb952e9c058"
-    },
-    "neo-n3-mainnet": {
-      "address": "0x80ea8435a88334b9b80077220097d88c440615f1"
-    }
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
   },
-  "card": {
-    "display": {
-      "type": "static",
-      "banner": "/banner.png",
-      "live_status": {
-        "enabled": true,
-        "refresh_interval": 300,
-        "fields": [
-          "daily_quota",
-          "users_helped"
-        ]
-      }
-    },
-    "info": {
-      "logo": "/logo.png",
-      "owner": {
-        "name": "Neo Service Layer",
-        "address": "NXV7ZhHiyM1aHXwpVsRZC6BwNFP2jghXAq",
-        "verified": true
-      }
-    }
-  }
+  "contracts": {
+    "primary": "0x80ea8435a88334b9b80077220097d88c440615f1"
+  },
+  "urls": {
+    "entry": "/miniapps/gas-sponsor/index.html",
+    "icon": "/miniapps/gas-sponsor/logo.png",
+    "banner": "/miniapps/gas-sponsor/banner.png"
+  },
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
+  ],
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://gas-sponsor"
+  },
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T00:00:00Z"
 }

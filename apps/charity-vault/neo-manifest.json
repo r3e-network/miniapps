@@ -1,14 +1,12 @@
 {
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
-  "id": "miniapp-milestone-escrow",
-  "name": "Milestone Escrow",
+  "id": "charity-vault",
+  "name": "Charity Vault",
   "version": "1.0.0",
-  "description": "Lock funds and release per approved milestones.",
-  "category": "other",
+  "description": "Charity Vault miniapp on Neo N3",
+  "category": "finance",
   "tags": [
-    "escrow",
-    "milestone",
-    "payments"
+    "finance"
   ],
   "developer": {
     "name": "R3E Network",
@@ -16,12 +14,12 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "primary": ""
+    "primary": "0x0000000000000000000000000000000000000000"
   },
   "urls": {
-    "entry": "/miniapps/milestone-escrow/index.html",
-    "icon": "/miniapps/milestone-escrow/logo.png",
-    "banner": "/miniapps/milestone-escrow/banner.png"
+    "entry": "/index.html",
+    "icon": "/logo.png",
+    "banner": "/banner.png"
   },
   "permissions": [
     "invoke:primary",
@@ -30,7 +28,7 @@
   "features": {
     "stateless": true,
     "offlineSupport": false,
-    "deeplink": "neomainapp://milestone-escrow"
+    "deeplink": "neomainapp://charity-vault"
   },
   "stateSource": {
     "type": "smart-contract",

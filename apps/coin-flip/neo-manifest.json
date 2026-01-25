@@ -1,49 +1,50 @@
 {
-  "app_id": "miniapp-coinflip",
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "miniapp-coinflip",
   "name": "Coin Flip",
-  "name_zh": "抛硬币",
-  "description": "Fair on-chain coin flip game with provable randomness",
-  "description_zh": "链上公平抛硬币游戏，可验证随机性",
   "version": "1.0.0",
-  "entry_url": "/miniapps/coin-flip/index.html",
-  "category": "gaming",
-  "status": "active",
+  "description": "Fair on-chain coin flip game with provable randomness",
+  "category": "games",
   "tags": [
     "gambling",
     "games",
     "randomness"
   ],
-  "permissions": {
-    "payments": true
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
   },
-  "assets_allowed": [
-    "GAS"
-  ],
-  "supported_chains": [
-    "neo-n3-testnet",
-    "neo-n3-mainnet"
-  ],
   "contracts": {
-    "neo-n3-testnet": {
-      "address": "0xbd4c9203495048900e34cd9c4618c05994e86cc0"
-    },
-    "neo-n3-mainnet": {
-      "address": "0x0a39f71c274dc944cd20cb49e4a38ce10f3ceea1"
-    }
+    "primary": "0x0a39f71c274dc944cd20cb49e4a38ce10f3ceea1"
   },
-  "card": {
-    "display": {
-      "type": "static",
-      "banner": "/banner.png"
-    },
-    "info": {
-      "logo": "/logo.png"
-    }
+  "urls": {
+    "entry": "/miniapps/coin-flip/index.html",
+    "icon": "/miniapps/coin-flip/logo.png",
+    "banner": "/miniapps/coin-flip/banner.png"
   },
-  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/coin-flip/logo.png",
-  "banner": "/miniapps/coin-flip/banner.png",
-  "governance_assets_allowed": [
-    "NEO"
-  ]
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
+  ],
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://coin-flip"
+  },
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T00:00:00Z"
 }

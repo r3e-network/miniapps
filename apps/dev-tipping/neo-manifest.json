@@ -1,49 +1,50 @@
 {
-  "app_id": "miniapp-dev-tipping",
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "miniapp-dev-tipping",
   "name": "Dev Tipping",
-  "name_zh": "开发者打赏",
-  "description": "Tip and appreciate developers with crypto",
-  "description_zh": "用加密货币打赏和感谢开发者",
   "version": "1.0.0",
-  "entry_url": "/miniapps/dev-tipping/index.html",
+  "description": "Tip and appreciate developers with crypto",
   "category": "social",
-  "status": "active",
   "tags": [
     "tipping",
     "developers",
     "appreciation"
   ],
-  "permissions": {
-    "payments": true
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
   },
-  "assets_allowed": [
-    "GAS"
-  ],
-  "supported_chains": [
-    "neo-n3-testnet",
-    "neo-n3-mainnet"
-  ],
   "contracts": {
-    "neo-n3-testnet": {
-      "address": "0x93d2406a73e060d43cbe28fb26d863e5ac4744a2"
-    },
-    "neo-n3-mainnet": {
-      "address": "0x1d476b067a180bc54ee4f90c91489ffa123759a4"
-    }
+    "primary": "0x1d476b067a180bc54ee4f90c91489ffa123759a4"
   },
-  "card": {
-    "display": {
-      "type": "static",
-      "banner": "/banner.png"
-    },
-    "info": {
-      "logo": "/logo.png"
-    }
+  "urls": {
+    "entry": "/miniapps/dev-tipping/index.html",
+    "icon": "/miniapps/dev-tipping/logo.png",
+    "banner": "/miniapps/dev-tipping/banner.png"
   },
-  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/dev-tipping/logo.png",
-  "banner": "/miniapps/dev-tipping/banner.png",
-  "governance_assets_allowed": [
-    "NEO"
-  ]
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
+  ],
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://dev-tipping"
+  },
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T00:00:00Z"
 }

@@ -1,49 +1,50 @@
 {
-  "app_id": "miniapp-neo-gacha",
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "miniapp-neo-gacha",
   "name": "Neo Gacha",
-  "name_zh": "Neo 盲盒机",
-  "description": "Create and play decentralized blind box games",
-  "description_zh": "创建和游玩去中心化盲盒游戏",
   "version": "2.0.0",
-  "entry_url": "/miniapps/neo-gacha/index.html",
-  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/neo-gacha/logo.png",
-  "banner": "/miniapps/neo-gacha/banner.png",
-  "category": "gaming",
-  "status": "active",
+  "description": "Create and play decentralized blind box games",
+  "category": "games",
   "tags": [
     "game",
     "nft",
     "fun"
   ],
-  "permissions": {
-    "payments": true
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
   },
-  "assets_allowed": [
-    "GAS"
-  ],
-  "governance_assets_allowed": [
-    "NEO"
-  ],
-  "supported_chains": [
-    "neo-n3-testnet",
-    "neo-n3-mainnet"
-  ],
   "contracts": {
-    "neo-n3-testnet": {
-      "address": "0x38f050f88deab96ac6bf5d1f197dd8f5d71182fc"
-    },
-    "neo-n3-mainnet": {
-      "address": "0xc9af7c9de5b0963e6514b6462b293f0179eb3798"
-    }
+    "primary": "0xc9af7c9de5b0963e6514b6462b293f0179eb3798"
   },
-  "card": {
-    "display": {
-      "type": "static",
-      "banner": "/banner.png"
-    },
-    "info": {
-      "logo": "/logo.png"
-    }
-  }
+  "urls": {
+    "entry": "/miniapps/neo-gacha/index.html",
+    "icon": "/miniapps/neo-gacha/logo.png",
+    "banner": "/miniapps/neo-gacha/banner.png"
+  },
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
+  ],
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://neo-gacha"
+  },
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T00:00:00Z"
 }
