@@ -10,15 +10,18 @@ APPS_DIR="$ROOT_DIR/apps"
 CDN_DIR="$ROOT_DIR/public/miniapps"
 
 ENVIRONMENT="${2:-staging}"
-R2_BUCKET="R2_BUCKET_${ENVIRONMENT^^}"
-R2_ENDPOINT="${R2_ENDPOINT:-https://bf0d7e814f69945157f30505e9fba9fe.r2.cloudflarestorage.com}"
+R2_BUCKET_VAR="R2_BUCKET_${ENVIRONMENT^^}"
+R2_BUCKET="${!R2_BUCKET_VAR}"
 
-echo "============================================"
-echo "Neo MiniApps Publisher"
-echo "============================================"
-echo "Environment: $ENVIRONMENT"
-echo "Bucket: ${!R2_BUCKET}"
-echo ""
+# ANSI colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 # Function to publish single miniapp
 publish_miniapp() {
@@ -26,84 +29,75 @@ publish_miniapp() {
     local app_dir="$APPS_DIR/$app_name"
     
     if [ ! -d "$app_dir" ]; then
-        echo "✗ Miniapp not found: $app_name"
+        log_error "Miniapp not found: $app_name"
         return 1
     fi
     
-    echo "[$app_name] Starting publish..."
+    echo ""
+    log_info "[$app_name] Starting publish..."
     
     # 1. Check neo-manifest.json exists
     if [ ! -f "$app_dir/neo-manifest.json" ]; then
-        echo "✗ [$app_name] Missing neo-manifest.json"
+        log_error "[$app_name] Missing neo-manifest.json"
         return 1
     fi
     
-    # 2. Build the miniapp
-    echo "  [1/4] Building..."
+    # 2. Validate neo-manifest.json
+    echo "  [1/3] Validating manifest..."
+    if ! python3 -c "import json; json.load(open('$app_dir/neo-manifest.json'))" 2>/dev/null; then
+        log_error "[$app_name] Invalid JSON in neo-manifest.json"
+        return 1
+    fi
+    
+    # 3. Build the miniapp
+    echo "  [2/3] Building..."
     cd "$app_dir"
-    pnpm build > /dev/null 2>&1 || {
-        echo "✗ [$app_name] Build failed"
+    if ! pnpm build > /dev/null 2>&1; then
+        log_error "[$app_name] Build failed"
         return 1
-    }
+    fi
     
-    # 3. Validate neo-manifest.json
-    echo "  [2/4] Validating manifest..."
-    python3 -c "import json; json.load(open('neo-manifest.json'))" || {
-        echo "✗ [$app_name] Invalid JSON in neo-manifest.json"
-        return 1
-    }
-    
-    # 4. Upload to R2 CDN
-    echo "  [3/4] Uploading to CDN..."
+    # 4. Copy to local CDN
+    echo "  [3/3] Copying to CDN..."
     local cdn_path="$CDN_DIR/$app_name"
     mkdir -p "$cdn_path"
     rm -rf "$cdn_path"/*
-    cp -r "dist/build/h5"/* "$cdn_path/"
     
-    # Sync to R2
-    aws s3 sync "$cdn_path/" "s3://${!R2_BUCKET}/$app_name" \
-        --endpoint-url="$R2_ENDPOINT" \
-        --acl public-read \
-        --delete 2>/dev/null || {
-        echo "⚠ [$app_name] R2 upload failed (using local CDN)"
-    }
+    if [ -d "dist/build/h5" ]; then
+        cp -r "dist/build/h5"/* "$cdn_path/"
+    else
+        log_warn "[$app_name] No dist/build/h5 found, skipping copy"
+    fi
     
-    # 5. Extract manifest data for registration
-    echo "  [4/4] Preparing registration..."
+    # Extract and display registration data
     local manifest=$(cat neo-manifest.json)
     local app_id=$(echo "$manifest" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('id', '$app_name'))")
     local name=$(echo "$manifest" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('name', '$app_name'))")
-    local description=$(echo "$manifest" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('description', ''))")
     local category=$(echo "$manifest" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('category', 'other'))")
     
-    # Output registration data (to be sent to platform)
-    cat << REGEOF
-{
-  "appId": "$app_id",
-  "name": "$name",
-  "description": "$description",
-  "category": "$category",
-  "cdnUrl": "https://cdn.yourdomain.com/$app_name/",
-  "version": "1.0.0",
-  "publishedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "environment": "$ENVIRONMENT"
-}
-REGEOF
+    echo ""
+    echo "  === Registration Data ==="
+    echo "  App ID:     $app_id"
+    echo "  Name:       $name"
+    echo "  Category:   $category"
+    echo "  CDN URL:    https://cdn.yourdomain.com/$app_name/"
+    echo "  Environment: $ENVIRONMENT"
+    echo ""
     
-    echo "✓ [$app_name] Published successfully"
+    log_info "[$app_name] Published successfully!"
 }
 
 # List of all miniapps
 list_miniapps() {
-    ls -d "$APPS_DIR"/*/ | xargs -I {} basename {}
+    ls -d "$APPS_DIR"/*/ | xargs -I {} basename {} | sort
 }
 
 # Main logic
 case "$1" in
     all)
-        echo "Publishing all miniapps..."
+        log_info "Publishing all miniapps to $ENVIRONMENT..."
         for app in $(list_miniapps); do
-            publish_miniapp "$app"
+            publish_miniapp "$app" || true
         done
         ;;
     list)
@@ -111,7 +105,11 @@ case "$1" in
         list_miniapps
         ;;
     --help|-h)
+        echo "Neo MiniApps Publisher"
+        echo ""
         echo "Usage: $0 [miniapp-name|all|list] [environment]"
+        echo ""
+        echo "Environments: staging, production"
         echo ""
         echo "Examples:"
         echo "  $0 lottery staging     # Publish lottery to staging"
@@ -121,6 +119,9 @@ case "$1" in
     "")
         echo "Error: Miniapp name required"
         echo "Usage: $0 [miniapp-name|all] [environment]"
+        echo ""
+        echo "Available miniapps:"
+        list_miniapps
         exit 1
         ;;
     *)
