@@ -1,54 +1,47 @@
 <template>
-  <AppLayout  :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="theme-doomsday">
       <view v-if="activeTab === 'game'" class="tab-content">
-        <view v-if="chainType === 'evm'" class="mb-4">
-          <NeoCard variant="danger">
-            <view class="flex flex-col items-center gap-2 py-1">
-              <text class="text-center font-bold doom-warning-title">{{ t("wrongChain") }}</text>
-              <text class="text-xs text-center opacity-80 doom-warning-desc">{{ t("wrongChainMessage") }}</text>
-              <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-            </view>
-          </NeoCard>
-        </view>
+        <!-- Chain Warning - Framework Component -->
+        <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
-      <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
-        <text class="font-bold">{{ status.msg }}</text>
-      </NeoCard>
+        <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
+          <text class="font-bold">{{ status.msg }}</text>
+        </NeoCard>
 
-      <!-- Claim Prize Section -->
-      <NeoCard v-if="canClaim" variant="success" class="mb-4 text-center">
-        <text class="text-xl font-bold block mb-2">{{ t("youWon") }}</text>
-        <text class="block mb-4 text-lg">{{ formatNumber(totalPot, 2) }} GAS</text>
-        <NeoButton variant="primary" size="lg" block :loading="isClaiming" @click="claimPrize">
-          {{ t("claimPrize") }}
-        </NeoButton>
-      </NeoCard>
+        <!-- Claim Prize Section -->
+        <NeoCard v-if="canClaim" variant="success" class="mb-4 text-center">
+          <text class="text-xl font-bold block mb-2">{{ t("youWon") }}</text>
+          <text class="block mb-4 text-lg">{{ formatNumber(totalPot, 2) }} GAS</text>
+          <NeoButton variant="primary" size="lg" block :loading="isClaiming" @click="claimPrize">
+            {{ t("claimPrize") }}
+          </NeoButton>
+        </NeoCard>
 
-      <!-- Buy Keys Section -->
-      <BuyKeysCard
-        v-else-if="isRoundActive"
-        v-model:keyCount="keyCount"
-        :estimated-cost="estimatedCost"
-        :is-paying="isPaying"
-        :t="t as any"
-        @buy="buyKeys"
-      />
+        <!-- Buy Keys Section -->
+        <BuyKeysCard
+          v-else-if="isRoundActive"
+          v-model:keyCount="keyCount"
+          :estimated-cost="estimatedCost"
+          :is-paying="isPaying"
+          :t="t as any"
+          @buy="buyKeys"
+        />
 
-      <!-- Dramatic Countdown Display -->
-      <ClockFace
-        :danger-level="dangerLevel"
-        :danger-level-text="dangerLevelText"
-        :should-pulse="shouldPulse"
-        :countdown="countdown"
-        :danger-progress="dangerProgress"
-        :current-event-description="currentEventDescription"
-        :t="t as any"
-      />
-    </view>
+        <!-- Dramatic Countdown Display -->
+        <ClockFace
+          :danger-level="dangerLevel"
+          :danger-level-text="dangerLevelText"
+          :should-pulse="shouldPulse"
+          :countdown="countdown"
+          :danger-progress="dangerProgress"
+          :current-event-description="currentEventDescription"
+          :t="t as any"
+        />
+      </view>
 
       <view v-if="activeTab === 'history'" class="tab-content scrollable">
-      <HistoryList :history="history" :t="t as any" />
+        <HistoryList :history="history" :t="t as any" />
       </view>
 
       <view v-if="activeTab === 'stats'" class="tab-content">
@@ -79,19 +72,20 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { formatNumber, formatAddress, parseGas } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { useI18n } from "@/composables/useI18n";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
-import { AppLayout, NeoCard, NeoDoc } from "@shared/components";
+import { AppLayout, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 import ClockFace from "./components/ClockFace.vue";
 import GameStats from "./components/GameStats.vue";
 import BuyKeysCard from "./components/BuyKeysCard.vue";
 import HistoryList, { type HistoryEvent } from "./components/HistoryList.vue";
-
 
 const { t } = useI18n();
 
@@ -119,8 +113,8 @@ const KEY_PRICE_INCREMENT_BPS = 10n; // 0.1% increment per key sold
 // Current round state for cost calculation
 const totalKeysInRound = ref(0n);
 
-const { address, connect, invokeRead, invokeContract, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS, isLoading: isPaying } = usePayments(APP_ID);
+const { address, connect, invokeRead, invokeContract, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, isLoading: isPaying } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
 const contractAddress = ref<string | null>(null);
@@ -191,14 +185,14 @@ const calculateKeyCostFormula = (keyCount: bigint, currentTotalKeys: bigint): bi
   if (keyCount <= 0n) return 0n;
 
   // Common difference per key
-  const commonDiff = BASE_KEY_PRICE * KEY_PRICE_INCREMENT_BPS / 10000n;
+  const commonDiff = (BASE_KEY_PRICE * KEY_PRICE_INCREMENT_BPS) / 10000n;
 
   // First key price
-  const firstKeyPrice = BASE_KEY_PRICE + (currentTotalKeys * commonDiff);
+  const firstKeyPrice = BASE_KEY_PRICE + currentTotalKeys * commonDiff;
 
   // Sum of arithmetic sequence: n * first + n*(n-1)/2 * diff
   const baseCost = keyCount * firstKeyPrice;
-  const incrementCost = keyCount * (keyCount - 1n) / 2n * commonDiff;
+  const incrementCost = ((keyCount * (keyCount - 1n)) / 2n) * commonDiff;
 
   return baseCost + incrementCost;
 };
@@ -377,23 +371,22 @@ const buyKeys = async () => {
     const costRaw = calculateKeyCostFormula(BigInt(count), totalKeysInRound.value);
     const costGas = Number(costRaw) / 1e8;
 
-    const payment = await payGAS(costGas.toString(), `keys:${roundId.value}:${count}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(costGas.toString(), `keys:${roundId.value}:${count}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
 
     // Use BuyKeysWithCost for O(1) verification instead of O(n) loop
-    await invokeContract({
-      scriptHash: contractAddress.value as string,
-      operation: "buyKeysWithCost",
-      args: [
+    await invoke(
+      "buyKeysWithCost",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: count },
         { type: "Integer", value: costRaw.toString() },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contractAddress.value as string,
+    );
     keyCount.value = "1";
     showStatus(t("keysPurchased"), "success");
     await refreshData();
@@ -409,13 +402,13 @@ const claimPrize = async () => {
     if (!address.value) await connect();
     if (!address.value) throw new Error(t("error"));
     await ensureContractAddress();
-    
+
     await invokeContract({
       scriptHash: contractAddress.value as string,
       operation: "checkAndEndRound",
       args: [],
     });
-    
+
     showStatus(t("prizeClaimed"), "success");
     await refreshData();
   } catch (e: any) {
@@ -450,7 +443,7 @@ onUnmounted(() => {
 @use "@shared/styles/variables.scss";
 
 @import "./doomsday-clock-theme.scss";
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
 
 :global(page) {
   background: var(--bg-primary);
@@ -464,13 +457,15 @@ onUnmounted(() => {
   gap: 16px;
   background-color: var(--doom-bg);
   /* Grunge texture */
-  background-image: 
+  background-image:
     linear-gradient(var(--doom-grid), var(--doom-grid)),
     radial-gradient(circle at 1px 1px, var(--doom-grid-dot) 1px, transparent 0);
-  background-size: auto, 4px 4px;
+  background-size:
+    auto,
+    4px 4px;
   min-height: 100vh;
   position: relative;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -483,9 +478,9 @@ onUnmounted(() => {
   box-shadow: var(--doom-shadow), var(--doom-shadow-glow) !important;
   color: var(--doom-text) !important;
   position: relative;
-  
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 2px;
     right: 2px;
@@ -494,7 +489,7 @@ onUnmounted(() => {
     background: var(--doom-border);
     box-shadow: 0 0 5px var(--doom-border);
   }
-  
+
   &.variant-danger {
     border-color: var(--doom-danger) !important;
     background: linear-gradient(135deg, var(--doom-danger-bg-start) 0%, var(--doom-danger-bg-end) 100%) !important;
@@ -509,27 +504,30 @@ onUnmounted(() => {
   border-radius: 2px !important;
   text-transform: uppercase;
   font-weight: 700 !important;
-  font-family: 'Share Tech Mono', monospace !important;
+  font-family: "Share Tech Mono", monospace !important;
   letter-spacing: 0.1em;
   position: relative;
   overflow: hidden;
-  
+
   &.variant-primary {
     background: var(--doom-accent) !important;
     color: var(--doom-button-text) !important;
     border: none !important;
     box-shadow: var(--doom-accent-glow) !important;
-    
+
     &:active {
       transform: translateY(2px);
       box-shadow: var(--doom-accent-glow-pressed) !important;
     }
-    
+
     /* Scanline effect */
     &::before {
-      content: '';
+      content: "";
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: repeating-linear-gradient(
         0deg,
         var(--doom-scanline),
@@ -540,12 +538,12 @@ onUnmounted(() => {
       pointer-events: none;
     }
   }
-  
+
   &.variant-secondary {
     background: transparent !important;
     border: 1px solid var(--doom-accent) !important;
     color: var(--doom-accent) !important;
-    
+
     &:hover {
       background: var(--doom-hover) !important;
     }

@@ -1,34 +1,16 @@
 <template>
   <AppLayout class="theme-neoburger" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <NeoCard
-      v-if="statusMessage"
-      :variant="statusType === 'error' ? 'danger' : 'success'"
-      class="status-card"
-    >
+    <NeoCard v-if="statusMessage" :variant="statusType === 'error' ? 'danger' : 'success'" class="status-card">
       <text class="status-text">{{ statusMessage }}</text>
     </NeoCard>
 
-    <view v-if="chainType === 'evm'" class="chain-warning">
-      <NeoCard variant="danger">
-        <view class="chain-warning-content">
-          <text class="status-text">{{ t("wrongChain") }}</text>
-          <text class="chain-warning-message">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" @click="() => switchToAppChain()">
-            {{ t("switchToNeo") }}
-          </NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <view v-if="activeTab === 'home'" class="neoburger-shell">
       <view class="hero fade-up">
         <view class="hero-content">
-          <image
-            class="hero-logo"
-            src="/static/logo.png"
-            mode="widthFix"
-            :alt="t('heroLogoAlt')"
-          />
+          <image class="hero-logo" src="/logo.png" mode="widthFix" :alt="t('heroLogoAlt')" />
           <text class="hero-title">{{ t("heroTitle") }}</text>
           <text class="hero-subtitle">{{ t("heroSubtitle") }}</text>
 
@@ -53,29 +35,16 @@
             mode="widthFix"
             :alt="t('heroBackgroundAlt')"
           />
-          <image
-            class="hero-gif"
-            src="/static/neoburger-intro.gif"
-            mode="widthFix"
-            :alt="t('heroIntroAlt')"
-          />
+          <image class="hero-gif" src="/static/neoburger-intro.gif" mode="widthFix" :alt="t('heroIntroAlt')" />
         </view>
       </view>
 
       <view class="station fade-up delay-1">
         <view class="station-tabs">
-          <button
-            class="station-tab"
-            :class="{ active: homeMode === 'burger' }"
-            @click="homeMode = 'burger'"
-          >
+          <button class="station-tab" :class="{ active: homeMode === 'burger' }" @click="homeMode = 'burger'">
             {{ t("burgerStation") }}
           </button>
-          <button
-            class="station-tab"
-            :class="{ active: homeMode === 'jazz' }"
-            @click="homeMode = 'jazz'"
-          >
+          <button class="station-tab" :class="{ active: homeMode === 'jazz' }" @click="homeMode = 'jazz'">
             {{ t("jazzUp") }}
           </button>
         </view>
@@ -84,12 +53,7 @@
           <view class="station-header">
             <text class="station-title">{{ t("burgerStation") }}</text>
             <view class="station-learn" @click="activeTab = 'docs'">
-              <image
-                class="learn-icon"
-                src="/static/neoburger-learn-more.svg"
-                mode="widthFix"
-                :alt="t('learnMore')"
-              />
+              <image class="learn-icon" src="/static/neoburger-learn-more.svg" mode="widthFix" :alt="t('learnMore')" />
               <text>{{ t("learnMore") }}</text>
             </view>
           </view>
@@ -100,8 +64,8 @@
                 <text class="swap-label">{{ t("from") }}</text>
                 <text class="swap-hint">
                   {{ t("balance") }}:
-                  {{ formatAmount(swapMode === 'stake' ? neoBalance : bNeoBalance) }}
-                  {{ swapMode === 'stake' ? t("tokenNeo") : t("tokenBneo") }}
+                  {{ formatAmount(swapMode === "stake" ? neoBalance : bNeoBalance) }}
+                  {{ swapMode === "stake" ? t("tokenNeo") : t("tokenBneo") }}
                 </text>
               </view>
               <view class="swap-input">
@@ -112,7 +76,7 @@
                     mode="widthFix"
                     :alt="swapMode === 'stake' ? t('neoAlt') : t('bneoAlt')"
                   />
-                  <text class="swap-asset-label">{{ swapMode === 'stake' ? t("tokenNeo") : t("tokenBneo") }}</text>
+                  <text class="swap-asset-label">{{ swapMode === "stake" ? t("tokenNeo") : t("tokenBneo") }}</text>
                 </view>
                 <NeoInput
                   :modelValue="swapAmount"
@@ -147,7 +111,7 @@
                     mode="widthFix"
                     :alt="swapMode === 'stake' ? t('bneoAlt') : t('neoAlt')"
                   />
-                  <text class="swap-asset-label">{{ swapMode === 'stake' ? t("tokenBneo") : t("tokenNeo") }}</text>
+                  <text class="swap-asset-label">{{ swapMode === "stake" ? t("tokenBneo") : t("tokenNeo") }}</text>
                 </view>
                 <text class="swap-output-value">{{ swapOutput }}</text>
               </view>
@@ -205,13 +169,7 @@
           <text class="jazz-note">{{ t("jazzNote1") }}</text>
           <text class="jazz-note">{{ t("jazzNote2") }}</text>
 
-          <NeoButton
-            variant="success"
-            size="lg"
-            block
-            :loading="loading"
-            @click="handleJazzAction"
-          >
+          <NeoButton variant="success" size="lg" block :loading="loading" @click="handleJazzAction">
             {{ loading ? t("processing") : jazzActionLabel }}
           </NeoButton>
         </view>
@@ -219,12 +177,7 @@
 
       <view class="section fade-up delay-2">
         <view class="section-media">
-          <image
-            class="section-image"
-            src="/static/neoburger-hero.svg"
-            mode="widthFix"
-            :alt="t('bneoHeroAlt')"
-          />
+          <image class="section-image" src="/static/neoburger-hero.svg" mode="widthFix" :alt="t('bneoHeroAlt')" />
         </view>
         <view class="section-content">
           <text class="section-title">{{ t("whatIsBneoTitle") }}</text>
@@ -242,12 +195,7 @@
 
       <view class="section reverse fade-up delay-3">
         <view class="section-media">
-          <image
-            class="section-image"
-            src="/static/neoburger-split.gif"
-            mode="widthFix"
-            :alt="t('bneoSplitAlt')"
-          />
+          <image class="section-image" src="/static/neoburger-split.gif" mode="widthFix" :alt="t('bneoSplitAlt')" />
         </view>
         <view class="section-content">
           <text class="section-title">{{ t("whyNeedBneoTitle") }}</text>
@@ -278,22 +226,12 @@
           </text>
         </view>
         <view class="section-media">
-          <image
-            class="section-image"
-            src="/static/neoburger-rewards.gif"
-            mode="widthFix"
-            :alt="t('rewardsAlt')"
-          />
+          <image class="section-image" src="/static/neoburger-rewards.gif" mode="widthFix" :alt="t('rewardsAlt')" />
         </view>
       </view>
 
       <view class="footer fade-up delay-6">
-        <image
-          class="footer-logo"
-          src="/static/logo.png"
-          mode="widthFix"
-          :alt="t('footerLogoAlt')"
-        />
+        <image class="footer-logo" src="/logo.png" mode="widthFix" :alt="t('footerLogoAlt')" />
         <view class="footer-links">
           <template v-for="(link, index) in footerLinks" :key="link.label">
             <text class="footer-link" @click="openExternal(link.url)">{{ link.label }}</text>
@@ -305,12 +243,7 @@
 
     <view v-if="activeTab === 'airdrop'" class="page-shell airdrop-shell">
       <view class="page-hero fade-up">
-        <image
-          class="page-hero-logo"
-          src="/static/neoburger-nobug-airdrop.svg"
-          mode="widthFix"
-          :alt="t('nobugAlt')"
-        />
+        <image class="page-hero-logo" src="/static/neoburger-nobug-airdrop.svg" mode="widthFix" :alt="t('nobugAlt')" />
         <text class="page-hero-title">{{ t("airdropTitle") }}</text>
       </view>
 
@@ -365,12 +298,7 @@
               :alt="t('vectorAlt')"
             />
             <text class="usage-text">{{ item }}</text>
-            <image
-              class="usage-vector"
-              src="/static/neoburger-vector-left.svg"
-              mode="widthFix"
-              :alt="t('vectorAlt')"
-            />
+            <image class="usage-vector" src="/static/neoburger-vector-left.svg" mode="widthFix" :alt="t('vectorAlt')" />
           </view>
         </view>
         <text class="section-text">{{ t("nobugUsageDesc1") }}</text>
@@ -414,12 +342,7 @@
 
       <view class="card fade-up delay-1">
         <view class="card-header">
-          <image
-            class="icon"
-            src="/static/neoburger-address.svg"
-            mode="widthFix"
-            :alt="t('treasuryAddressTitle')"
-          />
+          <image class="icon" src="/static/neoburger-address.svg" mode="widthFix" :alt="t('treasuryAddressTitle')" />
           <text class="section-title">{{ t("treasuryAddressTitle") }}</text>
         </view>
         <view class="address-list">
@@ -449,7 +372,12 @@
 
       <view class="card fade-up delay-3">
         <view class="card-header">
-          <image class="icon" src="/static/neoburger-neo-balance.svg" mode="widthFix" :alt="t('treasuryBalanceTitle')" />
+          <image
+            class="icon"
+            src="/static/neoburger-neo-balance.svg"
+            mode="widthFix"
+            :alt="t('treasuryBalanceTitle')"
+          />
           <text class="section-title">{{ t("treasuryBalanceTitle") }}</text>
         </view>
         <view class="chart-placeholder">{{ t("noData") }}</view>
@@ -579,9 +507,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoDoc, Fireworks, NeoButton, NeoInput } from "@shared/components";
+import { AppLayout, NeoCard, NeoDoc, Fireworks, NeoButton, NeoInput, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { getPrices, type PriceData } from "@shared/utils/price";
 import { toFixedDecimals, toFixed8 } from "@shared/utils/format";
@@ -592,7 +521,7 @@ const NEO_CONTRACT = "0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5";
 
 const { t } = useI18n();
 
-const { getAddress, invokeContract, getBalance, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { getAddress, invokeContract, getBalance, chainType, getContractAddress } = useWallet() as WalletSDK;
 
 const activeTab = ref("home");
 const homeMode = ref<"burger" | "jazz">("burger");
@@ -682,10 +611,7 @@ const nobugUsageTabs = computed(() => [t("nobugUsageRaise"), t("nobugUsageVote")
 
 const nobugOnChainRelease = computed(() => [t("nobugOnChainRelease1"), t("nobugOnChainRelease2")]);
 
-const nobugAirdropWays = computed(() => [
-  t("nobugDistributionWayCommunity"),
-  t("nobugDistributionWayEarlyUsers"),
-]);
+const nobugAirdropWays = computed(() => [t("nobugDistributionWayCommunity"), t("nobugDistributionWayEarlyUsers")]);
 
 const nobugTbdWays = computed(() => [
   t("nobugDistributionWayOnChainMining"),
@@ -890,8 +816,7 @@ async function loadBalances() {
     const bneo = await getBalance(bneoContract);
     neoBalance.value = typeof neo === "string" ? parseFloat(neo) || 0 : typeof neo === "number" ? neo : 0;
     bNeoBalance.value = typeof bneo === "string" ? parseFloat(bneo) || 0 : typeof bneo === "number" ? bneo : 0;
-  } catch {
-  }
+  } catch {}
 }
 
 const APY_CACHE_KEY = "neoburger_apy_cache";
@@ -913,7 +838,9 @@ const fetchStats = async () => {
 const readCachedApy = () => {
   try {
     const uniApi = (globalThis as any)?.uni;
-    const raw = uniApi?.getStorageSync?.(APY_CACHE_KEY) ?? (typeof localStorage !== "undefined" ? localStorage.getItem(APY_CACHE_KEY) : null);
+    const raw =
+      uniApi?.getStorageSync?.(APY_CACHE_KEY) ??
+      (typeof localStorage !== "undefined" ? localStorage.getItem(APY_CACHE_KEY) : null);
     const value = Number(raw);
     return Number.isFinite(value) && value >= 0 ? value : null;
   } catch {
@@ -929,8 +856,7 @@ const writeCachedApy = (value: number) => {
     } else if (typeof localStorage !== "undefined") {
       localStorage.setItem(APY_CACHE_KEY, String(value));
     }
-  } catch {
-  }
+  } catch {}
 };
 
 async function loadApy() {
@@ -1142,8 +1068,7 @@ function openExternal(url: string) {
 async function loadPrices() {
   try {
     priceData.value = await getPrices();
-  } catch {
-  }
+  } catch {}
 }
 
 onMounted(() => {

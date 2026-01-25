@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-quadratic-funding" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
     <view v-if="activeTab === 'rounds'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
@@ -85,20 +76,26 @@
               <text :class="['status-pill', round.status]">{{ roundStatusLabel(round.status) }}</text>
             </view>
 
-            <text class="round-desc">{{ round.description || '--' }}</text>
+            <text class="round-desc">{{ round.description || "--" }}</text>
 
             <view class="round-metrics">
               <view>
                 <text class="metric-label">{{ t("matchingPool") }}</text>
-                <text class="metric-value">{{ formatAmount(round.assetSymbol, round.matchingPool) }} {{ round.assetSymbol }}</text>
+                <text class="metric-value"
+                  >{{ formatAmount(round.assetSymbol, round.matchingPool) }} {{ round.assetSymbol }}</text
+                >
               </view>
               <view>
                 <text class="metric-label">{{ t("matchingRemaining") }}</text>
-                <text class="metric-value">{{ formatAmount(round.assetSymbol, round.matchingRemaining) }} {{ round.assetSymbol }}</text>
+                <text class="metric-value"
+                  >{{ formatAmount(round.assetSymbol, round.matchingRemaining) }} {{ round.assetSymbol }}</text
+                >
               </view>
               <view>
                 <text class="metric-label">{{ t("totalContributed") }}</text>
-                <text class="metric-value">{{ formatAmount(round.assetSymbol, round.totalContributed) }} {{ round.assetSymbol }}</text>
+                <text class="metric-value"
+                  >{{ formatAmount(round.assetSymbol, round.totalContributed) }} {{ round.assetSymbol }}</text
+                >
               </view>
               <view>
                 <text class="metric-label">{{ t("projectCount") }}</text>
@@ -107,7 +104,9 @@
             </view>
 
             <view class="round-meta">
-              <text class="meta-item">{{ t("roundSchedule") }}: {{ formatSchedule(round.startTime, round.endTime) }}</text>
+              <text class="meta-item"
+                >{{ t("roundSchedule") }}: {{ formatSchedule(round.startTime, round.endTime) }}</text
+              >
               <text class="meta-item">{{ t("roundCreator") }}: {{ formatAddress(round.creator) }}</text>
             </view>
 
@@ -185,17 +184,8 @@
     </view>
 
     <view v-if="activeTab === 'projects'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
@@ -256,17 +246,23 @@
                 <text :class="['status-pill', projectStatusClass(project)]">{{ projectStatusLabel(project) }}</text>
               </view>
 
-              <text class="project-desc">{{ project.description || '--' }}</text>
+              <text class="project-desc">{{ project.description || "--" }}</text>
               <text v-if="project.link" class="project-link">{{ project.link }}</text>
 
               <view class="project-metrics">
                 <view>
                   <text class="metric-label">{{ t("totalContributed") }}</text>
-                  <text class="metric-value">{{ formatAmount(selectedRound.assetSymbol, project.totalContributed) }} {{ selectedRound.assetSymbol }}</text>
+                  <text class="metric-value"
+                    >{{ formatAmount(selectedRound.assetSymbol, project.totalContributed) }}
+                    {{ selectedRound.assetSymbol }}</text
+                  >
                 </view>
                 <view>
                   <text class="metric-label">{{ t("matchedAmount") }}</text>
-                  <text class="metric-value">{{ formatAmount(selectedRound.assetSymbol, project.matchedAmount) }} {{ selectedRound.assetSymbol }}</text>
+                  <text class="metric-value"
+                    >{{ formatAmount(selectedRound.assetSymbol, project.matchedAmount) }}
+                    {{ selectedRound.assetSymbol }}</text
+                  >
                 </view>
                 <view>
                   <text class="metric-label">{{ t("donors") }}</text>
@@ -295,17 +291,8 @@
     </view>
 
     <view v-if="activeTab === 'contribute'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
@@ -339,7 +326,11 @@
         <NeoCard variant="erobo-neo">
           <view class="form-group">
             <NeoInput v-model="contributeForm.roundId" :label="t('contributionRoundId')" disabled />
-            <NeoInput v-model="contributeForm.projectId" :label="t('contributionProjectId')" :placeholder="t('selectProjectHint')" />
+            <NeoInput
+              v-model="contributeForm.projectId"
+              :label="t('contributionProjectId')"
+              :placeholder="t('selectProjectHint')"
+            />
             <NeoInput
               v-model="contributeForm.amount"
               type="number"
@@ -378,7 +369,7 @@
         :features="[
           { name: t('feature1Name'), desc: t('feature1Desc') },
           { name: t('feature2Name'), desc: t('feature2Desc') },
-          { name: t('feature3Name'), desc: t('feature3Desc') }
+          { name: t('feature3Name'), desc: t('feature3Desc') },
         ]"
       />
     </view>
@@ -388,15 +379,16 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton, NeoInput, NeoDoc } from "@shared/components";
+import { AppLayout, NeoCard, NeoButton, NeoInput, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain } from "@shared/utils/chain";
 import { formatAddress, formatFixed8, toFixedDecimals } from "@shared/utils/format";
 import { parseInvokeResult } from "@shared/utils/neo";
 
 const { t } = useI18n();
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
 
 const NEO_HASH = "0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5";
 const GAS_HASH = "0xd2a4cff31913016155e38e474a2c06d08be276cf";
@@ -498,17 +490,23 @@ const selectedRound = computed(() => rounds.value.find((round) => round.id === s
 const canManageSelectedRound = computed(() => {
   if (!selectedRound.value) return false;
   if (!address.value) return false;
-  return selectedRound.value.creator === address.value && !selectedRound.value.cancelled && !selectedRound.value.finalized;
+  return (
+    selectedRound.value.creator === address.value && !selectedRound.value.cancelled && !selectedRound.value.finalized
+  );
 });
 const canFinalizeSelectedRound = computed(() => {
   if (!selectedRound.value) return false;
   if (!address.value) return false;
-  return selectedRound.value.creator === address.value && !selectedRound.value.cancelled && !selectedRound.value.finalized;
+  return (
+    selectedRound.value.creator === address.value && !selectedRound.value.cancelled && !selectedRound.value.finalized
+  );
 });
 const canClaimUnused = computed(() => {
   if (!selectedRound.value) return false;
   if (!address.value) return false;
-  return selectedRound.value.creator === address.value && selectedRound.value.finalized && !selectedRound.value.cancelled;
+  return (
+    selectedRound.value.creator === address.value && selectedRound.value.finalized && !selectedRound.value.cancelled
+  );
 });
 
 const ensureContractAddress = async () => {
@@ -607,9 +605,10 @@ const parseRound = (raw: any, id: string): RoundItem | null => {
   const matchingPool = parseBigInt(raw.matchingPool);
   const matchingAllocated = parseBigInt(raw.matchingAllocated);
   const matchingWithdrawn = parseBigInt(raw.matchingWithdrawn);
-  const matchingRemaining = raw.matchingRemaining !== undefined
-    ? parseBigInt(raw.matchingRemaining)
-    : matchingPool - matchingAllocated - matchingWithdrawn;
+  const matchingRemaining =
+    raw.matchingRemaining !== undefined
+      ? parseBigInt(raw.matchingRemaining)
+      : matchingPool - matchingAllocated - matchingWithdrawn;
 
   return {
     id,
@@ -1074,7 +1073,12 @@ const claimUnusedMatching = async () => {
 const canClaimProject = (project: ProjectItem) => {
   if (!selectedRound.value) return false;
   if (!address.value) return false;
-  return selectedRound.value.finalized && !selectedRound.value.cancelled && !project.claimed && project.owner === address.value;
+  return (
+    selectedRound.value.finalized &&
+    !selectedRound.value.cancelled &&
+    !project.claimed &&
+    project.owner === address.value
+  );
 };
 
 const onTabChange = async (tabId: string) => {

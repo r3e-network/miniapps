@@ -1,5 +1,7 @@
 <template>
   <AppLayout class="theme-memorial-shrine" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
     <!-- Memorials Tab -->
     <view v-if="activeTab === 'memorials'" class="tab-content cemetery-bg">
       <view class="header">
@@ -11,12 +13,7 @@
       <view class="obituary-banner" v-if="recentObituaries.length">
         <text class="banner-title">📜 {{ t("obituaries") }}</text>
         <scroll-view scroll-x class="banner-scroll">
-          <view 
-            v-for="ob in recentObituaries" 
-            :key="ob.id" 
-            class="obituary-item"
-            @click="openMemorial(ob.id)"
-          >
+          <view v-for="ob in recentObituaries" :key="ob.id" class="obituary-item" @click="openMemorial(ob.id)">
             <text class="name">{{ ob.name }}</text>
             <text class="text">{{ ob.text }}</text>
           </view>
@@ -73,7 +70,6 @@
       v-if="selectedMemorial"
       :memorial="selectedMemorial"
       :offerings="offerings"
-     
       @close="closeMemorial"
       @tribute-paid="onTributePaid"
       @share="shareMemorial"
@@ -88,14 +84,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet, usePayments, useEvents } from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { readQueryParam } from "@shared/utils/url";
-import AppLayout from "@shared/components/AppLayout.vue";
-import NeoDoc from "@shared/components/NeoDoc.vue";
+import { AppLayout, NeoDoc, ChainWarning } from "@shared/components";
 import TombstoneCard from "./components/TombstoneCard.vue";
 import CreateMemorialForm from "./components/CreateMemorialForm.vue";
 import MemorialDetailModal from "./components/MemorialDetailModal.vue";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();
 
@@ -115,8 +112,8 @@ const docFeatures = computed(() => [
 ]);
 
 const APP_ID = "miniapp-memorial-shrine";
-const { address, connect, invokeContract, invokeRead, getContractAddress } = useWallet() as any;
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { address, connect, invokeContract, invokeRead, getContractAddress } = useWallet() as WalletSDK;
+const { isLoading } = usePaymentFlow(APP_ID);
 
 interface Memorial {
   id: number;
@@ -164,11 +161,44 @@ const ensureContract = async () => {
 const loadMemorials = async () => {
   // Demo data - in production, load from contract
   memorials.value = [
-    { id: 1, name: "张德明", photoHash: "", birthYear: 1938, deathYear: 2024, relationship: "父亲", biography: "一生勤劳朴实，热爱家庭。", obituary: "", hasRecentTribute: true, offerings: { incense: 128, candle: 45, flower: 56, fruit: 34, wine: 12, feast: 3 } },
-    { id: 2, name: "李淑芬", photoHash: "", birthYear: 1942, deathYear: 2023, relationship: "母亲", biography: "慈母一生为家庭奉献。", obituary: "", hasRecentTribute: true, offerings: { incense: 89, candle: 32, flower: 67, fruit: 21, wine: 8, feast: 2 } },
-    { id: 3, name: "王建国", photoHash: "", birthYear: 1950, deathYear: 2022, relationship: "爷爷", biography: "老革命，一生正直。", obituary: "", hasRecentTribute: false, offerings: { incense: 56, candle: 23, flower: 34, fruit: 12, wine: 5, feast: 1 } },
+    {
+      id: 1,
+      name: "张德明",
+      photoHash: "",
+      birthYear: 1938,
+      deathYear: 2024,
+      relationship: "父亲",
+      biography: "一生勤劳朴实，热爱家庭。",
+      obituary: "",
+      hasRecentTribute: true,
+      offerings: { incense: 128, candle: 45, flower: 56, fruit: 34, wine: 12, feast: 3 },
+    },
+    {
+      id: 2,
+      name: "李淑芬",
+      photoHash: "",
+      birthYear: 1942,
+      deathYear: 2023,
+      relationship: "母亲",
+      biography: "慈母一生为家庭奉献。",
+      obituary: "",
+      hasRecentTribute: true,
+      offerings: { incense: 89, candle: 32, flower: 67, fruit: 21, wine: 8, feast: 2 },
+    },
+    {
+      id: 3,
+      name: "王建国",
+      photoHash: "",
+      birthYear: 1950,
+      deathYear: 2022,
+      relationship: "爷爷",
+      biography: "老革命，一生正直。",
+      obituary: "",
+      hasRecentTribute: false,
+      offerings: { incense: 56, candle: 23, flower: 34, fruit: 12, wine: 5, feast: 1 },
+    },
   ];
-  
+
   recentObituaries.value = [
     { id: 1, name: "张老先生", text: "张老先生于2024年1月驾鹤西去" },
     { id: 2, name: "李奶奶", text: "慈母李奶奶安详离世" },
@@ -181,7 +211,7 @@ const loadVisitedMemorials = async () => {
 };
 
 const openMemorial = (id: number) => {
-  const memorial = memorials.value.find(m => m.id === id);
+  const memorial = memorials.value.find((m) => m.id === id);
   if (memorial) {
     selectedMemorial.value = memorial;
     // Update URL with memorial ID
@@ -210,19 +240,21 @@ const updateUrlWithMemorial = (id: number) => {
 const shareMemorial = (memorial?: Memorial) => {
   const target = memorial || selectedMemorial.value;
   if (!target || typeof window === "undefined") return;
-  
+
   const shareUrl = `${window.location.origin}${window.location.pathname}?id=${target.id}`;
-  
+
   // Try native share API first
   if (navigator.share) {
-    navigator.share({
-      title: `${target.name} - ${t("title")}`,
-      text: `${t("tagline")} | ${target.name} (${target.birthYear}-${target.deathYear})`,
-      url: shareUrl,
-    }).catch(() => {
-      // Fallback to clipboard
-      copyToClipboard(shareUrl);
-    });
+    navigator
+      .share({
+        title: `${target.name} - ${t("title")}`,
+        text: `${t("tagline")} | ${target.name} (${target.birthYear}-${target.deathYear})`,
+        url: shareUrl,
+      })
+      .catch(() => {
+        // Fallback to clipboard
+        copyToClipboard(shareUrl);
+      });
   } else {
     copyToClipboard(shareUrl);
   }
@@ -233,8 +265,10 @@ const copyToClipboard = (text: string) => {
     data: text,
     success: () => {
       shareStatus.value = t("linkCopied");
-      setTimeout(() => { shareStatus.value = null; }, 3000);
-    }
+      setTimeout(() => {
+        shareStatus.value = null;
+      }, 3000);
+    },
   });
 };
 
@@ -245,7 +279,7 @@ const checkUrlForMemorial = async () => {
     if (!isNaN(id)) {
       // Wait for memorials to load
       await loadMemorials();
-      const memorial = memorials.value.find(m => m.id === id);
+      const memorial = memorials.value.find((m) => m.id === id);
       if (memorial) {
         selectedMemorial.value = memorial;
       }
@@ -263,7 +297,7 @@ const onTributePaid = async (memorialId: number, offeringType: number) => {
   // Refresh memorial data
   await loadMemorials();
   if (selectedMemorial.value?.id === memorialId) {
-    selectedMemorial.value = memorials.value.find(m => m.id === memorialId) || null;
+    selectedMemorial.value = memorials.value.find((m) => m.id === memorialId) || null;
   }
 };
 
@@ -290,9 +324,9 @@ onMounted(async () => {
 .cemetery-bg {
   background: linear-gradient(180deg, var(--shrine-bg) 0%, var(--shrine-dark) 50%, var(--shrine-medium) 100%);
   position: relative;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -306,7 +340,7 @@ onMounted(async () => {
 .header {
   text-align: center;
   padding: 32px 16px;
-  
+
   .title {
     display: block;
     font-size: 28px;
@@ -315,7 +349,7 @@ onMounted(async () => {
     text-shadow: 0 0 30px var(--shrine-title-glow);
     margin-bottom: 8px;
   }
-  
+
   .tagline {
     display: block;
     font-size: 16px;
@@ -323,7 +357,7 @@ onMounted(async () => {
     letter-spacing: 6px;
     margin-bottom: 8px;
   }
-  
+
   .subtitle {
     display: block;
     font-size: 13px;
@@ -337,24 +371,24 @@ onMounted(async () => {
   padding: 12px 16px;
   margin-bottom: 20px;
   border: 1px solid var(--shrine-banner-border);
-  
+
   .banner-title {
     display: block;
     font-size: 13px;
     color: var(--shrine-gold);
     margin-bottom: 8px;
   }
-  
+
   .banner-scroll {
     white-space: nowrap;
   }
-  
+
   .obituary-item {
     display: inline-block;
     margin-right: 32px;
     font-size: 12px;
     color: var(--shrine-muted);
-    
+
     .name {
       color: var(--shrine-text);
       margin-right: 8px;
@@ -372,14 +406,14 @@ onMounted(async () => {
 .section-header {
   text-align: center;
   margin-bottom: 24px;
-  
+
   .section-title {
     display: block;
     font-size: 20px;
     color: var(--shrine-gold);
     margin-bottom: 8px;
   }
-  
+
   .section-desc {
     display: block;
     font-size: 13px;

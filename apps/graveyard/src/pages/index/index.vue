@@ -1,22 +1,11 @@
 <template>
   <AppLayout class="theme-graveyard" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="chainType === 'evm'" class="px-4 mb-4">
-      <NeoCard variant="danger">
-        <view class="flex flex-col items-center gap-2 py-1">
-          <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-          <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-            t("switchToNeo")
-          }}</NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <!-- Destroy Tab -->
     <view v-if="activeTab === 'destroy'" class="tab-content">
       <StatusMessage :status="status" />
-
-
 
       <DestructionChamber
         v-model:assetHash="assetHash"
@@ -24,14 +13,14 @@
         :memory-type-options="memoryTypeOptions"
         :is-destroying="isDestroying"
         :show-warning-shake="showWarningShake"
-        :t="t as any"
+        :t="t"
         @initiate="initiateDestroy"
       />
 
       <ConfirmDestroyModal
         :show="showConfirm"
         :asset-hash="assetHash"
-        :t="t as any"
+        :t="t"
         @cancel="showConfirm = false"
         @confirm="executeDestroy"
       />
@@ -39,7 +28,7 @@
 
     <!-- Stats Tab -->
     <view v-if="activeTab === 'stats'" class="tab-content">
-      <GraveyardHero :total-destroyed="totalDestroyed" :gas-reclaimed="gasReclaimed" :t="t as any" />
+      <GraveyardHero :total-destroyed="totalDestroyed" :gas-reclaimed="gasReclaimed" :t="t" />
     </view>
 
     <!-- History Tab -->
@@ -47,7 +36,7 @@
       v-if="activeTab === 'history'"
       :history="history"
       :forgetting-id="forgettingId"
-      :t="t as any"
+      :t="t"
       @forget="forgetMemory"
     />
 
@@ -67,10 +56,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
-import { sleep } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import AppLayout from "@shared/components/AppLayout.vue";
 import NeoDoc from "@shared/components/NeoDoc.vue";
@@ -82,7 +71,7 @@ import DestructionChamber from "./components/DestructionChamber.vue";
 import ConfirmDestroyModal from "./components/ConfirmDestroyModal.vue";
 import HistoryTab from "./components/HistoryTab.vue";
 import StatusMessage from "./components/StatusMessage.vue";
-
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();
 
@@ -103,8 +92,8 @@ const docFeatures = computed(() => [
 ]);
 
 const APP_ID = "miniapp-graveyard";
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, isLoading } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
 interface HistoryItem {
@@ -138,7 +127,7 @@ const waitForEvent = async (txid: string, eventName: string) => {
     const res = await listEvents({ app_id: APP_ID, event_name: eventName, limit: 25 });
     const match = res.events.find((evt) => evt.tx_hash === txid);
     if (match) return match;
-    await sleep(1500);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
   }
   return null;
 };
@@ -176,22 +165,23 @@ const executeDestroy = async () => {
     if (!address.value) throw new Error(t("connectWallet"));
     const contract = await ensureContractAddress();
 
-    const payment = await payGAS("0.1", `graveyard:bury:${assetHash.value.slice(0, 10)}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment("0.1", `graveyard:bury:${assetHash.value.slice(0, 10)}`);
     if (!receiptId) throw new Error(t("receiptMissing"));
 
-    const tx = await invokeContract({
-      contractAddress: contract,
-      operation: "buryMemory",
-      args: [
+    const tx = await invoke(
+      "BuryMemory",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "String", value: assetHash.value },
         { type: "Integer", value: String(memoryType.value) },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contract,
+    );
 
-    const txid = String((tx as any)?.txid || (tx as any)?.txHash || "");
+    const txid = String(
+      (tx as { txid?: string; txHash?: string })?.txid || (tx as { txid?: string; txHash?: string })?.txHash || "",
+    );
     const evt = txid ? await waitForEvent(txid, "MemoryBuried") : null;
     if (!evt) throw new Error(t("buryPending"));
 
@@ -239,8 +229,7 @@ const loadStats = async () => {
     const totalRes = await invokeRead({ contractAddress: contractAddress.value, operation: "totalMemories" });
     totalDestroyed.value = Number(parseInvokeResult(totalRes) || 0);
     gasReclaimed.value = Number((totalDestroyed.value * 0.1).toFixed(2));
-  } catch {
-  }
+  } catch {}
 };
 
 const loadHistory = async () => {
@@ -268,8 +257,7 @@ const loadHistory = async () => {
                 contentHash = String(detail.contentHash);
               }
             }
-          } catch {
-          }
+          } catch {}
         }
         return {
           id: memoryId,
@@ -280,8 +268,7 @@ const loadHistory = async () => {
       }),
     );
     history.value = entries;
-  } catch {
-  }
+  } catch {}
 };
 
 const forgetMemory = async (item: HistoryItem) => {
@@ -307,23 +294,20 @@ const forgetMemory = async (item: HistoryItem) => {
     if (!address.value) throw new Error(t("connectWallet"));
     const contract = await ensureContractAddress();
 
-    const payment = await payGAS("1", `graveyard:forget:${item.id}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment("1", `graveyard:forget:${item.id}`);
     if (!receiptId) throw new Error(t("receiptMissing"));
 
-    await invokeContract({
-      contractAddress: contract,
-      operation: "forgetMemory",
-      args: [
+    await invoke(
+      "ForgetMemory",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: String(item.id) },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
-
-    history.value = history.value.map((entry) =>
-      entry.id === item.id ? { ...entry, forgotten: true } : entry,
+      contract,
     );
+
+    history.value = history.value.map((entry) => (entry.id === item.id ? { ...entry, forgotten: true } : entry));
     status.value = { msg: t("forgetSuccess"), type: "success" };
   } catch (e: any) {
     status.value = { msg: e?.message || t("error"), type: "error" };
@@ -363,13 +347,13 @@ watch(activeTab, async (tab) => {
   background-color: var(--grave-bg);
   min-height: 100vh;
   position: relative;
-  
+
   /* Matrix/Grid background */
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
       linear-gradient(var(--grave-grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--grave-grid) 1px, transparent 1px);
     background-size: 20px 20px;
@@ -394,7 +378,7 @@ watch(activeTab, async (tab) => {
   font-family: var(--grave-font) !important;
   position: relative;
   z-index: 1;
-  
+
   &.variant-danger {
     background: var(--grave-card-danger-bg) !important;
     border-color: var(--grave-danger) !important;
@@ -410,34 +394,34 @@ watch(activeTab, async (tab) => {
   font-weight: 700 !important;
   border-radius: 0 !important;
   transition: all 0.1s steps(2);
-  
+
   &.variant-primary {
     background: var(--grave-accent) !important;
     color: var(--grave-bg) !important;
     border: none !important;
     box-shadow: var(--grave-button-shadow) !important;
-    
+
     &:hover {
       transform: translate(-2px, -2px);
       box-shadow: var(--grave-card-shadow) !important;
     }
-    
+
     &:active {
       transform: translate(0, 0);
       box-shadow: 0 0 0 !important;
     }
   }
-  
+
   &.variant-secondary {
     background: transparent !important;
     border: 1px solid var(--grave-accent) !important;
     color: var(--grave-accent) !important;
-    
+
     &:hover {
       background: var(--grave-accent-soft) !important;
     }
   }
-  
+
   &.variant-danger {
     background: var(--grave-danger) !important;
     color: var(--grave-bg) !important;
@@ -445,14 +429,15 @@ watch(activeTab, async (tab) => {
   }
 }
 
-:deep(input), :deep(.neo-input) {
+:deep(input),
+:deep(.neo-input) {
   background: var(--grave-bg) !important;
   border: 1px solid var(--grave-input-border) !important;
   color: var(--grave-accent) !important;
   font-family: var(--grave-font) !important;
   border-radius: 0 !important;
   caret-color: var(--grave-accent);
-  
+
   &:focus {
     border-color: var(--grave-accent) !important;
     box-shadow: 0 0 10px var(--grave-accent-glow) !important;

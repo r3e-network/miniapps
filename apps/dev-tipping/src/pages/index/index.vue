@@ -1,17 +1,11 @@
 <template>
   <AppLayout class="theme-dev-tipping" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="activeTab === 'developers' || activeTab === 'send' || activeTab === 'stats'" class="app-container theme-dev-tipping">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold tip-warning-title">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 tip-warning-desc">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-              t("switchToNeo")
-            }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+    <view
+      v-if="activeTab === 'developers' || activeTab === 'send' || activeTab === 'stats'"
+      class="app-container theme-dev-tipping"
+    >
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'erobo-neo'" class="mb-4">
         <text class="text-center font-bold text-glass">{{ status.msg }}</text>
@@ -155,15 +149,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useWallet, useEvents, usePayments} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { formatNumber, parseGas, toFixed8 } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard } from "@shared/components";
+import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import type { NavTab } from "@shared/components/NavBar.vue";
-
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();
 
@@ -174,9 +169,9 @@ const docFeatures = computed(() => [
 ]);
 const APP_ID = "miniapp-dev-tipping";
 const MIN_TIP = 0.001;
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
 const { list: listEvents } = useEvents();
-const { payGAS } = usePayments(APP_ID);
+const { processPayment } = usePaymentFlow(APP_ID);
 const isLoading = ref(false);
 
 const activeTab = ref<string>("send");
@@ -282,14 +277,13 @@ const loadDevelopers = async () => {
 
     // Filter before sorting to avoid null errors
     const validDevs = devs.filter((d): d is Developer => d !== null);
-    
+
     validDevs.sort((a, b) => b.totalTips - a.totalTips);
     validDevs.forEach((dev, idx) => {
       dev.rank = `#${idx + 1}`;
     });
     developers.value = validDevs;
-  } catch {
-  }
+  } catch {}
 };
 
 const loadRecentTips = async () => {
@@ -313,8 +307,7 @@ const refreshData = async () => {
   try {
     await loadDevelopers();
     await loadRecentTips();
-  } catch {
-  }
+  } catch {}
 };
 
 const selectDev = (dev: Developer) => {
@@ -343,16 +336,14 @@ const sendTip = async () => {
     }
     const amountInt = toFixed8(tipAmount.value);
 
-    const payment = await payGAS(String(amount), `tip:${selectedDevId.value}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(String(amount), `tip:${selectedDevId.value}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
 
-    await invokeContract({
-      contractAddress: contract,
-      operation: "tip",
-      args: [
+    await invoke(
+      "Tip",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: String(selectedDevId.value) },
         { type: "Integer", value: amountInt },
@@ -361,7 +352,8 @@ const sendTip = async () => {
         { type: "Boolean", value: anonymous.value },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contract,
+    );
 
     status.value = { msg: t("tipSent"), type: "success" };
     tipAmount.value = "1";
@@ -387,8 +379,6 @@ onMounted(() => {
 
 @import "./dev-tipping-theme.scss";
 
-
-
 :global(page) {
   background: var(--bg-primary);
 }
@@ -402,7 +392,7 @@ onMounted(() => {
   gap: 16px;
   background-color: var(--cafe-bg);
   /* Cyber Cafe Pattern */
-  background-image: 
+  background-image:
     linear-gradient(var(--cafe-panel-weak), var(--cafe-panel-weak)),
     repeating-linear-gradient(0deg, transparent, transparent 20px, var(--cafe-border) 21px),
     repeating-linear-gradient(90deg, transparent, transparent 20px, var(--cafe-border) 21px);
@@ -426,7 +416,7 @@ onMounted(() => {
   box-shadow: var(--cafe-card-shadow) !important;
   color: var(--cafe-text) !important;
   backdrop-filter: blur(10px);
-  
+
   &.variant-danger {
     border-color: var(--cafe-error-border) !important;
     background: var(--cafe-error-bg) !important;
@@ -435,23 +425,23 @@ onMounted(() => {
 
 :global(.theme-dev-tipping) :deep(.neo-button) {
   border-radius: 8px !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: "JetBrains Mono", monospace !important;
   font-weight: 700 !important;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  
+
   &.variant-primary {
     background: var(--cafe-neon) !important;
     color: var(--cafe-button-text) !important;
     border: none !important;
     box-shadow: var(--cafe-button-shadow) !important;
-    
+
     &:active {
       transform: scale(0.98);
       box-shadow: var(--cafe-button-shadow-press) !important;
     }
   }
-  
+
   &.variant-secondary {
     background: transparent !important;
     border: 1px solid var(--cafe-secondary-border) !important;
@@ -465,8 +455,8 @@ onMounted(() => {
   border: 1px solid var(--cafe-input-border) !important;
   color: var(--cafe-text) !important;
   border-radius: 8px !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  
+  font-family: "JetBrains Mono", monospace !important;
+
   &:focus {
     border-color: var(--cafe-neon) !important;
     box-shadow: 0 0 0 1px var(--cafe-neon) !important;
@@ -482,7 +472,7 @@ onMounted(() => {
   margin-bottom: 16px;
   cursor: pointer;
   transition: all 0.2s;
-  
+
   &:active {
     background: var(--cafe-panel-hover);
   }
@@ -528,7 +518,7 @@ onMounted(() => {
   font-size: 16px;
   font-weight: 800;
   color: var(--cafe-text-strong);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   display: block;
 }
 .dev-projects-glass {
@@ -564,7 +554,7 @@ onMounted(() => {
   color: var(--cafe-muted);
 }
 .tip-amount-glass {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 18px;
   color: var(--cafe-neon);
   font-weight: bold;
@@ -581,7 +571,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  
+
   &.active {
     border-color: var(--cafe-neon);
     background: var(--cafe-panel-hover);
@@ -590,7 +580,7 @@ onMounted(() => {
 .dev-select-name-glass {
   color: var(--cafe-text-strong);
   font-weight: bold;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
 }
 .dev-select-role-glass {
   color: var(--cafe-muted);
@@ -612,13 +602,16 @@ onMounted(() => {
   border-radius: 8px;
   padding: 10px;
   text-align: center;
-  
+
   &.active {
     background: var(--cafe-neon);
     border-color: var(--cafe-neon);
     color: var(--cafe-preset-active-text);
     box-shadow: var(--cafe-neon-glow);
-    .preset-value-glass, .preset-unit-glass { color: var(--cafe-preset-active-text); }
+    .preset-value-glass,
+    .preset-unit-glass {
+      color: var(--cafe-preset-active-text);
+    }
   }
 }
 
@@ -654,7 +647,7 @@ onMounted(() => {
 .recent-tip-amount-glass {
   margin-left: auto;
   color: var(--cafe-neon);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: bold;
 }
 
@@ -670,7 +663,7 @@ onMounted(() => {
 .stat-value-neo {
   font-size: 28px;
   color: var(--cafe-neon);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: bold;
   text-shadow: var(--cafe-neon-glow-strong);
 }
@@ -685,9 +678,19 @@ onMounted(() => {
   display: block;
 }
 
-.form-group { display: flex; flex-direction: column; gap: 20px; }
-.input-section { display: flex; flex-direction: column; }
-.toggle-row { display: flex; gap: 10px; }
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.input-section {
+  display: flex;
+  flex-direction: column;
+}
+.toggle-row {
+  display: flex;
+  gap: 10px;
+}
 
 .scrollable {
   overflow-y: auto;

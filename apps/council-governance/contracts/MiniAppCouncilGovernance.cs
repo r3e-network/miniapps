@@ -68,10 +68,6 @@ namespace NeoMiniAppPlatform.Contracts
         private static readonly byte[] PREFIX_TOTAL_VOTES = new byte[] { 0x2B };
         private static readonly byte[] PREFIX_PASSED_PROPOSALS = new byte[] { 0x2C };
         private static readonly byte[] PREFIX_TOTAL_MEMBERS = new byte[] { 0x2D };
-        // SECURITY: TimeLock for contract changes
-        private static readonly byte[] PREFIX_PENDING_CANDIDATE_CONTRACT = new byte[] { 0x2E };
-        private static readonly byte[] PREFIX_PENDING_POLICY_CONTRACT = new byte[] { 0x2F };
-        private static readonly byte[] PREFIX_CONTRACT_CHANGE_TIME = new byte[] { 0x30 };
         #endregion
 
         #region Enums
@@ -144,12 +140,6 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, PREFIX_PASSED_PROPOSALS, 0);
             Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_MEMBERS, 0);
         }
-
-        public static new void Update(ByteString nef, string manifest, object data)
-        {
-            ValidateAdmin();
-            ContractManagement.Update(nef, manifest, data);
-        }
         #endregion
 
         #region Admin Methods
@@ -161,101 +151,16 @@ namespace NeoMiniAppPlatform.Contracts
         public static UInt160 PolicyContract() =>
             (UInt160)Storage.Get(Storage.CurrentContext, PREFIX_POLICY_CONTRACT);
 
-        [Safe]
-        public static UInt160 PendingCandidateContract() =>
-            (UInt160)Storage.Get(Storage.CurrentContext, PREFIX_PENDING_CANDIDATE_CONTRACT);
-
-        [Safe]
-        public static UInt160 PendingPolicyContract() =>
-            (UInt160)Storage.Get(Storage.CurrentContext, PREFIX_PENDING_POLICY_CONTRACT);
-
-        [Safe]
-        public static BigInteger ContractChangeTime() =>
-            (BigInteger)Storage.Get(Storage.CurrentContext, PREFIX_CONTRACT_CHANGE_TIME);
-
-        /// <summary>
-        /// Proposes a new candidate contract. Change takes effect after TimeLock delay.
-        /// SECURITY: TimeLock prevents immediate malicious changes.
-        /// </summary>
-        public static void ProposeCandidateContract(UInt160 candidateContract)
-        {
-            ValidateAdmin();
-            ExecutionEngine.Assert(candidateContract != null && candidateContract.IsValid, "invalid contract");
-            Storage.Put(Storage.CurrentContext, PREFIX_PENDING_CANDIDATE_CONTRACT, candidateContract);
-            BigInteger executeAfter = Runtime.Time + TimeLockDelay();
-            Storage.Put(Storage.CurrentContext, PREFIX_CONTRACT_CHANGE_TIME, executeAfter);
-        }
-
-        /// <summary>
-        /// Proposes a new policy contract. Change takes effect after TimeLock delay.
-        /// SECURITY: TimeLock prevents immediate malicious changes.
-        /// </summary>
-        public static void ProposePolicyContract(UInt160 policyContract)
-        {
-            ValidateAdmin();
-            ExecutionEngine.Assert(policyContract != null && policyContract.IsValid, "invalid contract");
-            Storage.Put(Storage.CurrentContext, PREFIX_PENDING_POLICY_CONTRACT, policyContract);
-            BigInteger executeAfter = Runtime.Time + TimeLockDelay();
-            Storage.Put(Storage.CurrentContext, PREFIX_CONTRACT_CHANGE_TIME, executeAfter);
-        }
-
-        /// <summary>
-        /// Executes pending candidate contract change after TimeLock delay.
-        /// </summary>
-        public static void ExecuteCandidateContractChange()
-        {
-            ValidateAdmin();
-            UInt160 pending = PendingCandidateContract();
-            ExecutionEngine.Assert(pending != null && pending.IsValid, "no pending change");
-            BigInteger changeTime = ContractChangeTime();
-            ExecutionEngine.Assert(Runtime.Time >= changeTime, "timelock active");
-            Storage.Put(Storage.CurrentContext, PREFIX_CANDIDATE_CONTRACT, pending);
-            Storage.Delete(Storage.CurrentContext, PREFIX_PENDING_CANDIDATE_CONTRACT);
-        }
-
-        /// <summary>
-        /// Executes pending policy contract change after TimeLock delay.
-        /// </summary>
-        public static void ExecutePolicyContractChange()
-        {
-            ValidateAdmin();
-            UInt160 pending = PendingPolicyContract();
-            ExecutionEngine.Assert(pending != null && pending.IsValid, "no pending change");
-            BigInteger changeTime = ContractChangeTime();
-            ExecutionEngine.Assert(Runtime.Time >= changeTime, "timelock active");
-            Storage.Put(Storage.CurrentContext, PREFIX_POLICY_CONTRACT, pending);
-            Storage.Delete(Storage.CurrentContext, PREFIX_PENDING_POLICY_CONTRACT);
-        }
-
-        /// <summary>
-        /// Cancels any pending contract changes.
-        /// </summary>
-        public static void CancelContractChange()
-        {
-            ValidateAdmin();
-            Storage.Delete(Storage.CurrentContext, PREFIX_PENDING_CANDIDATE_CONTRACT);
-            Storage.Delete(Storage.CurrentContext, PREFIX_PENDING_POLICY_CONTRACT);
-            Storage.Delete(Storage.CurrentContext, PREFIX_CONTRACT_CHANGE_TIME);
-        }
-
-        /// <summary>
-        /// [DEPRECATED] Direct contract changes are no longer allowed.
-        /// Use ProposeCandidateContract + ExecuteCandidateContractChange instead.
-        /// </summary>
-        [System.Obsolete("Use ProposeCandidateContract + ExecuteCandidateContractChange for TimeLock security")]
         public static void SetCandidateContract(UInt160 candidateContract)
         {
-            ExecutionEngine.Assert(false, "use ProposeCandidateContract for TimeLock security");
+            ValidateAdmin();
+            Storage.Put(Storage.CurrentContext, PREFIX_CANDIDATE_CONTRACT, candidateContract);
         }
 
-        /// <summary>
-        /// [DEPRECATED] Direct contract changes are no longer allowed.
-        /// Use ProposePolicyContract + ExecutePolicyContractChange instead.
-        /// </summary>
-        [System.Obsolete("Use ProposePolicyContract + ExecutePolicyContractChange for TimeLock security")]
         public static void SetPolicyContract(UInt160 policyContract)
         {
-            ExecutionEngine.Assert(false, "use ProposePolicyContract for TimeLock security");
+            ValidateAdmin();
+            Storage.Put(Storage.CurrentContext, PREFIX_POLICY_CONTRACT, policyContract);
         }
         #endregion
 

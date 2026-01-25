@@ -8,3 +8,4 @@
 export * from "./wallet";
 export * from "./contract";
 export * from "./schemas";
+export * from "./domain";

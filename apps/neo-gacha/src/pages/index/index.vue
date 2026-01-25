@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-neo-gacha" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="app-container">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="chain-warning">
-            <text class="chain-warning__title">{{ t("wrongChain") }}</text>
-            <text class="chain-warning__desc">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
       <NeoCard v-if="status" :variant="status.variant" class="mb-4">
         <text class="status-text">{{ status.msg }}</text>
       </NeoCard>
@@ -135,16 +126,32 @@
             </NeoButton>
           </view>
           <view class="chip-row">
-            <NeoButton size="sm" :variant="sortMode === 'popular' ? 'primary' : 'secondary'" @click="sortMode = 'popular'">
+            <NeoButton
+              size="sm"
+              :variant="sortMode === 'popular' ? 'primary' : 'secondary'"
+              @click="sortMode = 'popular'"
+            >
               {{ t("sortPopular") }}
             </NeoButton>
-            <NeoButton size="sm" :variant="sortMode === 'newest' ? 'primary' : 'secondary'" @click="sortMode = 'newest'">
+            <NeoButton
+              size="sm"
+              :variant="sortMode === 'newest' ? 'primary' : 'secondary'"
+              @click="sortMode = 'newest'"
+            >
               {{ t("sortNewest") }}
             </NeoButton>
-            <NeoButton size="sm" :variant="sortMode === 'priceLow' ? 'primary' : 'secondary'" @click="sortMode = 'priceLow'">
+            <NeoButton
+              size="sm"
+              :variant="sortMode === 'priceLow' ? 'primary' : 'secondary'"
+              @click="sortMode = 'priceLow'"
+            >
               {{ t("sortPriceLow") }}
             </NeoButton>
-            <NeoButton size="sm" :variant="sortMode === 'priceHigh' ? 'primary' : 'secondary'" @click="sortMode = 'priceHigh'">
+            <NeoButton
+              size="sm"
+              :variant="sortMode === 'priceHigh' ? 'primary' : 'secondary'"
+              @click="sortMode = 'priceHigh'"
+            >
               {{ t("sortPriceHigh") }}
             </NeoButton>
           </view>
@@ -157,12 +164,7 @@
           {{ t("noMachines") }}
         </view>
         <view v-else class="grid-container">
-          <GachaCard
-            v-for="machine in sortedMachines"
-            :key="machine.id"
-            :machine="machine"
-            @select="selectMachine"
-          />
+          <GachaCard v-for="machine in sortedMachines" :key="machine.id" :machine="machine" @select="selectMachine" />
         </view>
       </view>
 
@@ -201,9 +203,7 @@
             </view>
 
             <view v-if="machine.revenueRaw > 0" class="manage-actions manage-actions--revenue">
-              <text class="revenue-label">
-                {{ t("revenueLabel") }}: {{ formatGas(machine.revenueRaw) }} GAS
-              </text>
+              <text class="revenue-label"> {{ t("revenueLabel") }}: {{ formatGas(machine.revenueRaw) }} GAS </text>
               <NeoButton
                 size="sm"
                 variant="primary"
@@ -270,9 +270,7 @@
                   <text class="inventory-stock" v-if="item.assetType === 1">
                     {{ t("stockLabel") }}: {{ item.stockDisplay }}
                   </text>
-                  <text class="inventory-stock" v-else>
-                    {{ t("tokenCountLabel") }}: {{ item.tokenCount }}
-                  </text>
+                  <text class="inventory-stock" v-else> {{ t("tokenCountLabel") }}: {{ item.tokenCount }} </text>
                 </view>
                 <text class="inventory-meta" v-if="item.assetType === 1">
                   {{ t("prizePerWinLabel") }}: {{ item.amountDisplay }}
@@ -351,13 +349,15 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
-import { AppLayout, NeoCard, NeoDoc, NeoButton, NeoInput, WalletPrompt } from "@shared/components";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
+import { AppLayout, NeoCard, NeoDoc, NeoButton, NeoInput, WalletPrompt, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import { useI18n } from "@/composables/useI18n";
 import { formatNumber, formatGas, toFixed8, toFixedDecimals, sleep } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { parseInvokeResult, parseStackItem, normalizeScriptHash, addressToScriptHash } from "@shared/utils/neo";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 import GachaCard from "./components/GachaCard.vue";
 import GachaMachine from "./components/GachaMachine.vue";
 import CreatorStudio from "./components/CreatorStudio.vue";
@@ -375,8 +375,8 @@ const navTabs = computed(() => [
 const activeTab = ref("market");
 
 const APP_ID = "miniapp-neo-gacha";
-const { address, connect, invokeRead, invokeContract, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS } = usePayments(APP_ID);
+const { address, connect, invokeRead, invokeContract, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, waitForEvent } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
 interface MachineItem {
@@ -511,9 +511,7 @@ const sortedMachines = computed(() => {
   }
 });
 
-const recommendedMachines = computed(() =>
-  [...marketMachines.value].sort((a, b) => b.plays - a.plays).slice(0, 4),
-);
+const recommendedMachines = computed(() => [...marketMachines.value].sort((a, b) => b.plays - a.plays).slice(0, 4));
 const topByPlays = computed(() => [...marketMachines.value].sort((a, b) => b.plays - a.plays).slice(0, 5));
 const topByRevenue = computed(() =>
   [...marketMachines.value]
@@ -685,16 +683,6 @@ const handleWalletConnect = async () => {
   fetchMachines();
 };
 
-const waitForEvent = async (txid: string, eventName: string) => {
-  for (let attempt = 0; attempt < 20; attempt += 1) {
-    const res = await listEvents({ app_id: APP_ID, event_name: eventName, limit: 25 });
-    const match = res.events.find((evt: any) => evt.tx_hash === txid);
-    if (match) return match;
-    await sleep(1500);
-  }
-  return null;
-};
-
 const waitForResolved = async (playId: string) => {
   for (let attempt = 0; attempt < 20; attempt += 1) {
     const res = await listEvents({ app_id: APP_ID, event_name: "PlayResolved", limit: 25 });
@@ -713,7 +701,7 @@ const fetchMachineItems = async (contract: string, machineId: number, itemCount:
   for (let index = 1; index <= itemCount; index += 1) {
     const itemRes = await invokeRead({
       scriptHash: contract,
-      operation: "getMachineItem",
+      operation: "GetMachineItem",
       args: [
         { type: "Integer", value: String(machineId) },
         { type: "Integer", value: String(index) },
@@ -756,14 +744,14 @@ const fetchMachines = async () => {
       return;
     }
 
-    const totalRes = await invokeRead({ scriptHash: contract, operation: "totalMachines" });
+    const totalRes = await invokeRead({ scriptHash: contract, operation: "TotalMachines" });
     const total = numberFrom(parseInvokeResult(totalRes));
     const loaded: Machine[] = [];
 
     for (let machineId = 1; machineId <= total; machineId += 1) {
       const machineRes = await invokeRead({
         scriptHash: contract,
-        operation: "getMachine",
+        operation: "GetMachine",
         args: [{ type: "Integer", value: String(machineId) }],
       });
       const machineMap = parseInvokeResult(machineRes) as Record<string, any> | null;
@@ -887,22 +875,21 @@ const playSelectedMachine = async () => {
 
     // Phase 1: Pay and initiate play (on-chain)
     const payAmount = gasInputFromRaw(selectedMachine.value.priceRaw);
-    const payment = await payGAS(payAmount, `gacha:${selectedMachine.value.id}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(payAmount, `gacha:${selectedMachine.value.id}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
 
     // Call InitiatePlay - returns [playId, seed] for hybrid mode
-    const initiateTx = await invokeContract({
-      scriptHash: contract,
-      operation: "initiatePlay",
-      args: [
+    const initiateTx = await invoke(
+      "initiatePlay",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: selectedMachine.value.id },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contract,
+    );
 
     const initiateTxid = String((initiateTx as any)?.txid || (initiateTx as any)?.txHash || "");
     const initiatedEvent = initiateTxid ? await waitForEvent(initiateTxid, "PlayInitiated") : null;
@@ -949,15 +936,15 @@ const playSelectedMachine = async () => {
     showFireworks.value = true;
 
     // Phase 3: Settle play (on-chain verification and transfer)
-    const settleTx = await invokeContract({
-      scriptHash: contract,
-      operation: "settlePlay",
-      args: [
+    const settleTx = await invoke(
+      "settlePlay",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: playId },
         { type: "Integer", value: String(selectedIndex) },
       ],
-    });
+      contract,
+    );
 
     const settleTxid = String((settleTx as any)?.txid || (settleTx as any)?.txHash || "");
     if (settleTxid) {
@@ -995,7 +982,7 @@ const publishMachine = async (machineData: any) => {
     const priceRaw = toFixed8(machineData.price);
     const createTx = await invokeContract({
       scriptHash: contract,
-      operation: "createMachine",
+      operation: "CreateMachine",
       args: [
         { type: "Hash160", value: address.value as string },
         { type: "String", value: machineData.name },
@@ -1032,7 +1019,7 @@ const publishMachine = async (machineData: any) => {
         try {
           const decimalsRes = await invokeRead({
             scriptHash: assetHash,
-            operation: "decimals",
+            operation: "Decimals",
           });
           decimals = numberFrom(parseInvokeResult(decimalsRes));
         } catch {
@@ -1044,7 +1031,7 @@ const publishMachine = async (machineData: any) => {
 
       const itemTx = await invokeContract({
         scriptHash: contract,
-        operation: "addMachineItem",
+        operation: "AddMachineItem",
         args: [
           { type: "Hash160", value: address.value as string },
           { type: "Integer", value: machineId },
@@ -1090,7 +1077,7 @@ const updateMachinePrice = async (machine: Machine) => {
     const priceRaw = toFixed8(input.price);
     await invokeContract({
       scriptHash: contract,
-      operation: "updateMachine",
+      operation: "UpdateMachine",
       args: [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: machine.id },
@@ -1122,7 +1109,7 @@ const toggleMachineActive = async (machine: Machine) => {
     if (!contract) return;
     await invokeContract({
       scriptHash: contract,
-      operation: "setMachineActive",
+      operation: "SetMachineActive",
       args: [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: machine.id },
@@ -1150,7 +1137,7 @@ const toggleMachineListed = async (machine: Machine) => {
     if (!contract) return;
     await invokeContract({
       scriptHash: contract,
-      operation: "setMachineListed",
+      operation: "SetMachineListed",
       args: [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: machine.id },
@@ -1181,7 +1168,7 @@ const listMachineForSale = async (machine: Machine) => {
     const salePriceRaw = toFixed8(input.salePrice);
     await invokeContract({
       scriptHash: contract,
-      operation: "listMachineForSale",
+      operation: "ListMachineForSale",
       args: [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: machine.id },
@@ -1235,18 +1222,20 @@ const buyMachine = async (machine: Machine) => {
     setActionLoading(key, true);
     const contract = await ensureContractAddress();
     if (!contract) return;
-    const payment = await payGAS(gasInputFromRaw(machine.salePriceRaw), `gacha-sale:${machine.id}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(
+      gasInputFromRaw(machine.salePriceRaw),
+      `gacha-sale:${machine.id}`,
+    );
     if (!receiptId) throw new Error(t("receiptMissing"));
-    await invokeContract({
-      scriptHash: contract,
-      operation: "buyMachine",
-      args: [
+    await invoke(
+      "buyMachine",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: machine.id },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contract,
+    );
     await fetchMachines();
   } catch (e: any) {
     setStatus(e?.message || t("error"), "danger");
@@ -1364,7 +1353,6 @@ watch(address, () => {
   fetchMachines();
 });
 
-
 const withdrawMachineRevenue = async (machine: Machine) => {
   const loadingKey = `withdrawRevenue:${machine.id}`;
   if (actionLoading.value[loadingKey]) return;
@@ -1405,11 +1393,13 @@ onMounted(() => {
   min-height: 100vh;
   background-color: var(--gacha-bg);
   // Subtle pattern background for Gacha
-  background-image: 
+  background-image:
     radial-gradient(var(--gacha-pattern-pink) 15%, transparent 16%),
     radial-gradient(var(--gacha-pattern-blue) 15%, transparent 16%);
   background-size: 40px 40px;
-  background-position: 0 0, 20px 20px;
+  background-position:
+    0 0,
+    20px 20px;
 }
 
 .scrollable {
@@ -1417,7 +1407,8 @@ onMounted(() => {
   -webkit-overflow-scrolling: touch;
 }
 
-.market-grid, .grid-container {
+.market-grid,
+.grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
@@ -1446,7 +1437,7 @@ onMounted(() => {
   align-items: center;
   padding: 24px;
   margin-bottom: 24px;
-  
+
   .hero-content {
     display: flex;
     flex-direction: column;
@@ -1462,12 +1453,12 @@ onMounted(() => {
     margin-bottom: 8px;
   }
   .hero-subtitle {
-     font-size: 12px;
-     font-weight: 700;
-     color: var(--text-secondary);
-     background: var(--gacha-hero-subtitle-bg);
-     padding: 4px 8px;
-     border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: var(--gacha-hero-subtitle-bg);
+    padding: 4px 8px;
+    border-radius: 8px;
   }
 }
 
@@ -1477,8 +1468,13 @@ onMounted(() => {
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .chip-row {
@@ -1534,7 +1530,7 @@ onMounted(() => {
   background: var(--gacha-badge-bg);
   color: var(--gacha-badge-text);
   text-transform: uppercase;
-  
+
   &.active {
     background: var(--gacha-badge-active-bg);
     color: var(--gacha-badge-active-text);
@@ -1623,7 +1619,7 @@ onMounted(() => {
   border-bottom: 1px solid var(--gacha-divider);
   padding-bottom: 8px;
   align-items: center;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -1643,7 +1639,8 @@ onMounted(() => {
   font-size: 12px;
 }
 
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
   text-align: center;
   padding: 40px;
   color: var(--text-secondary);
@@ -1656,7 +1653,7 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   text-align: center;
-  
+
   &__title {
     font-weight: 700;
     color: var(--gacha-danger-text);

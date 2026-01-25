@@ -1,16 +1,7 @@
 <template>
   <AppLayout class="theme-candidate-vote" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="chainType === 'evm'" class="px-5 mb-4">
-      <NeoCard variant="danger">
-        <view class="flex flex-col items-center gap-2 py-1">
-          <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-          <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-            t("switchToNeo")
-          }}</NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <!-- Vote Tab -->
     <view v-if="activeTab === 'vote' && chainType !== 'evm'" class="tab-content scrollable">
@@ -41,15 +32,13 @@
             <view class="candidate-badge">
               <!-- Logo and Name Row -->
               <view class="logo-name-row">
-                <image 
-                  v-if="selectedCandidate.logo" 
-                  class="candidate-logo-sm" 
-                  :src="selectedCandidate.logo" 
-                  mode="aspectFit" 
+                <image
+                  v-if="selectedCandidate.logo"
+                  class="candidate-logo-sm"
+                  :src="selectedCandidate.logo"
+                  mode="aspectFit"
                 />
-                <text class="candidate-name">{{
-                  selectedCandidate.name || selectedCandidate.address
-                }}</text>
+                <text class="candidate-name">{{ selectedCandidate.name || selectedCandidate.address }}</text>
               </view>
 
               <!-- Description -->
@@ -113,7 +102,9 @@
       :candidate="detailCandidate"
       :rank="detailRank"
       :total-votes="totalNetworkVotes"
-      :is-user-voted="detailCandidate ? normalizePublicKey(detailCandidate.publicKey) === normalizedUserVotedPublicKey : false"
+      :is-user-voted="
+        detailCandidate ? normalizePublicKey(detailCandidate.publicKey) === normalizedUserVotedPublicKey : false
+      "
       :can-vote="!!address && !isLoading"
       :governance-portal-url="governancePortalUrl"
       @close="closeCandidateDetail"
@@ -124,12 +115,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import type { GovernanceCandidate } from "./utils";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc, NeoCard, NeoButton } from "@shared/components";
+import { AppLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import CandidateList from "./components/CandidateList.vue";
 import CandidateDetailModal from "./components/CandidateDetailModal.vue";
@@ -147,7 +139,7 @@ const docFeatures = computed(() => [
 const NEO_CONTRACT = "0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5";
 
 const { address, connect, invokeContract, invokeRead, chainType, chainId, appChainId, switchToAppChain } =
-  useWallet() as any;
+  useWallet() as WalletSDK;
 
 const navTabs = computed<NavTab[]>(() => [
   { id: "vote", icon: "checkbox", label: t("vote") },
@@ -179,7 +171,9 @@ const getCacheKey = (network: "mainnet" | "testnet") => `candidate_vote_candidat
 const preferredChainId = computed(() => appChainId.value || chainId.value || "neo-n3-testnet");
 
 const governancePortalUrl = computed(() =>
-  preferredChainId.value === "neo-n3-testnet" ? "https://governance.neo.org/testnet#/" : "https://governance.neo.org/#/",
+  preferredChainId.value === "neo-n3-testnet"
+    ? "https://governance.neo.org/testnet#/"
+    : "https://governance.neo.org/#/",
 );
 
 const showStatus = (msg: string, type: string) => {
@@ -269,7 +263,7 @@ const loadUserVote = async () => {
   try {
     const result = await invokeRead({
       scriptHash: NEO_CONTRACT,
-      operation: "getAccountState",
+      operation: "GetAccountState",
       args: [{ type: "Hash160", value: address.value }],
     });
     // Result contains voteTo field with the public key user voted for
@@ -294,19 +288,19 @@ const loadCandidates = async (force = false) => {
   // Try cache first
   const network = preferredChainId.value === "neo-n3-testnet" ? "testnet" : "mainnet";
   const cacheKey = getCacheKey(network);
-  
+
   try {
     const cached = readCache(cacheKey);
     if (cached) {
       const parsed = JSON.parse(cached);
       candidates.value = parsed.candidates || [];
       totalNetworkVotes.value = parsed.totalVotes || "0";
-      
+
       const lastFetch = parsed.timestamp || 0;
       const now = Date.now();
       // If cache is fresh (less than 5 minutes) and we have data, skip fetch unless forced
-      if (!force && (now - lastFetch < 5 * 60 * 1000) && candidates.value.length > 0) {
-        return; 
+      if (!force && now - lastFetch < 5 * 60 * 1000 && candidates.value.length > 0) {
+        return;
       }
     }
   } catch {}
@@ -321,7 +315,8 @@ const loadCandidates = async (force = false) => {
 
     if (selectedCandidate.value) {
       const match = candidates.value.find(
-        (candidate) => normalizePublicKey(candidate.publicKey) === normalizePublicKey(selectedCandidate.value?.publicKey),
+        (candidate) =>
+          normalizePublicKey(candidate.publicKey) === normalizePublicKey(selectedCandidate.value?.publicKey),
       );
       selectedCandidate.value = match || null;
     }
@@ -362,7 +357,7 @@ const handleVote = async () => {
     // vote(account, voteTo) - voteTo is the public key of the candidate
     await invokeContract({
       scriptHash: NEO_CONTRACT,
-      operation: "vote",
+      operation: "Vote",
       args: [
         { type: "Hash160", value: address.value },
         { type: "PublicKey", value: selectedCandidate.value.publicKey },
@@ -446,7 +441,7 @@ watch(preferredChainId, () => {
 .candidate-badge {
   display: flex;
   flex-direction: column;
-  gap: 16px; 
+  gap: 16px;
 }
 
 .logo-name-row {
@@ -545,7 +540,7 @@ watch(preferredChainId, () => {
     letter-spacing: 0.05em;
     font-size: 16px !important;
     height: 56px;
-    
+
     &:active {
       transform: scale(0.98);
       box-shadow: var(--candidate-cta-shadow-press);

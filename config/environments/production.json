@@ -1,0 +1,16 @@
+{
+  "name": "production",
+  "baseURL": "https://miniapps.yourdomain.com",
+  "r2": {
+    "bucket": "miniapps-prod",
+    "domain": "miniapps.yourdomain.com",
+    "publicPath": "/miniapps/",
+    "cacheControl": "public, max-age=31536000, immutable"
+  },
+  "features": {
+    "analytics": true,
+    "caching": true,
+    "versioning": true,
+    "compression": true
+  }
+}

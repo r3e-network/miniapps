@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-milestone-escrow" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view v-if="activeTab === 'create'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
@@ -65,21 +56,9 @@
             <text class="total-hint">{{ t("totalHint") }}</text>
           </view>
 
-          <NeoInput
-            v-model="form.notes"
-            type="textarea"
-            :label="t('notes')"
-            :placeholder="t('notesPlaceholder')"
-          />
+          <NeoInput v-model="form.notes" type="textarea" :label="t('notes')" :placeholder="t('notesPlaceholder')" />
 
-          <NeoButton
-            variant="primary"
-            size="lg"
-            block
-            :loading="isLoading"
-            :disabled="isLoading"
-            @click="createEscrow"
-          >
+          <NeoButton variant="primary" size="lg" block :loading="isLoading" :disabled="isLoading" @click="createEscrow">
             {{ isLoading ? t("creating") : t("createEscrow") }}
           </NeoButton>
         </view>
@@ -128,23 +107,39 @@
           <view class="escrow-metrics">
             <view>
               <text class="metric-label">{{ t("totalAmount") }}</text>
-              <text class="metric-value">{{ formatAmount(escrow.assetSymbol, escrow.totalAmount) }} {{ escrow.assetSymbol }}</text>
+              <text class="metric-value"
+                >{{ formatAmount(escrow.assetSymbol, escrow.totalAmount) }} {{ escrow.assetSymbol }}</text
+              >
             </view>
             <view>
               <text class="metric-label">{{ t("claimed") }}</text>
-              <text class="metric-value">{{ formatAmount(escrow.assetSymbol, escrow.releasedAmount) }} {{ escrow.assetSymbol }}</text>
+              <text class="metric-value"
+                >{{ formatAmount(escrow.assetSymbol, escrow.releasedAmount) }} {{ escrow.assetSymbol }}</text
+              >
             </view>
           </view>
 
           <view class="milestone-list">
-            <view v-for="(amount, index) in escrow.milestoneAmounts" :key="`creator-${escrow.id}-${index}`" class="milestone-item">
+            <view
+              v-for="(amount, index) in escrow.milestoneAmounts"
+              :key="`creator-${escrow.id}-${index}`"
+              class="milestone-item"
+            >
               <view>
                 <text class="milestone-label">#{{ index + 1 }}</text>
-                <text class="milestone-amount">{{ formatAmount(escrow.assetSymbol, amount) }} {{ escrow.assetSymbol }}</text>
+                <text class="milestone-amount"
+                  >{{ formatAmount(escrow.assetSymbol, amount) }} {{ escrow.assetSymbol }}</text
+                >
               </view>
               <view class="milestone-actions">
                 <text class="milestone-status">
-                  {{ escrow.milestoneClaimed[index] ? t("claimed") : escrow.milestoneApproved[index] ? t("approved") : t("pending") }}
+                  {{
+                    escrow.milestoneClaimed[index]
+                      ? t("claimed")
+                      : escrow.milestoneApproved[index]
+                        ? t("approved")
+                        : t("pending")
+                  }}
                 </text>
                 <NeoButton
                   size="sm"
@@ -190,14 +185,26 @@
             <text :class="['status-pill', escrow.status]">{{ statusLabel(escrow.status) }}</text>
           </view>
           <view class="milestone-list">
-            <view v-for="(amount, index) in escrow.milestoneAmounts" :key="`beneficiary-${escrow.id}-${index}`" class="milestone-item">
+            <view
+              v-for="(amount, index) in escrow.milestoneAmounts"
+              :key="`beneficiary-${escrow.id}-${index}`"
+              class="milestone-item"
+            >
               <view>
                 <text class="milestone-label">#{{ index + 1 }}</text>
-                <text class="milestone-amount">{{ formatAmount(escrow.assetSymbol, amount) }} {{ escrow.assetSymbol }}</text>
+                <text class="milestone-amount"
+                  >{{ formatAmount(escrow.assetSymbol, amount) }} {{ escrow.assetSymbol }}</text
+                >
               </view>
               <view class="milestone-actions">
                 <text class="milestone-status">
-                  {{ escrow.milestoneClaimed[index] ? t("claimed") : escrow.milestoneApproved[index] ? t("approved") : t("pending") }}
+                  {{
+                    escrow.milestoneClaimed[index]
+                      ? t("claimed")
+                      : escrow.milestoneApproved[index]
+                        ? t("approved")
+                        : t("pending")
+                  }}
                 </text>
                 <NeoButton
                   size="sm"
@@ -224,7 +231,7 @@
         :features="[
           { name: t('feature1Name'), desc: t('feature1Desc') },
           { name: t('feature2Name'), desc: t('feature2Desc') },
-          { name: t('feature3Name'), desc: t('feature3Desc') }
+          { name: t('feature3Name'), desc: t('feature3Desc') },
         ]"
       />
     </view>
@@ -234,15 +241,16 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton, NeoInput, NeoDoc } from "@shared/components";
+import { AppLayout, NeoCard, NeoButton, NeoInput, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain } from "@shared/utils/chain";
 import { formatGas, formatAddress, toFixed8, toFixedDecimals } from "@shared/utils/format";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult } from "@shared/utils/neo";
 
 const { t } = useI18n();
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
 
 const NEO_HASH = "0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5";
 const GAS_HASH = "0xd2a4cff31913016155e38e474a2c06d08be276cf";
@@ -262,11 +270,7 @@ const form = reactive({
   notes: "",
 });
 
-const milestones = ref<Array<{ amount: string }>>([
-  { amount: "1" },
-  { amount: "1" },
-  { amount: "1" },
-]);
+const milestones = ref<Array<{ amount: string }>>([{ amount: "1" }, { amount: "1" }, { amount: "1" }]);
 
 const status = ref<{ msg: string; type: string } | null>(null);
 const isLoading = ref(false);
@@ -376,7 +380,7 @@ const fetchEscrowDetails = async (escrowId: string) => {
   const contract = await ensureContractAddress();
   const details = await invokeRead({
     contractAddress: contract,
-    operation: "getEscrowDetails",
+    operation: "GetEscrowDetails",
     args: [{ type: "Integer", value: escrowId }],
   });
   const parsed = parseInvokeResult(details) as any;
@@ -515,7 +519,7 @@ const createEscrow = async () => {
 
     await invokeContract({
       scriptHash: contract,
-      operation: "createEscrow",
+      operation: "CreateEscrow",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Hash160", value: beneficiary },
@@ -553,7 +557,7 @@ const approveMilestone = async (escrow: EscrowItem, milestoneIndex: number) => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "approveMilestone",
+      operation: "ApproveMilestone",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: escrow.id },
@@ -577,7 +581,7 @@ const claimMilestone = async (escrow: EscrowItem, milestoneIndex: number) => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "claimMilestone",
+      operation: "ClaimMilestone",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: escrow.id },
@@ -601,7 +605,7 @@ const cancelEscrow = async (escrow: EscrowItem) => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "cancelEscrow",
+      operation: "CancelEscrow",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: escrow.id },

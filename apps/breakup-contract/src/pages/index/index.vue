@@ -1,15 +1,8 @@
 <template>
   <AppLayout class="theme-breakup-contract" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view v-if="activeTab === 'create' || activeTab === 'contracts'" class="app-container">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'erobo-neo'" class="mb-4 text-center">
         <text class="font-bold status-msg">{{ status.msg }}</text>
@@ -57,16 +50,17 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { parseGas, toFixed8 } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc, NeoCard } from "@shared/components";
+import { AppLayout, NeoDoc, NeoCard, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import CreateContractForm from "./components/CreateContractForm.vue";
 import ContractList from "./components/ContractList.vue";
-
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();
 
@@ -77,9 +71,9 @@ const docFeatures = computed(() => [
 ]);
 
 const APP_ID = "miniapp-breakupcontract";
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
 const { list: listEvents } = useEvents();
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { processPayment, isLoading } = usePaymentFlow(APP_ID);
 const contractAddress = ref<string | null>(null);
 
 const activeTab = ref<string>("create");
@@ -230,7 +224,7 @@ const loadContracts = async () => {
     for (const id of Array.from(ids).sort((a, b) => b - a)) {
       const res = await invokeRead({
         contractAddress: contractAddress.value!,
-        operation: "getContractDetails",
+        operation: "GetContractDetails",
         args: [{ type: "Integer", value: id }],
       });
       const parsed = parseContract(id, parseInvokeResult(res));
@@ -285,15 +279,13 @@ const createContract = async () => {
       throw new Error(t("error"));
     }
     await ensureContractAddress();
-    const payment = await payGAS(stakeAmount.value, `contract:${partnerValue.slice(0, 10)}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(stakeAmount.value, `contract:${partnerValue.slice(0, 10)}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
-    await invokeContract({
-      contractAddress: contractAddress.value!,
-      operation: "createContract",
-      args: [
+    await invoke(
+      "createContract",
+      [
         { type: "Hash160", value: address.value },
         { type: "Hash160", value: partnerValue },
         { type: "Integer", value: toFixed8(stakeAmount.value) },
@@ -302,7 +294,8 @@ const createContract = async () => {
         { type: "String", value: termsValue },
         { type: "Integer", value: receiptId },
       ],
-    });
+      contractAddress.value!,
+    );
     status.value = { msg: t("contractCreated"), type: "success" };
     partnerAddress.value = "";
     stakeAmount.value = "";
@@ -319,20 +312,19 @@ const signContract = async (contract: RelationshipContractView) => {
   if (isLoading.value || !address.value) return;
   try {
     await ensureContractAddress();
-    const payment = await payGAS(contract.stake.toFixed(8), `contract:sign:${contract.id}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(contract.stake.toFixed(8), `contract:sign:${contract.id}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
-    await invokeContract({
-      contractAddress: contractAddress.value!,
-      operation: "signContract",
-      args: [
+    await invoke(
+      "signContract",
+      [
         { type: "Integer", value: contract.id },
         { type: "Hash160", value: address.value },
         { type: "Integer", value: receiptId },
       ],
-    });
+      contractAddress.value!,
+    );
     status.value = { msg: t("contractSigned"), type: "success" };
     await loadContracts();
   } catch (e: any) {
@@ -349,7 +341,7 @@ const breakContract = async (contract: RelationshipContractView) => {
     await ensureContractAddress();
     await invokeContract({
       contractAddress: contractAddress.value!,
-      operation: "triggerBreakup",
+      operation: "TriggerBreakup",
       args: [
         { type: "Integer", value: contract.id },
         { type: "Hash160", value: address.value },
@@ -385,14 +377,14 @@ onMounted(() => {
   background: radial-gradient(circle at 20% 20%, var(--heartbreak-radial) 0%, var(--heartbreak-bg) 100%);
   min-height: 100vh;
   position: relative;
-  
+
   /* Broken glass shards overlay (simulated with gradients) */
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     opacity: 0.1;
-    background-image: 
+    background-image:
       linear-gradient(45deg, transparent 48%, var(--heartbreak-shard) 49%, transparent 51%),
       linear-gradient(-45deg, transparent 40%, var(--heartbreak-shard) 41%, transparent 42%);
     background-size: 200px 200px;
@@ -430,7 +422,7 @@ onMounted(() => {
   border-radius: 2px !important; /* Sharp edges */
   color: var(--heartbreak-text) !important;
   backdrop-filter: blur(10px);
-  
+
   &.variant-danger {
     background: var(--heartbreak-card-danger-bg) !important;
     border-color: var(--heartbreak-card-danger-border) !important;
@@ -443,12 +435,12 @@ onMounted(() => {
   font-weight: 800 !important;
   letter-spacing: 0.1em;
   border: 1px solid var(--heartbreak-accent) !important;
-  
+
   &.variant-primary {
     background: linear-gradient(135deg, var(--heartbreak-accent) 0%, var(--heartbreak-accent-dark) 100%) !important;
     color: var(--heartbreak-status-text) !important;
     box-shadow: var(--heartbreak-button-shadow) !important;
-    
+
     &:active {
       transform: translate(2px, 2px);
       box-shadow: var(--heartbreak-button-shadow-press) !important;

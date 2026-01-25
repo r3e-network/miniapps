@@ -129,7 +129,6 @@ namespace NeoMiniAppPlatform.Contracts
         public static void _deploy(object data, bool update)
         {
             if (update) return;
-            Storage.Put(Storage.CurrentContext, PREFIX_ADMIN, Runtime.Transaction.Sender);
             Storage.Put(Storage.CurrentContext, PREFIX_DEV_ID, 0);
             Storage.Put(Storage.CurrentContext, PREFIX_TIP_ID, 0);
             Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_DONATED, 0);

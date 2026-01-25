@@ -20,7 +20,6 @@ namespace NeoMiniAppPlatform.Contracts
             ByteString policyData,
             BigInteger duration)
         {
-            ValidateNotGloballyPaused(APP_ID);
             ExecutionEngine.Assert(Runtime.CheckWitness(creator), "unauthorized");
             ExecutionEngine.Assert(IsCandidate(creator), "only candidates can create proposals");
             ExecutionEngine.Assert(proposalType == TYPE_TEXT || proposalType == TYPE_POLICY_CHANGE, "invalid type");
@@ -66,7 +65,6 @@ namespace NeoMiniAppPlatform.Contracts
         /// </summary>
         public static void Vote(UInt160 voter, BigInteger proposalId, bool support)
         {
-            ValidateNotGloballyPaused(APP_ID);
             ExecutionEngine.Assert(Runtime.CheckWitness(voter), "unauthorized");
             ExecutionEngine.Assert(IsCandidate(voter), "only candidates can vote");
             ExecutionEngine.Assert(proposalId > 0 && proposalId <= GetProposalCount(), "invalid proposal");
@@ -125,7 +123,6 @@ namespace NeoMiniAppPlatform.Contracts
         /// </summary>
         public static void RevokeProposal(UInt160 creator, BigInteger proposalId)
         {
-            ValidateNotGloballyPaused(APP_ID);
             ExecutionEngine.Assert(Runtime.CheckWitness(creator), "unauthorized");
             ExecutionEngine.Assert(proposalId > 0 && proposalId <= GetProposalCount(), "invalid proposal");
 
@@ -147,7 +144,6 @@ namespace NeoMiniAppPlatform.Contracts
         /// </summary>
         public static void FinalizeProposal(BigInteger proposalId)
         {
-            ValidateNotGloballyPaused(APP_ID);
             ExecutionEngine.Assert(proposalId > 0 && proposalId <= GetProposalCount(), "invalid proposal");
 
             var baseKey = GetProposalKey(proposalId);
@@ -201,7 +197,6 @@ namespace NeoMiniAppPlatform.Contracts
         /// </summary>
         public static void SubmitSignature(UInt160 signer, BigInteger proposalId, ByteString signature)
         {
-            ValidateNotGloballyPaused(APP_ID);
             ExecutionEngine.Assert(Runtime.CheckWitness(signer), "unauthorized");
             ExecutionEngine.Assert(IsCandidate(signer), "only candidates can sign");
             ExecutionEngine.Assert(proposalId > 0 && proposalId <= GetProposalCount(), "invalid proposal");
@@ -226,7 +221,6 @@ namespace NeoMiniAppPlatform.Contracts
         /// </summary>
         public static void ExecuteProposal(BigInteger proposalId)
         {
-            ValidateNotGloballyPaused(APP_ID);
             ExecutionEngine.Assert(proposalId > 0 && proposalId <= GetProposalCount(), "invalid proposal");
 
             var baseKey = GetProposalKey(proposalId);
@@ -250,7 +244,6 @@ namespace NeoMiniAppPlatform.Contracts
         /// </summary>
         public static void SetDelegation(UInt160 delegator, UInt160 delegatee)
         {
-            ValidateNotGloballyPaused(APP_ID);
             ExecutionEngine.Assert(Runtime.CheckWitness(delegator), "unauthorized");
             ExecutionEngine.Assert(IsCandidate(delegator), "delegator must be candidate");
             ExecutionEngine.Assert(IsCandidate(delegatee), "delegatee must be candidate");
@@ -275,7 +268,6 @@ namespace NeoMiniAppPlatform.Contracts
         /// </summary>
         public static void RevokeDelegation(UInt160 delegator)
         {
-            ValidateNotGloballyPaused(APP_ID);
             ExecutionEngine.Assert(Runtime.CheckWitness(delegator), "unauthorized");
 
             UInt160 currentDelegatee = GetDelegatee(delegator);

@@ -234,3 +234,98 @@ Apps must explicitly request permissions in `neo-manifest.json`:
 - Contract hash format validated (0x + 40 hex chars)
 - Manifest schema validation
 - Origin validation for iframe communication
+
+## Deployment
+
+### Environment Configuration
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+cp .env.example .env
+```
+
+Required environment variables:
+
+```env
+# Cloudflare R2 Configuration
+CLOUDFLARE_ACCOUNT_ID=your_account_id_here
+CLOUDFLARE_R2_ACCESS_KEY_ID=your_access_key_id_here
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=your_secret_access_key_here
+CLOUDFLARE_R2_BUCKET=miniapps-prod
+CLOUDFLARE_R2_ENDPOINT=https://your_account_id.r2.cloudflarestorage.com
+CLOUDFLARE_R2_REGION=auto
+
+# Deployment Configuration
+DEPLOY_ENVIRONMENT=production
+DEPLOY_BASE_URL=https://miniapps.yourdomain.com
+DEPLOY_PUBLIC_PATH=/miniapps/
+
+# Build Configuration
+BUILD_ANALYZE=false
+BUILD_SOURCEMAP=false
+BUILD_COMPRESS=true
+
+# Registry Configuration
+REGISTRY_SYNC_ENABLED=true
+REGISTRY_ENDPOINT=/data/miniapps.json
+```
+
+### Deploy to Cloudflare R2
+
+```bash
+# Deploy to production
+pnpm deploy
+
+# Deploy to development
+pnpm deploy:dev
+
+# Deploy to staging
+pnpm deploy:staging
+
+# Deploy to production (explicit)
+pnpm deploy:prod
+```
+
+The deployment process:
+1. Builds all mini-apps using `pnpm build:all`
+2. Uploads built files to Cloudflare R2 bucket
+3. Syncs the mini-apps registry
+4. Verifies deployment by checking key files
+
+### Deployment Scripts
+
+| Script | Description |
+|--------|-------------|
+| `scripts/deploy/to-r2.js` | Main deployment script for R2 |
+| `scripts/deploy/sync-registry.js` | Sync registry to remote endpoint |
+| `scripts/deploy/verify.js` | Verify deployment integrity |
+
+### Manual Registry Sync
+
+```bash
+# Generate mini-apps registry
+pnpm registry:generate
+
+# Sync registry to remote endpoint
+pnpm registry:sync
+```
+
+## Dependencies
+
+The project uses the following key dependencies:
+
+### Runtime Dependencies
+- **@aws-sdk/client-s3** (^3.709.0) - AWS S3 client for Cloudflare R2 deployment
+- **dotenv** (^16.4.7) - Environment variable management
+- **vue** (^3.5.0) - Vue 3 framework
+- **@dcloudio/uni-*** - uni-app framework packages
+
+### Development Dependencies
+- **turbo** (^2.7.5) - Build system and task runner
+- **typescript** (^5.4.5) - TypeScript compiler
+- **vitest** (^2.1.0) - Testing framework
+- **prettier** - Code formatting
+- **eslint** - Linting
+
+All dependencies are managed via pnpm workspace catalog for consistent versioning across the monorepo.

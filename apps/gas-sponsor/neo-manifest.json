@@ -7,8 +7,8 @@
   "version": "1.0.0",
   "entry_url": "/miniapps/gas-sponsor/index.html",
   "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/gas-sponsor/static/logo.png",
-  "banner": "/miniapps/gas-sponsor/static/banner.png",
+  "icon": "/miniapps/gas-sponsor/logo.png",
+  "banner": "/miniapps/gas-sponsor/banner.png",
   "category": "utility",
   "status": "active",
   "tags": [
@@ -39,7 +39,7 @@
   "card": {
     "display": {
       "type": "static",
-      "banner": "/static/banner.png",
+      "banner": "/banner.png",
       "live_status": {
         "enabled": true,
         "refresh_interval": 300,
@@ -50,7 +50,7 @@
       }
     },
     "info": {
-      "logo": "/static/logo.png",
+      "logo": "/logo.png",
       "owner": {
         "name": "Neo Service Layer",
         "address": "NXV7ZhHiyM1aHXwpVsRZC6BwNFP2jghXAq",

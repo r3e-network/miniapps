@@ -9,17 +9,8 @@
         <text class="status-msg">{{ status.msg }}</text>
       </NeoCard>
 
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="status-title">{{ t("wrongChain") }}</text>
-            <text class="status-detail">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-              t("switchToNeo")
-            }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <!-- Sponsor Tab -->
       <view v-if="activeTab === 'sponsor'" class="tab-content">
@@ -31,16 +22,11 @@
           :max-request-amount="maxRequestAmount"
           :is-requesting="isRequesting"
           :quick-amounts="quickAmounts"
-          :t="t as any"
+          :t="t"
           @request="requestSponsorship"
         />
         <!-- Gas Tank Visualization -->
-        <GasTank
-          :fuel-level-percent="fuelLevelPercent"
-          :gas-balance="gasBalance"
-          :is-eligible="isEligible"
-          :t="t as any"
-        />
+        <GasTank :fuel-level-percent="fuelLevelPercent" :gas-balance="gasBalance" :is-eligible="isEligible" :t="t" />
       </view>
 
       <!-- Donate Tab -->
@@ -110,7 +96,7 @@
           :user-address="userAddress"
           :gas-balance="gasBalance"
           :is-eligible="isEligible"
-          :t="t as any"
+          :t="t"
         />
 
         <DailyQuotaCard
@@ -119,7 +105,7 @@
           :used-quota="usedQuota"
           :remaining-quota="remainingQuota"
           :reset-time="resetTime"
-          :t="t as any"
+          :t="t"
         />
 
         <UsageStatisticsCard
@@ -127,14 +113,14 @@
           :remaining-quota="remainingQuota"
           :daily-limit="dailyLimit"
           :reset-time="resetTime"
-          :t="t as any"
+          :t="t"
         />
 
         <EligibilityStatusCard
           :gas-balance="gasBalance"
           :remaining-quota="remainingQuota"
           :user-address="userAddress"
-          :t="t as any"
+          :t="t"
         />
       </view>
 
@@ -147,18 +133,19 @@
           :steps="docSteps"
           :features="docFeatures"
         />
-        <HowItWorksCard :t="t as any" />
+        <HowItWorksCard :t="t" />
       </view>
     </view>
   </AppLayout>
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useWallet, useGasSponsor} from "@neo/uniapp-sdk";
+import { useWallet, useGasSponsor } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { toFixed8 } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoCard, NeoDoc, NeoButton, NeoInput } from "@shared/components";
+import { AppLayout, NeoCard, NeoDoc, NeoButton, NeoInput, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import GasTank from "./components/GasTank.vue";
 import UserBalanceInfo from "./components/UserBalanceInfo.vue";
@@ -168,10 +155,9 @@ import UsageStatisticsCard from "./components/UsageStatisticsCard.vue";
 import EligibilityStatusCard from "./components/EligibilityStatusCard.vue";
 import HowItWorksCard from "./components/HowItWorksCard.vue";
 
-
 const { t } = useI18n();
 
-const { address, connect, invokeContract, chainType, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, chainType } = useWallet() as WalletSDK;
 const { isRequestingSponsorship: isRequesting, checkEligibility, requestSponsorship: apiRequest } = useGasSponsor();
 
 const ELIGIBILITY_THRESHOLD = 0.1;
@@ -371,9 +357,8 @@ const docFeatures = computed(() => [
   flex-direction: column;
   gap: 24px;
   background-color: var(--gas-bg);
-  background-image: 
-    linear-gradient(var(--gas-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--gas-grid) 1px, transparent 1px);
+  background-image:
+    linear-gradient(var(--gas-grid) 1px, transparent 1px), linear-gradient(90deg, var(--gas-grid) 1px, transparent 1px);
   background-size: 40px 40px;
   min-height: 100vh;
   box-shadow: inset 0 0 100px var(--gas-inset-shadow);
@@ -388,7 +373,7 @@ const docFeatures = computed(() => [
   box-shadow: var(--gas-card-shadow) !important;
   color: var(--gas-text) !important;
   backdrop-filter: blur(10px);
-  
+
   &.variant-danger {
     border-color: var(--gas-card-danger-border) !important;
     background: var(--gas-card-danger-bg) !important;
@@ -403,19 +388,19 @@ const docFeatures = computed(() => [
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 800 !important;
-  
+
   &.variant-primary {
     background: var(--gas-button-primary-bg) !important;
     color: var(--gas-button-primary-text) !important;
     border: none !important;
     box-shadow: var(--gas-button-primary-shadow) !important;
-    
+
     &:active {
       transform: scale(0.95);
       box-shadow: var(--gas-button-primary-shadow) !important;
     }
   }
-  
+
   &.variant-secondary {
     background: var(--gas-button-secondary-bg) !important;
     border: 1px solid var(--gas-button-secondary-border) !important;
@@ -429,7 +414,7 @@ const docFeatures = computed(() => [
   border: 1px solid var(--gas-input-border) !important;
   border-radius: 4px !important;
   color: var(--gas-input-text) !important;
-  font-family: 'Courier New', monospace !important;
+  font-family: "Courier New", monospace !important;
 }
 
 .tab-content {
@@ -537,7 +522,9 @@ const docFeatures = computed(() => [
     background: var(--gas-preset-active-bg);
     border-color: var(--gas-accent);
     box-shadow: var(--gas-preset-active-shadow);
-    .preset-value { color: var(--gas-preset-active-text); }
+    .preset-value {
+      color: var(--gas-preset-active-text);
+    }
   }
 }
 

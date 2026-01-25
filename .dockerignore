@@ -1,0 +1,33 @@
+# Cloudflare R2 Deployment Configuration
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+public/
+dist/
+build/
+*.log
+
+# Dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Turbo
+.turbo/
+
+# pnpm
+.pnpm-store/

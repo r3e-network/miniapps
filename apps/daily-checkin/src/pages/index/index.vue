@@ -1,16 +1,7 @@
 <template>
   <AppLayout class="theme-daily-checkin" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="chainType === 'evm'" class="px-4 mb-4">
-      <NeoCard variant="danger">
-        <view class="flex flex-col items-center gap-2 py-1">
-          <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-          <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-            t("switchToNeo")
-          }}</NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <!-- Check-in Tab -->
     <view v-if="activeTab === 'checkin'" class="tab-content">
@@ -38,11 +29,9 @@
         :countdown-label="countdownLabel"
         :can-check-in="canCheckIn"
         :utc-time-display="utcTimeDisplay"
-       
       />
 
       <StreakDisplay :current-streak="currentStreak" :highest-streak="highestStreak" />
-
     </view>
 
     <!-- Stats Tab -->
@@ -52,16 +41,10 @@
         :unclaimed-rewards="unclaimedRewards"
         :total-claimed="totalClaimed"
         :is-claiming="isClaiming"
-       
         @claim="claimRewards"
         class="mb-4"
       />
-      <StatsTab
-        :global-stats="globalStats"
-        :user-stats="userStats"
-        :checkin-history="checkinHistory"
-       
-      />
+      <StatsTab :global-stats="globalStats" :user-stats="userStats" :checkin-history="checkinHistory" />
     </view>
 
     <!-- Docs Tab -->
@@ -80,18 +63,20 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
-import { formatGas, sleep } from "@shared/utils/format";
+import { formatGas } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoButton, NeoCard, NeoDoc, type StatItem } from "@shared/components";
+import { AppLayout, NeoButton, NeoCard, NeoDoc, type StatItem, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import CountdownHero from "./components/CountdownHero.vue";
 import StreakDisplay from "./components/StreakDisplay.vue";
 import RewardProgress from "./components/RewardProgress.vue";
 import UserRewards from "./components/UserRewards.vue";
 import StatsTab from "./components/StatsTab.vue";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();
 
@@ -99,8 +84,8 @@ const APP_ID = "miniapp-dailycheckin";
 const CHECK_IN_FEE = 0.001;
 const MS_PER_DAY = 24 * 60 * 60 * 1000; // milliseconds per day
 
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, isLoading } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
 const activeTab = ref("checkin");
@@ -215,7 +200,7 @@ const waitForEvent = async (txid: string, eventName: string): Promise<{ event: a
     const res = await listEvents({ app_id: APP_ID, event_name: eventName, limit: 25 });
     const match = res.events.find((evt) => evt.tx_hash === txid);
     if (match) return { event: match, pending: false };
-    await sleep(1500);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
   }
   // Return pending status instead of null - transaction may still succeed
   return { event: null, pending: true };
@@ -227,7 +212,7 @@ const loadUserStats = async () => {
     const contract = await ensureContractAddress();
     const res = await invokeRead({
       contractHash: contract,
-      operation: "getUserStats",
+      operation: "GetUserStats",
       args: [{ type: "Hash160", value: address.value }],
     });
     const data = parseInvokeResult(res);
@@ -239,8 +224,7 @@ const loadUserStats = async () => {
       totalClaimed.value = Number(data[4] ?? 0);
       totalUserCheckins.value = Number(data[5] ?? 0);
     }
-  } catch {
-  }
+  } catch {}
 };
 
 const loadGlobalStats = async () => {
@@ -248,7 +232,7 @@ const loadGlobalStats = async () => {
     const contract = await ensureContractAddress();
     const res = await invokeRead({
       contractHash: contract,
-      operation: "getPlatformStats",
+      operation: "GetPlatformStats",
       args: [],
     });
     const data = parseInvokeResult(res);
@@ -259,8 +243,7 @@ const loadGlobalStats = async () => {
         totalRewarded: Number(data[2] ?? 0),
       };
     }
-  } catch {
-  }
+  } catch {}
 };
 
 const loadHistory = async () => {
@@ -281,8 +264,7 @@ const loadHistory = async () => {
           reward: Number(values[2] ?? 0),
         };
       });
-  } catch {
-  }
+  } catch {}
 };
 
 const doCheckIn = async () => {
@@ -296,20 +278,21 @@ const doCheckIn = async () => {
     if (!address.value) throw new Error(t("connectWallet"));
 
     const contract = await ensureContractAddress();
-    const payment = await payGAS(String(CHECK_IN_FEE), "checkin");
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(String(CHECK_IN_FEE), "checkin");
     if (!receiptId) throw new Error(t("receiptMissing"));
 
-    const tx = await invokeContract({
-      scriptHash: contract,
-      operation: "checkIn",
-      args: [
+    const tx = await invoke(
+      "checkIn",
+      [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contract,
+    );
 
-    const txid = String((tx as any)?.txid || (tx as any)?.txHash || "");
+    const txid = String(
+      (tx as { txid?: string; txHash?: string })?.txid || (tx as { txid?: string; txHash?: string })?.txHash || "",
+    );
     const result = txid ? await waitForEvent(txid, "CheckedIn") : { event: null, pending: true };
 
     if (result.pending) {
@@ -336,13 +319,12 @@ const claimRewards = async () => {
     if (!address.value) throw new Error(t("connectWallet"));
 
     const contract = await ensureContractAddress();
-    const tx = await invokeContract({
-      scriptHash: contract,
-      operation: "claimRewards",
-      args: [{ type: "Hash160", value: address.value }],
-    });
+    const { invoke } = await processPayment("0", "claim");
+    const tx = await invoke("claimRewards", [{ type: "Hash160", value: address.value }], contract);
 
-    const txid = String((tx as any)?.txid || (tx as any)?.txHash || "");
+    const txid = String(
+      (tx as { txid?: string; txHash?: string })?.txid || (tx as { txid?: string; txHash?: string })?.txHash || "",
+    );
     const result = txid ? await waitForEvent(txid, "RewardsClaimed") : { event: null, pending: true };
 
     if (result.pending) {
@@ -381,7 +363,7 @@ onUnmounted(() => {
 @use "@shared/styles/tokens.scss" as *;
 @use "@shared/styles/variables.scss";
 @import "./daily-checkin-theme.scss";
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300;400;500;600;700&display=swap");
 
 :global(page) {
   background: var(--sunrise-bg);
@@ -398,19 +380,17 @@ onUnmounted(() => {
   min-height: 100vh;
   position: relative;
   font-family: var(--sunrise-font);
-  
+
   /* Sun Ray Pattern */
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: -20%; left: 50%;
-    width: 200%; height: 100%;
+    top: -20%;
+    left: 50%;
+    width: 200%;
+    height: 100%;
     transform: translateX(-50%);
-    background: repeating-conic-gradient(
-      from 0deg,
-      var(--sunrise-ray) 0deg 20deg,
-      transparent 20deg 40deg
-    );
+    background: repeating-conic-gradient(from 0deg, var(--sunrise-ray) 0deg 20deg, transparent 20deg 40deg);
     pointer-events: none;
     z-index: 0;
   }
@@ -426,13 +406,13 @@ onUnmounted(() => {
   color: var(--sunrise-text) !important;
   position: relative;
   z-index: 1;
-  
+
   &.variant-erobo-neo {
     background: var(--sunrise-card-neo-bg) !important;
     border-color: var(--sunrise-card-neo-border) !important; /* Yellow-200 */
     border-bottom-color: var(--sunrise-card-neo-border-strong) !important; /* Yellow-300 */
   }
-  
+
   &.variant-danger {
     background: var(--sunrise-danger-bg) !important;
     border-color: var(--sunrise-danger-border) !important;
@@ -455,13 +435,13 @@ onUnmounted(() => {
   letter-spacing: 0.05em;
   transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1) !important;
   font-family: var(--sunrise-font) !important;
-  
+
   &:active {
     transform: translateY(4px);
     box-shadow: none !important;
-    border-bottom-width: 0 !important; 
+    border-bottom-width: 0 !important;
   }
-  
+
   &.variant-primary {
     background: var(--sunrise-button-gradient) !important;
     border: none !important;
@@ -469,7 +449,7 @@ onUnmounted(() => {
     color: var(--sunrise-button-text) !important;
     text-shadow: var(--sunrise-button-text-shadow);
   }
-  
+
   &.variant-secondary {
     background: var(--sunrise-button-secondary-bg) !important;
     border: 2px solid var(--sunrise-blue) !important;

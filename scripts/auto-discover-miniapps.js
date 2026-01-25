@@ -17,7 +17,7 @@ const fs = require("fs");
 const path = require("path");
 
 const APPS_DIR = path.join(__dirname, "../apps");
-const OUTPUT_FILE = path.join(__dirname, "../../platform/host-app/data/miniapps.json");
+const OUTPUT_FILE = path.join(__dirname, "../public/data/miniapps.json");
 const CONTRACT_CONFIGS = {
   "neo-n3-testnet": path.join(__dirname, "../../deploy/config/testnet_contracts.json"),
   "neo-n3-mainnet": path.join(__dirname, "../../deploy/config/mainnet_contracts.json"),
@@ -165,8 +165,7 @@ function discoverMiniapp(appDir) {
   const name = toString(neoManifest?.name) || toString(manifest?.name) || fallbackName;
   const category = (toString(neoManifest?.category) || detectCategory(appDir)).toLowerCase();
 
-  const description =
-    toString(neoManifest?.description) || toString(manifest?.description) || `${name} - Neo MiniApp`;
+  const description = toString(neoManifest?.description) || toString(manifest?.description) || `${name} - Neo MiniApp`;
 
   const descriptionZh =
     toString(neoManifest?.description_zh) || toString(neoManifest?.descriptionZh) || `${name} - Neo 小程序`;
@@ -178,9 +177,7 @@ function discoverMiniapp(appDir) {
   );
   const entryUrl = toString(neoManifest?.entry_url) || `/miniapps/${appDir}/index.html`;
   const supportedChainsRaw = Array.isArray(neoManifest?.supported_chains) ? neoManifest.supported_chains : [];
-  const supportedChainsSet = new Set(
-    supportedChainsRaw.map((c) => toString(c).toLowerCase()).filter(Boolean),
-  );
+  const supportedChainsSet = new Set(supportedChainsRaw.map((c) => toString(c).toLowerCase()).filter(Boolean));
   const rawContracts =
     neoManifest?.contracts && typeof neoManifest.contracts === "object" && !Array.isArray(neoManifest.contracts)
       ? neoManifest.contracts

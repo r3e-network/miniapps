@@ -31,7 +31,6 @@ namespace NeoMiniAppPlatform.Contracts
         /// </summary>
         public static BigInteger StartGame(UInt160 player, BigInteger boxCount, BigInteger receiptId)
         {
-            ValidateNotGloballyPaused(APP_ID);
             // Authorization check
             UInt160 gateway = Gateway();
             bool fromGateway = gateway != null && gateway.IsValid && Runtime.CallingScriptHash == gateway;
@@ -95,7 +94,6 @@ namespace NeoMiniAppPlatform.Contracts
             BigInteger totalReward,
             ByteString scriptHash)
         {
-            ValidateNotGloballyPaused(APP_ID);
             // Authorization check
             UInt160 gateway = Gateway();
             bool fromGateway = gateway != null && gateway.IsValid && Runtime.CallingScriptHash == gateway;

@@ -26,7 +26,7 @@
   "card": {
     "display": {
       "type": "static",
-      "banner": "/static/banner.png",
+      "banner": "/banner.png",
       "live_status": {
         "enabled": true,
         "refresh_interval": 15,
@@ -40,7 +40,7 @@
       }
     },
     "info": {
-      "logo": "/static/logo.png",
+      "logo": "/logo.png",
       "owner": {
         "name": "R3E Network",
         "address": "NhWxcoEc9qtmnjsTLF1fVF6myJ5MZZhSMK",
@@ -49,8 +49,8 @@
     }
   },
   "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/explorer/static/logo.png",
-  "banner": "/miniapps/explorer/static/banner.png",
+  "icon": "/miniapps/explorer/logo.png",
+  "banner": "/miniapps/explorer/banner.png",
   "governance_assets_allowed": [
     "NEO"
   ],

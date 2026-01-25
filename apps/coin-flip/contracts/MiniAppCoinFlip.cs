@@ -9,6 +9,13 @@ using Neo.SmartContract.Framework.Services;
 
 namespace NeoMiniAppPlatform.Contracts
 {
+    public delegate void BetPlacedHandler(UInt160 player, BigInteger betId, BigInteger amount, bool choice);
+    public delegate void BetInitiatedHandler(UInt160 player, BigInteger betId, BigInteger amount, bool choice, string seed);
+    public delegate void BetResolvedHandler(UInt160 player, BigInteger betId, bool won, BigInteger payout);
+    public delegate void JackpotWonHandler(UInt160 player, BigInteger amount);
+    public delegate void AchievementUnlockedHandler(UInt160 player, BigInteger achievementId, string name);
+    public delegate void StreakUpdatedHandler(UInt160 player, BigInteger streakType, BigInteger streakCount);
+
     [DisplayName("MiniAppCoinFlip")]
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Email", "dev@r3e.network")]
@@ -81,22 +88,22 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region Events
         [DisplayName("BetPlaced")]
-        public static event Action<UInt160, BigInteger, BigInteger, bool> OnBetPlaced;
+        public static event BetPlacedHandler OnBetPlaced;
 
         [DisplayName("BetInitiated")]
-        public static event Action<UInt160, BigInteger, BigInteger, bool, string> OnBetInitiated;
+        public static event BetInitiatedHandler OnBetInitiated;
 
         [DisplayName("BetResolved")]
-        public static event Action<UInt160, BigInteger, bool, BigInteger> OnBetResolved;
+        public static event BetResolvedHandler OnBetResolved;
 
         [DisplayName("JackpotWon")]
-        public static event Action<UInt160, BigInteger> OnJackpotWon;
+        public static event JackpotWonHandler OnJackpotWon;
 
         [DisplayName("AchievementUnlocked")]
-        public static event Action<UInt160, BigInteger, string> OnAchievementUnlocked;
+        public static event AchievementUnlockedHandler OnAchievementUnlocked;
 
         [DisplayName("StreakUpdated")]
-        public static event Action<UInt160, BigInteger, BigInteger> OnStreakUpdated;
+        public static event StreakUpdatedHandler OnStreakUpdated;
         #endregion
 
         #region Lifecycle
@@ -158,6 +165,16 @@ namespace NeoMiniAppPlatform.Contracts
                 Helper.Concat(PREFIX_ACHIEVEMENTS, player),
                 (ByteString)achievementId.ToByteArray());
             return (BigInteger)Storage.Get(Storage.CurrentContext, key) == 1;
+        }
+
+        [Safe]
+        public static string GetScriptHash(string scriptName)
+        {
+            if (scriptName == "flip-coin")
+            {
+                return Runtime.CallingScriptHash.ToString();
+            }
+            return "";
         }
         #endregion
     }

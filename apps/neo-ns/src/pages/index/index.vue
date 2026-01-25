@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-neo-ns" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view v-if="activeTab !== 'docs'" class="app-container">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-              t("switchToNeo")
-            }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="statusMessage" :variant="statusType === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ statusMessage }}</text>
@@ -74,28 +65,34 @@
               <text class="manage-title font-bold text-xl">{{ t("manageTitle") }}: {{ managingDomain.name }}</text>
               <NeoButton size="sm" variant="secondary" @click="cancelManage">{{ t("cancelManage") }}</NeoButton>
             </view>
-            
+
             <view class="manage-details mb-4">
               <text class="detail-label">{{ t("currentOwner") }}:</text>
               <text class="detail-value mono">{{ shortenAddress(managingDomain.owner) }}</text>
               <text class="detail-label mt-2">{{ t("targetAddress") }}:</text>
-              <text class="detail-value mono">{{ managingDomain.target ? shortenAddress(managingDomain.target) : t("notSet") }}</text>
+              <text class="detail-value mono">{{
+                managingDomain.target ? shortenAddress(managingDomain.target) : t("notSet")
+              }}</text>
               <text class="detail-label mt-2">{{ t("currentExpiry") }}:</text>
               <text class="detail-expiry">{{ formatDate(managingDomain.expiry) }}</text>
             </view>
 
             <view class="manage-actions-group">
-               <view class="action-card mb-4">
-                 <text class="action-title mb-2 block font-bold">{{ t("setTarget") }}</text>
-                 <NeoInput v-model="targetAddressInput" :placeholder="t('targetAddress')" class="mb-2" />
-                 <NeoButton :loading="loading" :disabled="loading" block @click="handleSetTarget">{{ t("setTarget") }}</NeoButton>
-               </view>
+              <view class="action-card mb-4">
+                <text class="action-title mb-2 block font-bold">{{ t("setTarget") }}</text>
+                <NeoInput v-model="targetAddressInput" :placeholder="t('targetAddress')" class="mb-2" />
+                <NeoButton :loading="loading" :disabled="loading" block @click="handleSetTarget">{{
+                  t("setTarget")
+                }}</NeoButton>
+              </view>
 
-               <view class="action-card">
-                 <text class="action-title mb-2 block font-bold text-red-500">{{ t("transferDomain") }}</text>
-                 <NeoInput v-model="transferAddressInput" :placeholder="t('receiverAddress')" class="mb-2" />
-                 <NeoButton :loading="loading" :disabled="loading" block variant="danger" @click="handleTransfer">{{ t("transferDomain") }}</NeoButton>
-               </view>
+              <view class="action-card">
+                <text class="action-title mb-2 block font-bold text-red-500">{{ t("transferDomain") }}</text>
+                <NeoInput v-model="transferAddressInput" :placeholder="t('receiverAddress')" class="mb-2" />
+                <NeoButton :loading="loading" :disabled="loading" block variant="danger" @click="handleTransfer">{{
+                  t("transferDomain")
+                }}</NeoButton>
+              </view>
             </view>
           </NeoCard>
         </view>
@@ -138,12 +135,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc, AppIcon, NeoButton, NeoCard, NeoInput } from "@shared/components";
-
+import { AppLayout, NeoDoc, AppIcon, NeoButton, NeoCard, NeoInput, ChainWarning } from "@shared/components";
 
 const { t } = useI18n();
 
@@ -154,7 +151,7 @@ const docFeatures = computed(() => [
 ]);
 const APP_ID = "miniapp-neo-ns";
 const NNS_CONTRACT = "0x50ac1c37690cc2cfc594472833cf57505d5f46de";
-const { address, connect, chainType, invokeRead, invokeContract, switchToAppChain } = useWallet() as any;
+const { address, connect, chainType, invokeRead, invokeContract } = useWallet() as WalletSDK;
 
 interface SearchResult {
   available: boolean;
@@ -375,20 +372,20 @@ async function handleTransfer() {
   if (!managingDomain.value || !transferAddressInput.value) return;
   if (!requireNeoChain(chainType, t)) return;
   // Basic address validation could be added here
-  
+
   loading.value = true;
   try {
-     // Transfer is typically transfer(to, tokenId, data) on NEP-11
-     // Need token ID
-    const tokenId = domainToTokenId(managingDomain.value.name.replace('.neo', ''));
-    
+    // Transfer is typically transfer(to, tokenId, data) on NEP-11
+    // Need token ID
+    const tokenId = domainToTokenId(managingDomain.value.name.replace(".neo", ""));
+
     await invokeContract({
       scriptHash: NNS_CONTRACT,
       operation: "transfer",
       args: [
         { type: "Hash160", value: transferAddressInput.value },
         { type: "ByteArray", value: tokenId },
-        { type: "Any", value: null }, 
+        { type: "Any", value: null },
       ],
     });
 
@@ -401,7 +398,6 @@ async function handleTransfer() {
     loading.value = false;
   }
 }
-
 
 // Load user's domains from NNS contract
 async function loadMyDomains() {
@@ -455,8 +451,7 @@ async function loadMyDomains() {
             target: props.target ? String(props.target) : undefined,
           });
         }
-      } catch {
-      }
+      } catch {}
     }
 
     myDomains.value = domains.sort((a, b) => b.expiry - a.expiry);
@@ -501,8 +496,12 @@ watch(address, async (newAddr) => {
   gap: 24px;
   background-color: var(--dir-bg);
   /* Scanlines */
-  background-image: linear-gradient(var(--dir-scanline-top) 50%, var(--dir-scanline-bottom) 50%), linear-gradient(90deg, var(--dir-scanline-red), var(--dir-scanline-green), var(--dir-scanline-blue));
-  background-size: 100% 2px, 3px 100%;
+  background-image:
+    linear-gradient(var(--dir-scanline-top) 50%, var(--dir-scanline-bottom) 50%),
+    linear-gradient(90deg, var(--dir-scanline-red), var(--dir-scanline-green), var(--dir-scanline-blue));
+  background-size:
+    100% 2px,
+    3px 100%;
   min-height: 100vh;
 }
 
@@ -526,9 +525,14 @@ watch(address, async (newAddr) => {
     border-color: var(--dir-danger) !important;
     box-shadow: var(--dir-danger-glow) !important;
     color: var(--dir-danger-text) !important;
-    
-    .text-center { color: var(--dir-danger-text) !important; }
-    .text-xs { color: var(--dir-danger-text) !important; opacity: 0.8; }
+
+    .text-center {
+      color: var(--dir-danger-text) !important;
+    }
+    .text-xs {
+      color: var(--dir-danger-text) !important;
+      opacity: 0.8;
+    }
   }
 }
 
@@ -542,36 +546,37 @@ watch(address, async (newAddr) => {
   font-family: var(--dir-font) !important;
   text-transform: uppercase;
   font-weight: bold !important;
-  
+
   &.variant-primary {
     background: var(--dir-green) !important;
     color: var(--dir-bg) !important;
     border: 1px solid var(--dir-green) !important;
-    
+
     &:active {
       background: var(--dir-green-dim) !important;
       color: var(--dir-green) !important;
     }
   }
-  
+
   &.variant-secondary {
     background: var(--dir-card-bg) !important;
     border: 1px solid var(--dir-card-border) !important;
     color: var(--dir-card-text) !important;
-    
+
     &:hover {
       background: var(--dir-green-dim) !important;
     }
   }
 }
 
-:deep(input), :deep(.neo-input) {
+:deep(input),
+:deep(.neo-input) {
   background: var(--dir-card-bg) !important;
   border: 1px solid var(--dir-card-border) !important;
   color: var(--dir-card-text) !important;
   font-family: var(--dir-font) !important;
   border-radius: 0 !important;
-  
+
   &:focus {
     box-shadow: 0 0 15px var(--dir-card-border) !important;
   }
@@ -581,7 +586,7 @@ watch(address, async (newAddr) => {
   margin-top: 24px;
   background: var(--dir-card-bg);
   border: 2px solid var(--dir-card-border);
-  
+
   &.variant-success {
     border-color: var(--dir-green);
     box-shadow: 0 0 20px var(--dir-green);
@@ -645,7 +650,9 @@ watch(address, async (newAddr) => {
 }
 
 @keyframes blink {
-  50% { opacity: 0.5; }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .result-body {
@@ -674,7 +681,7 @@ watch(address, async (newAddr) => {
   font-size: 32px;
   font-family: var(--dir-font);
   color: var(--dir-card-text);
-  
+
   &.premium-price {
     color: var(--dir-warning);
     text-shadow: var(--dir-warning-glow);
@@ -717,7 +724,7 @@ watch(address, async (newAddr) => {
   background: var(--dir-card-bg);
   border: 1px solid var(--dir-card-border);
   margin-bottom: 16px;
-  
+
   &:hover {
     background: var(--dir-green-dim);
   }
@@ -790,7 +797,8 @@ watch(address, async (newAddr) => {
   display: block;
 }
 
-.detail-value, .detail-expiry {
+.detail-value,
+.detail-expiry {
   font-size: 16px;
   color: var(--dir-card-text);
   font-weight: 600;
@@ -818,7 +826,13 @@ watch(address, async (newAddr) => {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

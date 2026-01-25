@@ -2,21 +2,12 @@
   <AppLayout class="theme-compound-capsule" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold status-msg">{{ status.msg }}</text>
       </NeoCard>
-
-
 
       <!-- Lock Period Selector & Deposit -->
       <NeoCard class="deposit-card" variant="erobo-neo">
@@ -109,7 +100,7 @@
             <view class="capsule-actions">
               <view class="capsule-status">
                 <view class="status-badge" :class="capsule.status === 'Ready' ? 'ready' : 'locked'">
-                  <text class="status-badge-text">{{ capsule.status === 'Ready' ? t("ready") : t("locked") }}</text>
+                  <text class="status-badge-text">{{ capsule.status === "Ready" ? t("ready") : t("locked") }}</text>
                 </view>
               </view>
               <NeoButton
@@ -127,7 +118,7 @@
             <view class="progress-bar-glass">
               <view class="progress-fill-glass" :style="{ width: capsule.status === 'Ready' ? '100%' : '0%' }"></view>
             </view>
-            <text class="progress-text">{{ capsule.status === 'Ready' ? t("ready") : t("locked") }}</text>
+            <text class="progress-text">{{ capsule.status === "Ready" ? t("ready") : t("locked") }}</text>
           </view>
           <view class="capsule-footer">
             <view class="countdown">
@@ -178,12 +169,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { formatNumber } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard, Fireworks } from "@shared/components";
+import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard, Fireworks, ChainWarning } from "@shared/components";
 
 const isLoading = ref(false);
 
@@ -216,7 +208,7 @@ const docFeatures = computed(() => [
   { name: t("feature1Name"), desc: t("feature1Desc") },
   { name: t("feature2Name"), desc: t("feature2Desc") },
 ]);
-const { address, connect, chainType, getContractAddress, invokeContract, invokeRead, switchToAppChain } = useWallet() as any;
+const { address, connect, chainType, getContractAddress, invokeContract, invokeRead } = useWallet() as WalletSDK;
 const contractAddress = ref<string | null>(null);
 
 const ensureContractAddress = async () => {
@@ -283,11 +275,11 @@ const fetchData = async () => {
     const contract = await ensureContractAddress();
     const totalResult = await invokeRead({
       contractAddress: contract,
-      operation: "totalCapsules",
+      operation: "TotalCapsules",
       args: [],
     });
     const totalCapsules = Number(parseInvokeResult(totalResult) || 0);
-    const lockedResult = await invokeRead({ contractAddress: contract, operation: "totalLocked", args: [] });
+    const lockedResult = await invokeRead({ contractAddress: contract,       operation: "TotalLocked", args: [] });
     const platformLocked = Number(parseInvokeResult(lockedResult) || 0);
     const userCapsules: Capsule[] = [];
     let userLocked = 0;
@@ -298,7 +290,7 @@ const fetchData = async () => {
     for (let i = 1; i <= totalCapsules; i++) {
       const capsuleResult = await invokeRead({
         contractAddress: contract,
-        operation: "getCapsuleDetails",
+        operation: "GetCapsuleDetails",
         args: [{ type: "Integer", value: i.toString() }],
       });
       const parsed = parseInvokeResult(capsuleResult);
@@ -374,7 +366,7 @@ const createCapsule = async (): Promise<void> => {
 
     await invokeContract({
       scriptHash: contract,
-      operation: "createCapsule",
+      operation: "CreateCapsule",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: String(amt) },
@@ -407,10 +399,8 @@ const unlockCapsule = async (capsuleId: string) => {
     // Contract only needs capsuleId, owner is verified internally
     await invokeContract({
       scriptHash: contract,
-      operation: "unlockCapsule",
-      args: [
-        { type: "Integer", value: capsuleId },
-      ],
+      operation: "UnlockCapsule",
+      args: [{ type: "Integer", value: capsuleId }],
     });
 
     status.value = { msg: t("capsuleUnlocked"), type: "success" };
@@ -439,7 +429,7 @@ const unlockCapsule = async (capsuleId: string) => {
   flex-direction: column;
   gap: 24px;
   background-color: var(--capsule-bg);
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 20%, var(--capsule-accent-purple) 0%, transparent 20%),
     radial-gradient(circle at 90% 80%, var(--capsule-accent-gold) 0%, transparent 20%);
   min-height: 100vh;
@@ -456,37 +446,47 @@ const unlockCapsule = async (capsuleId: string) => {
   overflow: hidden;
 
   /* Decorative Corner Accents */
-  &::before, &::after {
-    content: '';
+  &::before,
+  &::after {
+    content: "";
     position: absolute;
-    width: 40px; height: 40px;
+    width: 40px;
+    height: 40px;
     border: 1px solid var(--capsule-gold);
     opacity: 0.3;
     pointer-events: none;
   }
-  &::before { top: -20px; left: -20px; border-radius: 50%; }
-  &::after { bottom: -20px; right: -20px; border-radius: 50%; }
+  &::before {
+    top: -20px;
+    left: -20px;
+    border-radius: 50%;
+  }
+  &::after {
+    bottom: -20px;
+    right: -20px;
+    border-radius: 50%;
+  }
 }
 
 :deep(.neo-button) {
   border-radius: 8px !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: "Cinzel", serif !important;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 700 !important;
-  
+
   &.variant-primary {
     background: var(--capsule-button-gradient) !important;
     color: var(--capsule-button-text) !important;
     border: 1px solid var(--capsule-button-border) !important;
     box-shadow: var(--capsule-button-shadow) !important;
-    
+
     &:active {
       transform: translateY(1px);
       box-shadow: var(--capsule-button-shadow-press) !important;
     }
   }
-  
+
   &.variant-secondary {
     background: transparent !important;
     border: 1px solid var(--capsule-text) !important;
@@ -495,108 +495,260 @@ const unlockCapsule = async (capsuleId: string) => {
   }
 }
 
-:deep(input), :deep(.neo-input input) {
-  font-family: 'Cinzel', serif !important;
+:deep(input),
+:deep(.neo-input input) {
+  font-family: "Cinzel", serif !important;
 }
 
 /* Custom Elements */
 
-.status-msg { 
-  font-size: 14px; color: var(--capsule-text); letter-spacing: 0.05em; font-family: 'Cinzel', serif;
+.status-msg {
+  font-size: 14px;
+  color: var(--capsule-text);
+  letter-spacing: 0.05em;
+  font-family: "Cinzel", serif;
 }
 
-.capsule-container-glass { display: flex; align-items: center; gap: 24px; padding: 12px; }
+.capsule-container-glass {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px;
+}
 .capsule-body-glass {
-  width: 70px; height: 120px; 
+  width: 70px;
+  height: 120px;
   background: var(--capsule-body-bg);
-  border: 2px solid var(--capsule-body-border); 
-  border-radius: 40px; 
-  position: relative; 
+  border: 2px solid var(--capsule-body-border);
+  border-radius: 40px;
+  position: relative;
   overflow: hidden;
   box-shadow: var(--capsule-body-shadow);
-  
+
   /* Flask Shape approximation */
   &::after {
-    content: ''; position: absolute; top: 10%; left: 10%; width: 20%; height: 10%; 
-    background: var(--capsule-body-highlight); border-radius: 50%; filter: blur(2px);
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 20%;
+    height: 10%;
+    background: var(--capsule-body-highlight);
+    border-radius: 50%;
+    filter: blur(2px);
   }
 }
 .capsule-fill-glass {
-  position: absolute; bottom: 0; left: 0; width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   background: var(--capsule-fill-gradient);
-  border-top: 1px solid var(--capsule-fill-border); transition: height 0.5s ease;
-  
+  border-top: 1px solid var(--capsule-fill-border);
+  transition: height 0.5s ease;
+
   /* Bubbles */
   background-image: radial-gradient(var(--capsule-fill-bubble) 1px, transparent 1px);
   background-size: 10px 10px;
 }
 .capsule-label {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
 }
-.capsule-apy { font-weight: 800; font-size: 16px; color: var(--capsule-apy-text); text-shadow: var(--capsule-apy-shadow); font-family: 'Cinzel', serif; }
-.capsule-apy-label { font-size: 9px; font-weight: 700; color: var(--capsule-apy-label); text-transform: uppercase; letter-spacing: 0.1em; }
+.capsule-apy {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--capsule-apy-text);
+  text-shadow: var(--capsule-apy-shadow);
+  font-family: "Cinzel", serif;
+}
+.capsule-apy-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--capsule-apy-label);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
 
-.vault-stats-grid { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.vault-stats-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 .stat-item-glass {
-  padding: 16px; background: var(--capsule-stat-bg); border: 1px solid var(--capsule-stat-border); border-radius: 12px;
+  padding: 16px;
+  background: var(--capsule-stat-bg);
+  border: 1px solid var(--capsule-stat-border);
+  border-radius: 12px;
 }
-.stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--capsule-stat-label); letter-spacing: 0.1em; }
-.stat-value { font-weight: 800; font-family: 'Cinzel', serif; font-size: 18px; color: var(--capsule-gold); }
-.stat-unit { font-size: 10px; color: var(--capsule-stat-unit); margin-left: 4px; }
+.stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--capsule-stat-label);
+  letter-spacing: 0.1em;
+}
+.stat-value {
+  font-weight: 800;
+  font-family: "Cinzel", serif;
+  font-size: 18px;
+  color: var(--capsule-gold);
+}
+.stat-unit {
+  font-size: 10px;
+  color: var(--capsule-stat-unit);
+  margin-left: 4px;
+}
 
-.period-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+.period-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
 .period-option-glass {
-  padding: 16px 8px; background: var(--capsule-period-bg); border: 1px solid var(--capsule-period-border);
-  border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s;
-  
-  &:hover { background: var(--capsule-period-hover); }
+  padding: 16px 8px;
+  background: var(--capsule-period-bg);
+  border: 1px solid var(--capsule-period-border);
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: var(--capsule-period-hover);
+  }
   &.active {
-    background: var(--capsule-period-active-bg); border-color: var(--capsule-gold);
+    background: var(--capsule-period-active-bg);
+    border-color: var(--capsule-gold);
     box-shadow: var(--capsule-period-active-shadow);
   }
 }
-.period-days { font-weight: 700; font-size: 14px; color: var(--capsule-text); display: block; font-family: 'Cinzel', serif; }
+.period-days {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--capsule-text);
+  display: block;
+  font-family: "Cinzel", serif;
+}
 
 .projected-returns-glass {
-  background: var(--capsule-returns-bg); padding: 16px; border-radius: 8px; margin-bottom: 20px; text-align: center;
-  border: 1px solid var(--capsule-returns-border); box-shadow: var(--capsule-returns-shadow);
+  background: var(--capsule-returns-bg);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid var(--capsule-returns-border);
+  box-shadow: var(--capsule-returns-shadow);
 }
-.returns-label { font-size: 11px; color: var(--capsule-returns-label); display: block; margin-bottom: 8px; letter-spacing: 0.1em; text-transform: uppercase; }
-.returns-value { font-size: 24px; font-weight: 800; color: var(--capsule-emerald); font-family: 'Cinzel', serif; text-shadow: var(--capsule-returns-value-shadow); }
+.returns-label {
+  font-size: 11px;
+  color: var(--capsule-returns-label);
+  display: block;
+  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.returns-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--capsule-emerald);
+  font-family: "Cinzel", serif;
+  text-shadow: var(--capsule-returns-value-shadow);
+}
 
 .capsule-item-glass {
-  padding: 20px; background: var(--capsule-item-bg); border: 1px solid var(--capsule-item-border);
-  margin-bottom: 20px; border-radius: 12px;
+  padding: 20px;
+  background: var(--capsule-item-bg);
+  border: 1px solid var(--capsule-item-border);
+  margin-bottom: 20px;
+  border-radius: 12px;
   position: relative;
-  
+
   /* Vintage Paper Texture Overlay (simulated) */
   &::before {
-    content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.05"/%3E%3C/svg%3E');
-    opacity: 0.1; pointer-events: none; border-radius: 12px;
+    opacity: 0.1;
+    pointer-events: none;
+    border-radius: 12px;
   }
 }
-.capsule-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-.capsule-icon { font-size: 28px; filter: grayscale(0.5); }
-.capsule-amount { font-size: 18px; font-weight: 700; color: var(--capsule-gold); display: block; font-family: 'Cinzel', serif; }
-.capsule-period { font-size: 12px; color: var(--capsule-returns-label); }
+.capsule-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.capsule-icon {
+  font-size: 28px;
+  filter: grayscale(0.5);
+}
+.capsule-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--capsule-gold);
+  display: block;
+  font-family: "Cinzel", serif;
+}
+.capsule-period {
+  font-size: 12px;
+  color: var(--capsule-returns-label);
+}
 .status-badge {
-  padding: 4px 12px; border-radius: 4px; border: 1px solid transparent; text-transform: uppercase; letter-spacing: 0.1em;
-  &.ready { background: var(--capsule-status-ready-bg); border-color: var(--capsule-emerald); }
-  &.locked { background: var(--capsule-status-locked-bg); border-color: var(--capsule-status-locked-border); }
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  &.ready {
+    background: var(--capsule-status-ready-bg);
+    border-color: var(--capsule-emerald);
+  }
+  &.locked {
+    background: var(--capsule-status-locked-bg);
+    border-color: var(--capsule-status-locked-border);
+  }
 }
 .status-badge-text {
-  font-size: 10px; font-weight: 700;
-  .ready & { color: var(--capsule-emerald); }
-  .locked & { color: var(--capsule-status-locked-text); }
+  font-size: 10px;
+  font-weight: 700;
+  .ready & {
+    color: var(--capsule-emerald);
+  }
+  .locked & {
+    color: var(--capsule-status-locked-text);
+  }
 }
 
 .capsule-footer {
-  display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; 
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px dashed var(--capsule-footer-border);
 }
-.countdown-value, .rewards-value { font-size: 14px; font-weight: 700; color: var(--capsule-text); font-family: 'Cinzel', serif; }
-.rewards-value { color: var(--capsule-emerald); text-shadow: var(--capsule-emerald-glow); }
+.countdown-value,
+.rewards-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--capsule-text);
+  font-family: "Cinzel", serif;
+}
+.rewards-value {
+  color: var(--capsule-emerald);
+  text-shadow: var(--capsule-emerald-glow);
+}
 
 .scrollable {
   overflow-y: auto;
@@ -604,12 +756,12 @@ const unlockCapsule = async (capsuleId: string) => {
 }
 
 .empty-text {
-   font-size: 14px;
-   color: var(--capsule-empty-text);
-   text-align: center;
-   display: block;
-   padding: 32px;
-   font-style: italic;
-   font-family: 'Cinzel', serif;
+  font-size: 14px;
+  color: var(--capsule-empty-text);
+  text-align: center;
+  display: block;
+  padding: 32px;
+  font-style: italic;
+  font-family: "Cinzel", serif;
 }
 </style>

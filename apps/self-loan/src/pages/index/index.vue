@@ -1,16 +1,7 @@
 <template>
   <AppLayout class="theme-self-loan" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="chainType === 'evm'" class="px-4 mb-4">
-      <NeoCard variant="danger">
-        <view class="flex flex-col items-center gap-2 py-1">
-          <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-          <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-            t("switchToNeo")
-          }}</NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content">
@@ -63,17 +54,17 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useWallet, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { formatNumber, parseGas, toFixedDecimals } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc, NeoCard, NeoButton } from "@shared/components";
+import { AppLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import PositionSummary from "./components/PositionSummary.vue";
 import CollateralStatus from "./components/CollateralStatus.vue";
 import BorrowForm from "./components/BorrowForm.vue";
 import StatsTab from "./components/StatsTab.vue";
-
 
 const { t } = useI18n();
 
@@ -106,7 +97,8 @@ const docFeatures = computed(() => [
 ]);
 const APP_ID = "miniapp-self-loan";
 
-const { address, connect, invokeContract, invokeRead, getBalance, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, getBalance, chainType, getContractAddress } =
+  useWallet() as WalletSDK;
 const { list: listEvents } = useEvents();
 const isLoading = ref(false);
 const neoBalance = ref(0);
@@ -232,7 +224,7 @@ const takeLoan = async (): Promise<void> => {
     const selfLoanAddress = await ensureContractAddress();
     await invokeContract({
       scriptHash: selfLoanAddress,
-      operation: "createLoan",
+      operation: "CreateLoan",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: collateral }, // NEO is indivisible
@@ -276,7 +268,7 @@ const loadLoanPosition = async (loanId: number) => {
   const contract = await ensureContractAddress();
   const res = await invokeRead({
     contractAddress: contract,
-    operation: "getLoanDetails",
+        operation: "GetLoanDetails",
     args: [{ type: "Integer", value: String(loanId) }],
   });
   const parsed = parseInvokeResult(res);
@@ -290,13 +282,19 @@ const loadLoanPosition = async (loanId: number) => {
   const active = Boolean(data.active);
   const ltvBps = toNumber(data.ltvBps);
   const ltvPercent = ltvBps ? ltvBps / 100 : selectedLtvPercent.value;
-  loan.value = { borrowed: active ? debt : 0, collateralLocked: active ? collateral : 0, active, id: loanId, ltvPercent };
+  loan.value = {
+    borrowed: active ? debt : 0,
+    collateralLocked: active ? collateral : 0,
+    active,
+    id: loanId,
+    ltvPercent,
+  };
 };
 
 const loadPlatformStats = async () => {
   try {
     const contract = await ensureContractAddress();
-    const statsRes = await invokeRead({ contractAddress: contract, operation: "getPlatformStats" });
+      const statsRes = await invokeRead({ contractAddress: contract, operation: "GetPlatformStats" });
     const parsed = parseInvokeResult(statsRes);
     if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
       const data = parsed as Record<string, unknown>;
@@ -309,15 +307,14 @@ const loadPlatformStats = async () => {
         platformFeeBps: feeBps > 0 ? feeBps : platformStats.value.platformFeeBps,
       };
     }
-  } catch {
-  }
+  } catch {}
 };
 
 const loadHistoryFromContract = async () => {
   const contract = await ensureContractAddress();
   const countRes = await invokeRead({
     contractAddress: contract,
-    operation: "getUserLoanCount",
+    operation: "GetUserLoanCount",
     args: [{ type: "Hash160", value: address.value }],
   });
   const count = Number(parseInvokeResult(countRes) || 0);
@@ -331,7 +328,7 @@ const loadHistoryFromContract = async () => {
   const limit = Math.min(count, 50);
   const idsRes = await invokeRead({
     contractAddress: contract,
-    operation: "getUserLoans",
+    operation: "GetUserLoans",
     args: [
       { type: "Hash160", value: address.value },
       { type: "Integer", value: "0" },
@@ -347,7 +344,7 @@ const loadHistoryFromContract = async () => {
     ids.map(async (loanId) => {
       const detailRes = await invokeRead({
         contractAddress: contract,
-        operation: "getLoanDetails",
+    operation: "GetLoanDetails",
         args: [{ type: "Integer", value: String(loanId) }],
       });
       const parsed = parseInvokeResult(detailRes);
@@ -385,22 +382,23 @@ const loadHistoryFromContract = async () => {
         amount: entry.netBorrow,
         timestampRaw: entry.createdTime * 1000,
       };
-      const repaidLabel = entry.repaid > 0
-        ? {
-          icon: "↩️",
-          label: t("repaidLabel"),
-          amount: entry.repaid,
-          timestampRaw: entry.createdTime * 1000,
-        }
-        : null;
+      const repaidLabel =
+        entry.repaid > 0
+          ? {
+              icon: "↩️",
+              label: t("repaidLabel"),
+              amount: entry.repaid,
+              timestampRaw: entry.createdTime * 1000,
+            }
+          : null;
       const closedLabel = entry.active
         ? null
         : {
-          icon: "✅",
-          label: t("closedLabel"),
-          amount: 0,
-          timestampRaw: entry.createdTime * 1000,
-        };
+            icon: "✅",
+            label: t("closedLabel"),
+            amount: 0,
+            timestampRaw: entry.createdTime * 1000,
+          };
       return [createdLabel, repaidLabel, closedLabel].filter(Boolean);
     })
     .sort((a, b) => Number(b?.timestampRaw || 0) - Number(a?.timestampRaw || 0));
@@ -525,8 +523,7 @@ const fetchData = async () => {
 
     await loadPlatformStats();
     await loadHistory();
-  } catch {
-  }
+  } catch {}
 };
 
 onMounted(() => {
@@ -541,7 +538,7 @@ onMounted(() => {
 
 :global(page) {
   background: var(--checkbook-bg);
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .tab-content {
@@ -565,9 +562,9 @@ onMounted(() => {
   border-radius: 2px !important;
   box-shadow: var(--checkbook-card-shadow) !important;
   color: var(--checkbook-text) !important;
-  font-family: 'Courier New', Courier, monospace !important;
+  font-family: "Courier New", Courier, monospace !important;
   margin-bottom: 20px !important;
-  
+
   &.variant-danger {
     border-color: var(--checkbook-danger-border) !important;
     background: var(--checkbook-danger-bg) !important;
@@ -576,31 +573,32 @@ onMounted(() => {
 
 :deep(.neo-button) {
   border-radius: 4px !important;
-  font-family: 'Courier New', Courier, monospace !important;
+  font-family: "Courier New", Courier, monospace !important;
   font-weight: 700 !important;
   text-transform: capitalize !important;
   letter-spacing: 0 !important;
-  
+
   &.variant-primary {
     background: var(--checkbook-accent) !important;
     color: var(--checkbook-button-text) !important;
     border: none !important;
-    
+
     &:active {
       opacity: 0.8;
     }
   }
 }
 
-:deep(input), :deep(.neo-input) {
-  font-family: 'Courier New', Courier, monospace !important;
+:deep(input),
+:deep(.neo-input) {
+  font-family: "Courier New", Courier, monospace !important;
   border: none !important;
   border-bottom: 1px solid var(--checkbook-line) !important;
   background: transparent !important;
   border-radius: 0 !important;
   padding-left: 0 !important;
   color: var(--checkbook-text) !important;
-  
+
   &:focus {
     border-bottom: 2px solid var(--checkbook-accent) !important;
     box-shadow: none !important;

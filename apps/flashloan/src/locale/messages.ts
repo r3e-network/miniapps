@@ -40,9 +40,26 @@ title: { en: "Flash Loan", zh: "闪电贷" },
   loanNotFound: { en: "Loan not found", zh: "未找到该贷款" },
   invalidLoanId: { en: "Invalid loan ID", zh: "无效贷款 ID" },
   error: { en: "Error", zh: "错误" },
+  connectWallet: { en: "Please connect your wallet", zh: "请连接钱包" },
   main: { en: "Status", zh: "状态" },
   stats: { en: "Activity", zh: "活动" },
   docs: { en: "Learn", zh: "学习" },
+  
+  // Create Loan
+  tabLookup: { en: "Lookup", zh: "查询" },
+  tabCreate: { en: "Request Loan", zh: "请求贷款" },
+  requestLoanTitle: { en: "Request Flash Loan", zh: "请求闪电贷" },
+  loanAmount: { en: "Loan Amount", zh: "贷款金额" },
+  amountPlaceholder: { en: "Enter amount in GAS", zh: "输入 GAS 金额" },
+  callbackContractPlaceholder: { en: "Enter callback contract address", zh: "输入回调合约地址" },
+  callbackMethodPlaceholder: { en: "Enter callback method name", zh: "输入回调方法名" },
+  flashloanInfo: { 
+    en: "Flash loans must be repaid within a single transaction. The callback contract will receive the loan and must repay the principal + fee atomically.",
+    zh: "闪电贷必须在单笔交易中偿还。回调合约将收到贷款，并必须原子化偿还本金+手续费。" 
+  },
+  requestLoan: { en: "Request Loan", zh: "请求贷款" },
+  requesting: { en: "Requesting...", zh: "请求中..." },
+  loanRequested: { en: "Flash loan requested successfully!", zh: "闪电贷请求成功！" },
   docSubtitle: { en: "Understanding Flash Loans", zh: "理解闪电贷" },
   docDescription: {
     en: "Flash loans enable uncollateralized borrowing with instant repayment in a single transaction. This miniapp is instructional only; real flash loans must be executed programmatically.",

@@ -1,0 +1,45 @@
+{
+  "app_id": "miniapp-trustanchor",
+  "name": "TrustAnchor",
+  "name_zh": "TrustAnchor",
+  "description": "Non-profit voting delegation for Neo N3 governance. Delegate your voting power to candidates with proven reputation and active contribution. Zero fees, 100% of GAS rewards to stakers.",
+  "description_zh": "Neo N3 治理的非营利性投票委托系统。将您的投票权委托给有良好声誉和积极贡献的候选人。零手续费，100% 的 GAS 奖励归质押者所有。",
+  "version": "1.0.0",
+  "entry_url": "/miniapps/trustanchor/index.html",
+  "category": "governance",
+  "status": "active",
+  "tags": ["staking", "voting", "delegation", "governance", "reputation"],
+  "permissions": {
+    "payments": false,
+    "governance": true,
+    "rng": false
+  },
+  "assets_allowed": ["NEO", "GAS"],
+  "governance_assets_allowed": ["NEO"],
+  "supported_chains": [
+    "neo-n3-testnet",
+    "neo-n3-mainnet"
+  ],
+  "contracts": {
+    "neo-n3-testnet": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "nef_file_hash": "12c5a264202931ca61696ec17a26f98c2b9b7ea2333e512b612bd99d40e5937f"
+    },
+    "neo-n3-mainnet": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "nef_file_hash": "12c5a264202931ca61696ec17a26f98c2b9b7ea2333e512b612bd99d40e5937f"
+    }
+  },
+  "card": {
+    "display": {
+      "type": "static",
+      "banner": "/banner.png"
+    },
+    "info": {
+      "logo": "/logo.png"
+    }
+  },
+  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
+  "icon": "/miniapps/trustanchor/logo.png",
+  "banner": "/miniapps/trustanchor/banner.png"
+}

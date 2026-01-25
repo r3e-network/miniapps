@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-forever-album" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
     <view class="album-container">
-      <view v-if="chainType === 'evm'" class="chain-warning">
-        <NeoCard variant="danger">
-          <view class="chain-warning__content">
-            <text class="chain-warning__title">{{ t("wrongChain") }}</text>
-            <text class="chain-warning__desc">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <view class="header">
         <text class="title">{{ t("title") }}</text>
@@ -112,13 +103,7 @@
     <NeoModal :visible="showDecrypt" :title="t('decryptTitle')" closeable @close="closeDecrypt">
       <view class="decrypt-body">
         <NeoInput v-model="decryptPassword" type="password" :placeholder="t('enterPassword')" />
-        <NeoButton
-          variant="secondary"
-          size="sm"
-          class="decrypt-btn"
-          :loading="decrypting"
-          @click="decryptPhoto"
-        >
+        <NeoButton variant="secondary" size="sm" class="decrypt-btn" :loading="decrypting" @click="decryptPhoto">
           {{ decrypting ? t("decrypting") : t("decryptConfirm") }}
         </NeoButton>
 
@@ -137,14 +122,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
-import { AppLayout, NeoCard, NeoButton, NeoModal, NeoInput, WalletPrompt } from "@shared/components";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
+import { AppLayout, NeoCard, NeoButton, NeoModal, NeoInput, WalletPrompt, ChainWarning } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
 
 const { t } = useI18n();
-const { address, connect, invokeRead, invokeContract, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeRead, invokeContract, chainType, getContractAddress } = useWallet() as WalletSDK;
 
 const MAX_PHOTOS_PER_UPLOAD = 5;
 const MAX_PHOTO_BYTES = 45000;
@@ -280,9 +266,7 @@ const loadPhotos = async () => {
         return parsePhotoInfo(parsed);
       }),
     );
-    photos.value = entries
-      .filter((entry): entry is PhotoItem => !!entry)
-      .sort((a, b) => b.createdAt - a.createdAt);
+    photos.value = entries.filter((entry): entry is PhotoItem => !!entry).sort((a, b) => b.createdAt - a.createdAt);
   } catch (e: any) {
     uni.showToast({ title: e?.message || t("loadFailed"), icon: "none" });
   } finally {

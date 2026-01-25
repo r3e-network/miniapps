@@ -1,6 +1,8 @@
 <template>
-  <AppLayout  :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    
+  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
+
     <!-- News Tab -->
     <view v-if="activeTab === 'news'" class="nnt-container theme-neo-news">
       <!-- Loading State -->
@@ -53,16 +55,14 @@
         :features="docFeatures"
       />
     </view>
-
   </AppLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { AppLayout, NeoCard, NeoDoc } from "@shared/components";
+import { AppLayout, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
 import type { NavTab } from "@shared/components/NavBar.vue";
-
 
 const { t } = useI18n();
 
@@ -125,7 +125,7 @@ async function fetchArticles() {
 }
 
 function formatDate(dateStr: string): string {
-  if(!dateStr) return "";
+  if (!dateStr) return "";
   const date = new Date(dateStr);
   return date.toLocaleDateString("en-US", {
     month: "short",
@@ -137,9 +137,9 @@ function formatDate(dateStr: string): string {
 function openArticle(article: Article) {
   const url = article.url;
   if (!url) return;
-  
+
   uni.navigateTo({
-    url: `/pages/detail/index?url=${encodeURIComponent(url)}`
+    url: `/pages/detail/index?url=${encodeURIComponent(url)}`,
   });
 }
 </script>
@@ -157,7 +157,7 @@ function openArticle(article: Article) {
 
 .nnt-container {
   padding: 16px;
-  padding-bottom: 80px; 
+  padding-bottom: 80px;
   background-color: var(--news-bg);
   min-height: 100vh;
   /* Dot Matrix Pattern */
@@ -173,7 +173,7 @@ function openArticle(article: Article) {
   border-radius: 2px !important;
   box-shadow: var(--news-shadow) !important;
   color: var(--news-ink) !important;
-  
+
   &.variant-danger {
     border-color: var(--news-accent) !important;
     background: var(--news-accent-soft) !important;
@@ -184,19 +184,19 @@ function openArticle(article: Article) {
   border-radius: 2px !important;
   text-transform: uppercase;
   font-weight: 800 !important;
-  font-family: 'Oswald', sans-serif !important;
+  font-family: "Oswald", sans-serif !important;
   letter-spacing: 0.05em;
-  
+
   &.variant-primary {
     background: var(--news-accent) !important;
     color: var(--news-date-text) !important;
     border: none !important;
-    
+
     &:active {
       background: var(--news-accent-strong) !important;
     }
   }
-  
+
   &.variant-secondary {
     background: var(--news-paper) !important;
     border: 1px solid var(--news-border) !important;
@@ -221,7 +221,9 @@ function openArticle(article: Article) {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .nnt-loading-text {
@@ -248,7 +250,9 @@ function openArticle(article: Article) {
 }
 
 .nnt-article-card {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   &:active {
     transform: translateY(2px);
     box-shadow: var(--news-shadow-press) !important;
@@ -279,7 +283,7 @@ function openArticle(article: Article) {
   color: var(--news-ink);
   margin-bottom: 8px;
   line-height: 1.25;
-  font-family: 'Merriweather', serif;
+  font-family: "Merriweather", serif;
 }
 
 .nnt-meta {
@@ -306,7 +310,7 @@ function openArticle(article: Article) {
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-family: 'Georgia', serif;
+  font-family: "Georgia", serif;
 }
 
 .read-more {
@@ -330,5 +334,8 @@ function openArticle(article: Article) {
   padding: 16px;
   padding-bottom: 80px;
 }
-.scrollable { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.scrollable {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 </style>

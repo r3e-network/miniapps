@@ -5,7 +5,7 @@
         <view class="action-btn share" @click="$emit('share')">🔗</view>
         <view class="action-btn close" @click="$emit('close')">×</view>
       </view>
-      
+
       <!-- Tombstone Header -->
       <view class="tombstone-header">
         <view class="photo-frame">
@@ -16,13 +16,13 @@
         <text class="lifespan">{{ memorial.birthYear }} - {{ memorial.deathYear }}</text>
         <text class="relationship">{{ memorial.relationship || t("foreverRemember") }}</text>
       </view>
-      
+
       <!-- Biography -->
       <view class="section">
         <text class="section-title">📜 {{ t("biography") }}</text>
         <text class="biography">{{ memorial.biography || t("noBio") }}</text>
       </view>
-      
+
       <!-- Offerings Received -->
       <view class="section">
         <text class="section-title">🙏 {{ t("offeringsReceived") }}</text>
@@ -59,7 +59,7 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Pay Tribute -->
       <view class="section">
         <text class="section-title">🕯️ {{ t("payTribute") }}</text>
@@ -76,15 +76,11 @@
             <text class="cost">{{ offering.cost }} GAS</text>
           </view>
         </view>
-        
+
         <view class="message-input">
-          <input
-            v-model="message"
-            :placeholder="t('messagePlaceholder')"
-            class="input"
-          />
+          <input v-model="message" :placeholder="t('messagePlaceholder')" class="input" />
         </view>
-        
+
         <view class="tribute-btn" @click="payTribute" :class="{ disabled: isPaying }">
           <text>{{ isPaying ? t("paying") : t("payTributeBtn") }}</text>
         </view>
@@ -95,8 +91,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useWallet, usePayments } from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
 import { useI18n } from "@/composables/useI18n";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 import { requireNeoChain } from "@shared/utils/chain";
 
 interface Memorial {
@@ -139,7 +136,7 @@ const emit = defineEmits<{
 
 const APP_ID = "miniapp-memorial-shrine";
 const { address, connect, invokeContract, getContractAddress, chainType } = useWallet() as any;
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { processPayment } = usePaymentFlow(APP_ID);
 
 const selectedOffering = ref(1);
 const message = ref("");
@@ -149,32 +146,29 @@ const payTribute = async () => {
   if (isPaying.value) return;
   if (!requireNeoChain(chainType, t)) return;
   isPaying.value = true;
-  
+
   try {
-    const offering = props.offerings.find(o => o.type === selectedOffering.value);
+    const offering = props.offerings.find((o) => o.type === selectedOffering.value);
     if (!offering) throw new Error(t("invalidOffering"));
-    
+
     if (!address.value) await connect();
     if (!address.value) throw new Error(t("connectWallet"));
-    
+
     const contract = await getContractAddress();
-    
-    const payment = await payGAS(String(offering.cost), `tribute:${props.memorial.id}:${offering.type}`);
-    const receiptId = payment?.receipt_id;
-    if (!receiptId) throw new Error(t("paymentFailed"));
-    
-    await invokeContract({
-      contractAddress: contract,
-      operation: "payTribute",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Integer", value: String(props.memorial.id) },
-        { type: "Integer", value: String(selectedOffering.value) },
-        { type: "String", value: message.value },
-        { type: "Integer", value: String(receiptId) },
-      ],
-    });
-    
+
+    const { receiptId, invoke: invokeWithReceipt } = await processPayment(
+      String(offering.cost),
+      `tribute:${props.memorial.id}:${offering.type}`,
+    );
+
+    await invokeWithReceipt(contract, "PayTribute", [
+      { type: "Hash160", value: address.value },
+      { type: "Integer", value: String(props.memorial.id) },
+      { type: "Integer", value: String(selectedOffering.value) },
+      { type: "String", value: message.value },
+      { type: "Integer", value: String(receiptId) },
+    ]);
+
     uni.showToast({ title: t("tributeSuccess"), icon: "success" });
     message.value = "";
     emit("tribute-paid", props.memorial.id, selectedOffering.value);
@@ -187,7 +181,6 @@ const payTribute = async () => {
 </script>
 
 <style lang="scss" scoped>
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -233,11 +226,11 @@ const payTribute = async () => {
   color: var(--shrine-text);
   cursor: pointer;
   transition: background 0.2s;
-  
+
   &:hover {
     background: var(--shrine-panel-soft);
   }
-  
+
   &.close {
     font-size: 22px;
   }
@@ -261,12 +254,12 @@ const payTribute = async () => {
   justify-content: center;
   background: radial-gradient(circle, var(--shrine-gold-soft), transparent);
   overflow: hidden;
-  
+
   image {
     width: 100%;
     height: 100%;
   }
-  
+
   .default-icon {
     font-size: 32px;
   }
@@ -325,10 +318,17 @@ const payTribute = async () => {
   background: var(--shrine-panel-soft);
   border-radius: 16px;
   font-size: 12px;
-  
-  .icon { font-size: 14px; }
-  .label { color: var(--shrine-text); }
-  .count { color: var(--shrine-gold-light); font-weight: 600; }
+
+  .icon {
+    font-size: 14px;
+  }
+  .label {
+    color: var(--shrine-text);
+  }
+  .count {
+    color: var(--shrine-gold-light);
+    font-weight: 600;
+  }
 }
 
 .offerings-grid {
@@ -346,20 +346,32 @@ const payTribute = async () => {
   background: var(--shrine-panel-soft);
   border: 1px solid var(--shrine-panel-border);
   border-radius: 8px;
-  
+
   &.selected {
     border-color: var(--shrine-gold);
     background: var(--shrine-gold-soft);
   }
-  
-  .icon { display: block; font-size: 24px; margin-bottom: 4px; }
-  .name { display: block; font-size: 12px; color: var(--shrine-text); }
-  .cost { display: block; font-size: 10px; color: var(--shrine-muted); }
+
+  .icon {
+    display: block;
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+  .name {
+    display: block;
+    font-size: 12px;
+    color: var(--shrine-text);
+  }
+  .cost {
+    display: block;
+    font-size: 10px;
+    color: var(--shrine-muted);
+  }
 }
 
 .message-input {
   margin-bottom: 12px;
-  
+
   .input {
     width: 100%;
     padding: 10px 12px;
@@ -376,13 +388,13 @@ const payTribute = async () => {
   background: var(--shrine-button-bg);
   border-radius: 10px;
   text-align: center;
-  
+
   text {
     font-size: 15px;
     font-weight: 600;
     color: var(--shrine-button-text);
   }
-  
+
   &.disabled {
     opacity: 0.6;
   }

@@ -2,15 +2,8 @@
   <AppLayout class="theme-heritage-trust" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <view v-if="status" class="mb-4">
         <NeoCard
@@ -33,7 +26,7 @@
         v-model:interval-days="newTrust.intervalDays"
         v-model:notes="newTrust.notes"
         :is-loading="isLoading"
-        :t="t as any"
+        :t="t"
         @create="create"
       />
     </view>
@@ -46,15 +39,15 @@
           <text class="count-badge">{{ myCreatedTrusts.length }}</text>
         </view>
         <view v-if="myCreatedTrusts.length === 0" class="empty-state">
-           <NeoCard variant="erobo" class="p-8 text-center opacity-60">
-             <text class="block mb-2">📜</text>
-             <text class="text-xs">{{ t("noTrusts") }}</text>
-           </NeoCard>
+          <NeoCard variant="erobo" class="p-8 text-center opacity-60">
+            <text class="block mb-2">📜</text>
+            <text class="text-xs">{{ t("noTrusts") }}</text>
+          </NeoCard>
         </view>
         <view v-for="trust in myCreatedTrusts" :key="trust.id">
           <TrustCard
             :trust="trust"
-            :t="t as any"
+            :t="t"
             @heartbeat="heartbeatTrust"
             @claimYield="claimYield"
             @execute="executeTrust"
@@ -67,15 +60,15 @@
           <text class="count-badge">{{ myBeneficiaryTrusts.length }}</text>
         </view>
         <view v-if="myBeneficiaryTrusts.length === 0" class="empty-state">
-           <NeoCard variant="erobo" class="p-8 text-center opacity-60">
-             <text class="block mb-2">🎁</text>
-             <text class="text-xs">{{ t("noTrusts") }}</text>
-           </NeoCard>
+          <NeoCard variant="erobo" class="p-8 text-center opacity-60">
+            <text class="block mb-2">🎁</text>
+            <text class="text-xs">{{ t("noTrusts") }}</text>
+          </NeoCard>
         </view>
         <view v-for="trust in myBeneficiaryTrusts" :key="trust.id">
           <TrustCard
             :trust="trust"
-            :t="t as any"
+            :t="t"
             @heartbeat="heartbeatTrust"
             @claimYield="claimYield"
             @execute="executeTrust"
@@ -87,7 +80,7 @@
 
     <!-- Stats Tab -->
     <view v-if="activeTab === 'stats'" class="tab-content scrollable">
-      <StatsCard :stats="stats" :t="t as any" />
+      <StatsCard :stats="stats" :t="t" />
     </view>
 
     <!-- Docs Tab -->
@@ -105,9 +98,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive, watch } from "vue";
-import { useWallet, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc, NeoCard } from "@shared/components";
+import { AppLayout, NeoDoc, NeoCard, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { parseGas, toFixed8, toFixedDecimals, sleep } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
@@ -116,7 +110,6 @@ import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStack
 import TrustCard, { type Trust } from "./components/TrustCard.vue";
 import CreateTrustForm from "./components/CreateTrustForm.vue";
 import StatsCard from "./components/StatsCard.vue";
-
 
 const { t } = useI18n();
 
@@ -136,7 +129,8 @@ const docFeatures = computed(() => [
   { name: t("feature3Name"), desc: t("feature3Desc") },
 ]);
 const APP_ID = "miniapp-heritage-trust";
-const { address, connect, invokeContract, invokeRead, getBalance, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, getBalance, chainType, getContractAddress } =
+  useWallet() as WalletSDK;
 const { list: listEvents } = useEvents();
 const isLoading = ref(false);
 const contractAddress = ref<string | null>(null);
@@ -192,28 +186,25 @@ const isLoadingData = ref(false);
 const myCreatedTrusts = computed(() => trusts.value.filter((t) => t.role === "owner"));
 const myBeneficiaryTrusts = computed(() => trusts.value.filter((t) => t.role === "beneficiary"));
 
-watch(
-  [() => newTrust.releaseMode, () => newTrust.neoValue, () => newTrust.gasValue],
-  ([mode, neoValue, gasValue]) => {
-    const neoAmount = Number.parseFloat(neoValue);
-    const gasAmount = Number.parseFloat(gasValue);
+watch([() => newTrust.releaseMode, () => newTrust.neoValue, () => newTrust.gasValue], ([mode, neoValue, gasValue]) => {
+  const neoAmount = Number.parseFloat(neoValue);
+  const gasAmount = Number.parseFloat(gasValue);
 
-    if (mode !== "fixed") {
-      newTrust.gasValue = "0";
-      newTrust.monthlyGas = "0";
-    } else if (!Number.isFinite(gasAmount) || gasAmount <= 0) {
-      newTrust.monthlyGas = "0";
-    }
-
-    if (mode === "rewardsOnly") {
-      newTrust.monthlyNeo = "0";
-    } else if (!Number.isFinite(neoAmount) || neoAmount <= 0) {
-      newTrust.monthlyNeo = "0";
-    } else if (newTrust.monthlyNeo === "0") {
-      newTrust.monthlyNeo = "1";
-    }
+  if (mode !== "fixed") {
+    newTrust.gasValue = "0";
+    newTrust.monthlyGas = "0";
+  } else if (!Number.isFinite(gasAmount) || gasAmount <= 0) {
+    newTrust.monthlyGas = "0";
   }
-);
+
+  if (mode === "rewardsOnly") {
+    newTrust.monthlyNeo = "0";
+  } else if (!Number.isFinite(neoAmount) || neoAmount <= 0) {
+    newTrust.monthlyNeo = "0";
+  } else if (newTrust.monthlyNeo === "0") {
+    newTrust.monthlyNeo = "1";
+  }
+});
 
 const stats = computed(() => ({
   totalTrusts: trusts.value.length,
@@ -325,7 +316,9 @@ const fetchData = async () => {
         releaseMode,
         totalNeoReleased: Number(trustData.totalNeoReleased || 0),
         totalGasReleased: parseGas(trustData.totalGasReleased || 0),
-        createdTime: trustData.createdTime ? new Date(Number(trustData.createdTime) * 1000).toISOString().split("T")[0] : t("unknown"),
+        createdTime: trustData.createdTime
+          ? new Date(Number(trustData.createdTime) * 1000).toISOString().split("T")[0]
+          : t("unknown"),
         icon: isOwner ? "📜" : "🎁",
         status,
         daysRemaining,
@@ -432,7 +425,9 @@ const create = async () => {
       ],
     });
 
-    const txid = String((tx as any)?.txid || (tx as any)?.txHash || "");
+    const txid = String(
+      (tx as { txid?: string; txHash?: string })?.txid || (tx as { txid?: string; txHash?: string })?.txHash || "",
+    );
     if (txid) {
       const event = await waitForEvent(txid, "TrustCreated");
       if (event?.state) {
@@ -455,7 +450,7 @@ const create = async () => {
     newTrust.releaseMode = "neoRewards";
     newTrust.intervalDays = "30";
     newTrust.notes = "";
-    
+
     await fetchData();
   } catch (e: any) {
     status.value = { msg: e.message || t("error"), type: "error" };
@@ -611,10 +606,12 @@ onMounted(() => {
 }
 
 /* Custom transitions */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

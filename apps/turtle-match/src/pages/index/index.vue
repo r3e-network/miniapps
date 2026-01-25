@@ -4,19 +4,21 @@
     <view class="pond-caustics" />
     <view class="neural-rain" />
     <AppLayout class="pond-theme" :title="t('title')" :show-back="true">
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
       <view class="game-container">
         <!-- Header Stats -->
         <view class="game-header">
           <view class="header-glass">
             <view class="game-header__stat">
               <view class="stat-icon">📅</view>
-              <text class="game-header__label">{{ t('totalSessions') }}</text>
+              <text class="game-header__label">{{ t("totalSessions") }}</text>
               <text class="game-header__value">{{ stats?.totalSessions || 0 }}</text>
             </view>
             <view class="divider" />
             <view class="game-header__stat">
               <view class="stat-icon">💎</view>
-              <text class="game-header__label">{{ t('totalRewards') }}</text>
+              <text class="game-header__label">{{ t("totalRewards") }}</text>
               <text class="game-header__value gold-text">{{ formatGas(stats?.totalPaid || 0n, 3) }} GAS</text>
             </view>
           </view>
@@ -33,9 +35,11 @@
               <view class="hero-turtle">
                 <TurtleSprite :color="TurtleColor.Green" matched />
               </view>
-              <text class="connect-prompt__title">{{ t('title') }}</text>
-              <text class="connect-prompt__desc">{{ t('description') }}</text>
-              <NeoButton variant="primary" size="lg" @click="connect" :loading="loading">{{ t('connectWallet') }}</NeoButton>
+              <text class="connect-prompt__title">{{ t("title") }}</text>
+              <text class="connect-prompt__desc">{{ t("description") }}</text>
+              <NeoButton variant="primary" size="lg" @click="connect" :loading="loading">{{
+                t("connectWallet")
+              }}</NeoButton>
             </view>
           </GradientCard>
         </view>
@@ -45,9 +49,9 @@
           <view class="purchase-grid">
             <GradientCard variant="erobo-neo" class="purchase-card">
               <view class="purchase-section__content">
-                <text class="purchase-section__title">{{ t('buyBlindbox') }}</text>
-                <text class="purchase-section__price">0.1 GAS / {{ t('box') }}</text>
-                
+                <text class="purchase-section__title">{{ t("buyBlindbox") }}</text>
+                <text class="purchase-section__price">0.1 GAS / {{ t("box") }}</text>
+
                 <view class="purchase-section__counter">
                   <view class="counter-btn" @click="decreaseCount">
                     <text class="btn-icon">-</text>
@@ -59,11 +63,13 @@
                 </view>
 
                 <view class="purchase-section__total">
-                  <text class="total-label">{{ t('totalPrice') }}</text>
+                  <text class="total-label">{{ t("totalPrice") }}</text>
                   <text class="total-value">{{ totalCost }} GAS</text>
                 </view>
 
-                <NeoButton variant="primary" size="lg" block @click="startGame" :loading="loading">{{ t('startGame') }}</NeoButton>
+                <NeoButton variant="primary" size="lg" block @click="startGame" :loading="loading">{{
+                  t("startGame")
+                }}</NeoButton>
               </view>
             </GradientCard>
           </view>
@@ -73,15 +79,15 @@
         <view v-else class="game-area">
           <view class="game-stats-row">
             <view class="stat-bubble">
-              <text class="bubble-label">{{ t('remainingBoxes') }}</text>
+              <text class="bubble-label">{{ t("remainingBoxes") }}</text>
               <text class="bubble-value">{{ remainingBoxes }}</text>
             </view>
             <view class="stat-bubble">
-              <text class="bubble-label">{{ t('matches') }}</text>
+              <text class="bubble-label">{{ t("matches") }}</text>
               <text class="bubble-value">{{ currentMatches }}</text>
             </view>
             <view class="stat-bubble highlight">
-              <text class="bubble-label">{{ t('won') }}</text>
+              <text class="bubble-label">{{ t("won") }}</text>
               <text class="bubble-value gold">{{ formatGas(currentReward || 0n, 3) }} GAS</text>
             </view>
           </view>
@@ -96,9 +102,9 @@
                 <view class="p-wave" />
                 <view class="p-wave" />
               </view>
-              <text class="auto-play-text">{{ t('autoOpening') }}</text>
+              <text class="auto-play-text">{{ t("autoOpening") }}</text>
             </view>
-            
+
             <NeoButton
               v-else-if="gamePhase === 'settling'"
               variant="primary"
@@ -106,24 +112,18 @@
               block
               @click="finishGame"
               :loading="loading"
-            >{{ t('settleRewards') }}</NeoButton>
-            
-            <NeoButton
-              v-else-if="gamePhase === 'complete'"
-              variant="secondary"
-              block
-              @click="newGame"
-            >{{ t('newGame') }}</NeoButton>
+              >{{ t("settleRewards") }}</NeoButton
+            >
+
+            <NeoButton v-else-if="gamePhase === 'complete'" variant="secondary" block @click="newGame">{{
+              t("newGame")
+            }}</NeoButton>
           </view>
         </view>
       </view>
 
       <!-- Animations -->
-      <BlindboxOpening
-        :visible="showBlindbox"
-        :turtleColor="currentTurtleColor"
-        @complete="onBlindboxComplete"
-      />
+      <BlindboxOpening :visible="showBlindbox" :turtleColor="currentTurtleColor" @complete="onBlindboxComplete" />
       <MatchCelebration
         :visible="showCelebration"
         :turtleColor="matchColor"
@@ -137,17 +137,14 @@
         :boxCount="Number(session?.boxCount || 0)"
         @close="onResultClose"
       />
-      <GameSplash
-        :visible="showSplash"
-        @complete="showSplash = false"
-      />
+      <GameSplash :visible="showSplash" @complete="showSplash = false" />
     </AppLayout>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { AppLayout, GradientCard, NeoButton } from "@shared/components";
+import { AppLayout, GradientCard, NeoButton, ChainWarning } from "@shared/components";
 import { formatGas } from "@shared/utils/format";
 import { useTurtleMatch, TurtleColor } from "@/shared/composables/useTurtleMatch";
 import { useI18n } from "@/composables/useI18n";
@@ -161,9 +158,19 @@ import TurtleSprite from "./components/TurtleSprite.vue";
 // Composables
 const { t } = useI18n();
 const {
-  loading, error, session, localGame, stats,
-  isConnected, hasActiveSession, gridTurtles,
-  connect, startGame: contractStartGame, settleGame, processGameStep, resetLocalGame,
+  loading,
+  error,
+  session,
+  localGame,
+  stats,
+  isConnected,
+  hasActiveSession,
+  gridTurtles,
+  connect,
+  startGame: contractStartGame,
+  settleGame,
+  processGameStep,
+  resetLocalGame,
 } = useTurtleMatch();
 
 // Animation state
@@ -179,7 +186,7 @@ const currentTurtleColor = ref<TurtleColor>(TurtleColor.Green);
 const matchColor = ref<TurtleColor>(TurtleColor.Green);
 const matchReward = ref<bigint>(BigInt(0));
 const isAutoPlaying = ref(false);
-const gamePhase = ref<'idle' | 'playing' | 'settling' | 'complete'>('idle');
+const gamePhase = ref<"idle" | "playing" | "settling" | "complete">("idle");
 
 // Computed
 const totalCost = computed(() => {
@@ -212,12 +219,12 @@ function decreaseCount() {
 }
 
 async function startGame() {
-  gamePhase.value = 'playing';
+  gamePhase.value = "playing";
   const sessionId = await contractStartGame(boxCount.value);
   if (sessionId) {
     setTimeout(() => autoPlay(), 500);
   } else {
-    gamePhase.value = 'idle';
+    gamePhase.value = "idle";
   }
 }
 
@@ -234,29 +241,29 @@ async function autoPlay() {
       currentTurtleColor.value = result.turtle.color;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     showBlindbox.value = false;
 
     if (result.matches > 0) {
       matchColor.value = currentTurtleColor.value;
       matchReward.value = result.reward;
       showCelebration.value = true;
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      await new Promise((resolve) => setTimeout(resolve, 2500));
       showCelebration.value = false;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
   }
 
   isAutoPlaying.value = false;
-  gamePhase.value = 'settling';
+  gamePhase.value = "settling";
   showResult.value = true;
 }
 
 async function finishGame() {
   const success = await settleGame();
   if (success) {
-    gamePhase.value = 'complete';
+    gamePhase.value = "complete";
   }
 }
 
@@ -266,7 +273,7 @@ function onResultClose() {
 
 function newGame() {
   resetLocalGame();
-  gamePhase.value = 'idle';
+  gamePhase.value = "idle";
 }
 
 function onBlindboxComplete() {
@@ -338,7 +345,7 @@ function onCelebrationComplete() {
   font-size: 20px;
   font-weight: 800;
   color: var(--turtle-primary);
-  
+
   &.gold-text {
     color: var(--turtle-accent);
   }
@@ -353,8 +360,13 @@ function onCelebrationComplete() {
 }
 
 @keyframes hero-float {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  50% { transform: translateY(-20px) rotate(5deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
 }
 
 .connect-prompt__content {
@@ -430,11 +442,17 @@ function onCelebrationComplete() {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px var(--turtle-primary-glow-strong);
-  
-  &:active { transform: scale(0.95); }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
-.btn-icon { color: var(--turtle-text); font-size: 24px; font-weight: 800; }
+.btn-icon {
+  color: var(--turtle-text);
+  font-size: 24px;
+  font-weight: 800;
+}
 
 .counter-value {
   font-size: 40px;
@@ -476,7 +494,7 @@ function onCelebrationComplete() {
   padding: 12px;
   border-radius: 16px;
   text-align: center;
-  
+
   &.highlight {
     background: var(--turtle-accent-soft);
     border-color: var(--turtle-accent-border);
@@ -495,7 +513,9 @@ function onCelebrationComplete() {
   font-size: 16px;
   font-weight: 800;
   color: var(--turtle-text);
-  &.gold { color: var(--turtle-accent); }
+  &.gold {
+    color: var(--turtle-accent);
+  }
 }
 
 .grid-container {
@@ -534,12 +554,20 @@ function onCelebrationComplete() {
   border: 1px solid var(--turtle-primary-border);
   border-radius: 40px;
   animation: pulse-wave 2s infinite;
-  &:last-child { animation-delay: 1s; }
+  &:last-child {
+    animation-delay: 1s;
+  }
 }
 
 @keyframes pulse-wave {
-  0% { transform: scale(1); opacity: 0.5; }
-  100% { transform: scale(1.5, 2); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.5, 2);
+    opacity: 0;
+  }
 }
 
 .error-banner {
@@ -551,5 +579,9 @@ function onCelebrationComplete() {
   text-align: center;
 }
 
-.error-text { color: var(--turtle-danger-text); font-size: 12px; font-weight: 600; }
+.error-text {
+  color: var(--turtle-danger-text);
+  font-size: 12px;
+  font-weight: 600;
+}
 </style>

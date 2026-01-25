@@ -1,5 +1,7 @@
 <template>
   <AppLayout class="theme-neo-treasury" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
     <view v-if="activeTab !== 'docs'" class="app-container">
       <!-- Status Message -->
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
@@ -75,7 +77,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { AppLayout, NeoCard, NeoButton, NeoDoc, AppIcon } from "@shared/components";
+import { AppLayout, NeoCard, NeoButton, NeoDoc, AppIcon, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { useI18n } from "@/composables/useI18n";
 import { fetchTreasuryData, type TreasuryData, type CategoryBalance } from "@/utils/treasury";
@@ -84,7 +86,6 @@ import TotalSummaryCard from "./components/TotalSummaryCard.vue";
 import PriceGrid from "./components/PriceGrid.vue";
 import FoundersList from "./components/FoundersList.vue";
 import FounderDetail from "./components/FounderDetail.vue";
-
 
 const { t } = useI18n();
 
@@ -134,8 +135,7 @@ async function loadData() {
       data.value = JSON.parse(cached);
       // If we have cache, we can stop "hard" loading but keep "soft" loading in background
     }
-  } catch {
-  }
+  } catch {}
 
   try {
     const freshData = await fetchTreasuryData();
@@ -175,10 +175,12 @@ onMounted(() => {
   gap: 16px;
   background-color: var(--treasury-bg);
   /* Gold Flakes */
-  background-image: 
+  background-image:
     radial-gradient(ellipse at 50% 50%, var(--treasury-flare) 0%, transparent 60%),
     radial-gradient(circle, var(--treasury-flake) 1px, transparent 1px);
-  background-size: auto, 8px 8px;
+  background-size:
+    auto,
+    8px 8px;
 }
 
 .tab-content {
@@ -197,12 +199,15 @@ onMounted(() => {
   border-radius: 12px !important;
   box-shadow: var(--treasury-card-shadow) !important;
   color: var(--treasury-text) !important;
-  
+
   /* Reflective Edge */
   &::after {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; height: 1px;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
     background: var(--treasury-card-edge);
     opacity: 0.5;
   }
@@ -210,17 +215,17 @@ onMounted(() => {
 
 :deep(.neo-button) {
   border-radius: 6px !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: "Cinzel", serif !important;
   text-transform: uppercase;
   font-weight: 700 !important;
-  
+
   &.variant-primary {
     background: var(--treasury-button-bg) !important;
     color: var(--treasury-button-text) !important;
     border: 1px solid var(--treasury-button-border) !important;
     box-shadow: var(--treasury-button-shadow) !important;
     text-shadow: var(--treasury-button-text-shadow);
-    
+
     &:active {
       background: var(--treasury-button-active-bg) !important;
     }
@@ -256,7 +261,7 @@ onMounted(() => {
 }
 
 .soft-loading-text {
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -271,8 +276,13 @@ onMounted(() => {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .error-container {
@@ -286,7 +296,7 @@ onMounted(() => {
 
 .loading-label,
 .error-label {
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
@@ -295,20 +305,45 @@ onMounted(() => {
 }
 
 .status-text {
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--treasury-text);
 }
 
-.animate-spin { animation: spin 1s linear infinite; }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-.fade-in { animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-.text-danger { color: var(--treasury-danger); }
+.text-danger {
+  color: var(--treasury-danger);
+}
 
-.scrollable { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.scrollable {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 </style>

@@ -2,15 +2,8 @@
   <AppLayout class="theme-guardian-policy" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
@@ -25,21 +18,21 @@
         v-model:startPrice="startPrice"
         :premium="premiumDisplay"
         :is-fetching-price="isFetchingPrice"
-        :t="t as any"
+        :t="t"
         @fetchPrice="fetchPrice"
         @create="createPolicy"
       />
 
       <!-- Policy Rules -->
-      <PoliciesList :policies="policies" :t="t as any" @claim="requestClaim" />
+      <PoliciesList :policies="policies" :t="t" @claim="requestClaim" />
     </view>
 
     <!-- Stats Tab -->
     <view v-if="activeTab === 'stats'" class="tab-content scrollable">
-      <StatsCard :stats="stats" :t="t as any" />
+      <StatsCard :stats="stats" :t="t" />
 
       <!-- Action History -->
-      <ActionHistory :action-history="actionHistory" :t="t as any" />
+      <ActionHistory :action-history="actionHistory" :t="t" />
     </view>
 
     <!-- Docs Tab -->
@@ -57,12 +50,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet, useEvents, useDatafeed, usePayments} from "@neo/uniapp-sdk";
+import { useWallet, useEvents, useDatafeed } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoDoc, NeoButton } from "@shared/components";
+import { AppLayout, NeoCard, NeoDoc, NeoButton, ChainWarning } from "@shared/components";
 import { requireNeoChain } from "@shared/utils/chain";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 import PoliciesList, { type Policy, type Level } from "./components/PoliciesList.vue";
 import CreatePolicyForm from "./components/CreatePolicyForm.vue";
@@ -70,11 +65,11 @@ import StatsCard from "./components/StatsCard.vue";
 import ActionHistory, { type ActionHistoryItem } from "./components/ActionHistory.vue";
 
 const { t } = useI18n();
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
 const { list: listEvents } = useEvents();
 const { getPrice, isLoading: isFetchingPrice } = useDatafeed();
 const APP_ID = "miniapp-guardianpolicy";
-const { payGAS } = usePayments(APP_ID);
+const { processPayment } = usePaymentFlow(APP_ID);
 const contractAddress = ref<string | null>(null);
 
 const navTabs = computed<NavTab[]>(() => [
@@ -227,7 +222,7 @@ const fetchPolicies = async () => {
   for (const id of uniqueIds) {
     const res = await invokeRead({
       contractAddress: contract,
-      operation: "getPolicyDetails",
+      operation: "GetPolicyDetails",
       args: [{ type: "Integer", value: id }],
     });
     const parsed = parseInvokeResult(res);
@@ -318,8 +313,7 @@ const refreshData = async () => {
     if (!address.value) return;
     await fetchPolicies();
     await fetchHistory();
-  } catch {
-  }
+  } catch {}
 };
 
 const fetchPrice = async () => {
@@ -371,13 +365,11 @@ const createPolicy = async () => {
     if (!address.value) throw new Error(t("error"));
 
     const contract = await ensureContractAddress();
-    const payment = await payGAS(premiumDisplay.value || "0", `policy:${assetType.value.trim()}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(premiumDisplay.value || "0", `policy:${assetType.value.trim()}`);
     if (!receiptId) throw new Error(t("receiptMissing"));
-    await invokeContract({
-      scriptHash: contract,
-      operation: "createPolicy",
-      args: [
+    await invoke(
+      "createPolicy",
+      [
         { type: "Hash160", value: address.value },
         { type: "String", value: assetType.value.trim() },
         { type: "Integer", value: String(selectedPolicyType) },
@@ -386,7 +378,8 @@ const createPolicy = async () => {
         { type: "Integer", value: String(thresholdPercent) },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contract,
+    );
     status.value = { msg: t("policyCreated"), type: "success" };
     assetType.value = "";
     coverage.value = "";
@@ -409,7 +402,7 @@ const requestClaim = async (policyId: string) => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "requestClaim",
+      operation: "RequestClaim",
       args: [{ type: "Integer", value: policyId }],
     });
     status.value = { msg: t("claimRequested"), type: "success" };
@@ -459,42 +452,46 @@ watch(address, () => {
   color: var(--ops-text) !important;
   backdrop-filter: blur(10px);
   position: relative;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: -2px; left: -1px;
-    width: 10px; height: 10px;
+    top: -2px;
+    left: -1px;
+    width: 10px;
+    height: 10px;
     border-top: 2px solid var(--ops-cyan);
     border-left: 2px solid var(--ops-cyan);
   }
   &::after {
-    content: '';
+    content: "";
     position: absolute;
-    bottom: -2px; right: -1px;
-    width: 10px; height: 10px;
+    bottom: -2px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
     border-bottom: 2px solid var(--ops-cyan);
     border-right: 2px solid var(--ops-cyan);
   }
 }
 
 :deep(.neo-button) {
-  font-family: 'Share Tech Mono', monospace !important;
+  font-family: "Share Tech Mono", monospace !important;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   border-radius: 2px !important;
-  
+
   &.variant-primary {
     background: var(--ops-button-primary-bg) !important;
     border: 1px solid var(--ops-blue) !important;
     color: var(--ops-blue) !important;
     box-shadow: var(--ops-button-primary-shadow) !important;
-    
+
     &:active {
       background: var(--ops-button-primary-bg-pressed) !important;
     }
   }
-  
+
   &.variant-secondary {
     background: transparent !important;
     border: 1px solid var(--ops-button-secondary-border) !important;
@@ -503,8 +500,9 @@ watch(address, () => {
 }
 
 /* Technical Font Overrides */
-:deep(text), :deep(view) {
-  font-family: 'Share Tech Mono', monospace; /* Fallback if not available */
+:deep(text),
+:deep(view) {
+  font-family: "Share Tech Mono", monospace; /* Fallback if not available */
 }
 
 /* Status Indicator */

@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-event-ticket-pass" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
     <view v-if="activeTab === 'create'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
@@ -23,7 +14,12 @@
           <NeoInput v-model="form.venue" :label="t('eventVenue')" :placeholder="t('eventVenuePlaceholder')" />
           <NeoInput v-model="form.start" :label="t('eventStart')" :placeholder="t('eventStartPlaceholder')" />
           <NeoInput v-model="form.end" :label="t('eventEnd')" :placeholder="t('eventEndPlaceholder')" />
-          <NeoInput v-model="form.maxSupply" type="number" :label="t('maxSupply')" :placeholder="t('maxSupplyPlaceholder')" />
+          <NeoInput
+            v-model="form.maxSupply"
+            type="number"
+            :label="t('maxSupply')"
+            :placeholder="t('maxSupplyPlaceholder')"
+          />
           <NeoInput v-model="form.notes" type="textarea" :label="t('notes')" :placeholder="t('notesPlaceholder')" />
 
           <NeoButton
@@ -99,12 +95,7 @@
               >
                 {{ event.minted >= event.maxSupply ? t("soldOut") : t("issueTicket") }}
               </NeoButton>
-              <NeoButton
-                size="sm"
-                variant="secondary"
-                :loading="togglingId === event.id"
-                @click="toggleEvent(event)"
-              >
+              <NeoButton size="sm" variant="secondary" :loading="togglingId === event.id" @click="toggleEvent(event)">
                 {{ event.active ? t("deactivate") : t("activate") }}
               </NeoButton>
             </view>
@@ -180,7 +171,11 @@
 
       <NeoCard variant="erobo-neo">
         <view class="form-group">
-          <NeoInput v-model="checkin.tokenId" :label="t('checkinTokenId')" :placeholder="t('checkinTokenIdPlaceholder')" />
+          <NeoInput
+            v-model="checkin.tokenId"
+            :label="t('checkinTokenId')"
+            :placeholder="t('checkinTokenIdPlaceholder')"
+          />
           <view class="checkin-actions">
             <NeoButton size="sm" variant="secondary" :loading="isLookingUp" @click="lookupTicket">
               {{ isLookingUp ? t("lookingUp") : t("lookup") }}
@@ -220,7 +215,7 @@
         :features="[
           { name: t('feature1Name'), desc: t('feature1Desc') },
           { name: t('feature2Name'), desc: t('feature2Desc') },
-          { name: t('feature3Name'), desc: t('feature3Desc') }
+          { name: t('feature3Name'), desc: t('feature3Desc') },
         ]"
       />
     </view>
@@ -228,7 +223,11 @@
 
   <NeoModal :visible="issueModalOpen" :title="t('issueTicketTitle')" :closeable="true" @close="closeIssueModal">
     <view class="form-group">
-      <NeoInput v-model="issueForm.recipient" :label="t('issueRecipient')" :placeholder="t('issueRecipientPlaceholder')" />
+      <NeoInput
+        v-model="issueForm.recipient"
+        :label="t('issueRecipient')"
+        :placeholder="t('issueRecipientPlaceholder')"
+      />
       <NeoInput v-model="issueForm.seat" :label="t('issueSeat')" :placeholder="t('issueSeatPlaceholder')" />
       <NeoInput v-model="issueForm.memo" :label="t('issueMemo')" :placeholder="t('issueMemoPlaceholder')" />
     </view>
@@ -248,14 +247,15 @@
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import QRCode from "qrcode";
 import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton, NeoInput, NeoModal, NeoDoc } from "@shared/components";
+import { AppLayout, NeoCard, NeoButton, NeoInput, NeoModal, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, parseInvokeResult } from "@shared/utils/neo";
 
 const { t } = useI18n();
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
 
 const activeTab = ref("create");
 const navTabs = computed<NavTab[]>(() => [
@@ -420,7 +420,7 @@ const fetchEventIds = async (creatorAddress: string) => {
   const contract = await ensureContractAddress();
   const result = await invokeRead({
     contractAddress: contract,
-    operation: "getCreatorEvents",
+    operation: "GetCreatorEvents",
     args: [
       { type: "Hash160", value: creatorAddress },
       { type: "Integer", value: "0" },
@@ -440,7 +440,7 @@ const fetchEventDetails = async (eventId: string) => {
   const contract = await ensureContractAddress();
   const details = await invokeRead({
     contractAddress: contract,
-    operation: "getEventDetails",
+    operation: "GetEventDetails",
     args: [{ type: "Integer", value: eventId }],
   });
   const parsed = parseInvokeResult(details) as any;
@@ -470,7 +470,7 @@ const refreshTickets = async () => {
     const contract = await ensureContractAddress();
     const tokenResult = await invokeRead({
       contractAddress: contract,
-      operation: "tokensOf",
+      operation: "TokensOf",
       args: [{ type: "Hash160", value: address.value }],
     });
     const parsed = parseInvokeResult(tokenResult);
@@ -480,25 +480,28 @@ const refreshTickets = async () => {
     }
     const tokenIds = parsed.map((value) => String(value || "")).filter(Boolean);
 
-    const details = await Promise.all(tokenIds.map(async (tokenId) => {
-      const detailResult = await invokeRead({
-        contractAddress: contract,
-        operation: "getTicketDetails",
-        args: [{ type: "ByteArray", value: encodeTokenId(tokenId) }],
-      });
-      const detailParsed = parseInvokeResult(detailResult) as any;
-      return parseTicket(detailParsed, tokenId);
-    }));
+    const details = await Promise.all(
+      tokenIds.map(async (tokenId) => {
+        const detailResult = await invokeRead({
+          contractAddress: contract,
+          operation: "GetTicketDetails",
+          args: [{ type: "ByteArray", value: encodeTokenId(tokenId) }],
+        });
+        const detailParsed = parseInvokeResult(detailResult) as any;
+        return parseTicket(detailParsed, tokenId);
+      }),
+    );
 
     tickets.value = details.filter(Boolean) as TicketItem[];
-    await Promise.all(tickets.value.map(async (ticket) => {
-      if (!ticketQrs[ticket.tokenId]) {
-        try {
-          ticketQrs[ticket.tokenId] = await QRCode.toDataURL(ticket.tokenId, { margin: 1 });
-        } catch {
+    await Promise.all(
+      tickets.value.map(async (ticket) => {
+        if (!ticketQrs[ticket.tokenId]) {
+          try {
+            ticketQrs[ticket.tokenId] = await QRCode.toDataURL(ticket.tokenId, { margin: 1 });
+          } catch {}
         }
-      }
-    }));
+      }),
+    );
   } catch (e: any) {
     setStatus(e.message || t("contractMissing"), "error");
   } finally {
@@ -549,7 +552,7 @@ const createEvent = async () => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "createEvent",
+      operation: "CreateEvent",
       args: [
         { type: "Hash160", value: address.value },
         { type: "String", value: name },
@@ -606,7 +609,7 @@ const issueTicket = async () => {
 
     await invokeContract({
       scriptHash: contract,
-      operation: "issueTicket",
+      operation: "IssueTicket",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Hash160", value: recipient },
@@ -637,7 +640,7 @@ const toggleEvent = async (event: EventItem) => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "setEventActive",
+      operation: "SetEventActive",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: event.id },
@@ -665,7 +668,7 @@ const lookupTicket = async () => {
     const contract = await ensureContractAddress();
     const detailResult = await invokeRead({
       contractAddress: contract,
-      operation: "getTicketDetails",
+      operation: "GetTicketDetails",
       args: [{ type: "ByteArray", value: encodeTokenId(tokenId) }],
     });
     const detailParsed = parseInvokeResult(detailResult) as any;
@@ -698,7 +701,7 @@ const checkInTicket = async () => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "checkIn",
+      operation: "CheckIn",
       args: [
         { type: "Hash160", value: address.value },
         { type: "ByteArray", value: encodeTokenId(tokenId) },
@@ -719,7 +722,7 @@ const copyTokenId = (tokenId: string) => {
     data: tokenId,
     success: () => {
       setStatus(t("copied"), "success");
-    }
+    },
   });
 };
 

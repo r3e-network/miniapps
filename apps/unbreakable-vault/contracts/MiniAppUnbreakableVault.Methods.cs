@@ -176,7 +176,7 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region Automation
 
-        public static new void OnPeriodicExecution(BigInteger taskId, ByteString payload)
+        public static void OnPeriodicExecution(BigInteger taskId, ByteString payload)
         {
             UInt160 anchor = AutomationAnchor();
             ExecutionEngine.Assert(anchor != UInt160.Zero && Runtime.CallingScriptHash == anchor, "unauthorized");

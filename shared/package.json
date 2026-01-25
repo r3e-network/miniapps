@@ -1,5 +1,5 @@
 {
-  "name": "@neo/ui",
+  "name": "@neo/shared",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -13,6 +13,8 @@
     "./styles/*": "./styles/*"
   },
   "peerDependencies": {
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "@neo/uniapp-sdk": "*",
+    "@neo/types": "*"
   }
 }

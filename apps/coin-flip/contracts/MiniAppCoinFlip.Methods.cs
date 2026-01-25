@@ -17,28 +17,30 @@ namespace NeoMiniAppPlatform.Contracts
         public static BigInteger PlaceBet(UInt160 player, BigInteger amount, bool choice, BigInteger receiptId)
         {
             ValidateNotGloballyPaused(APP_ID);
+
             UInt160 gateway = Gateway();
             bool fromGateway = gateway != null && gateway.IsValid && Runtime.CallingScriptHash == gateway;
             ExecutionEngine.Assert(fromGateway || Runtime.CheckWitness(player), "unauthorized");
+
             ExecutionEngine.Assert(amount >= MIN_BET, "bet too small");
             ExecutionEngine.Assert(amount <= MAX_BET, "bet too large");
-            ValidateAddress(player);
-            ExecutionEngine.Assert(amount > 0, "amount must be > 0");
-            // NOTE: Bet limits validation temporarily disabled due to compiler issue.
+            ValidateBetLimits(player, amount);
             ValidatePaymentReceipt(APP_ID, player, amount, receiptId);
+
             BigInteger betId = GetBetCount() + 1;
             Storage.Put(Storage.CurrentContext, PREFIX_BET_ID, betId);
-            BetData bet = new BetData();
-            bet.Player = player;
-            bet.Amount = amount;
-            bet.Choice = choice;
-            bet.Timestamp = Runtime.Time;
-            bet.Resolved = false;
-            bet.Won = false;
-            bet.Payout = 0;
-            bet.StreakBonus = 0;
-            bet.Seed = ByteString.Empty;
-            bet.HybridMode = false;
+
+            BetData bet = new BetData
+            {
+                Player = player,
+                Amount = amount,
+                Choice = choice,
+                Timestamp = Runtime.Time,
+                Resolved = false,
+                Won = false,
+                Payout = 0,
+                StreakBonus = 0
+            };
             StoreBet(betId, bet);
 
             AddUserBet(player, betId);

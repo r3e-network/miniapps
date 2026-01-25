@@ -1,0 +1,44 @@
+{
+  "development": {
+    "bucket": "miniapps-dev",
+    "allowedOrigins": ["http://localhost:3000", "http://localhost:5173"],
+    "cacheRules": {
+      "staticAssets": {
+        "ttl": 0,
+        "edgeTTL": 0
+      },
+      "htmlFiles": {
+        "ttl": 0,
+        "edgeTTL": 0
+      }
+    }
+  },
+  "staging": {
+    "bucket": "miniapps-staging",
+    "allowedOrigins": ["https://staging-miniapps.yourdomain.com"],
+    "cacheRules": {
+      "staticAssets": {
+        "ttl": 1800,
+        "edgeTTL": 3600
+      },
+      "htmlFiles": {
+        "ttl": 300,
+        "edgeTTL": 600
+      }
+    }
+  },
+  "production": {
+    "bucket": "miniapps-prod",
+    "allowedOrigins": ["https://miniapps.yourdomain.com"],
+    "cacheRules": {
+      "staticAssets": {
+        "ttl": 86400,
+        "edgeTTL": 604800
+      },
+      "htmlFiles": {
+        "ttl": 3600,
+        "edgeTTL": 86400
+      }
+    }
+  }
+}

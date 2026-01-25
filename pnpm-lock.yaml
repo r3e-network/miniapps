@@ -4,6 +4,48 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@cityofzion/neon-core':
+      specifier: ^5.8.0
+      version: 5.8.0
+    '@dcloudio/uni-app':
+      specifier: 3.0.0-4060620250520001
+      version: 3.0.0-4060620250520001
+    '@dcloudio/uni-cli-shared':
+      specifier: 3.0.0-4060620250520001
+      version: 3.0.0-4060620250520001
+    '@dcloudio/uni-components':
+      specifier: 3.0.0-4060620250520001
+      version: 3.0.0-4060620250520001
+    '@dcloudio/uni-h5':
+      specifier: 3.0.0-4060620250520001
+      version: 3.0.0-4060620250520001
+    '@dcloudio/vite-plugin-uni':
+      specifier: 3.0.0-4060620250520001
+      version: 3.0.0-4060620250520001
+    '@noble/curves':
+      specifier: ^2.0.1
+      version: 2.0.1
+    '@noble/hashes':
+      specifier: ^2.0.1
+      version: 2.0.1
+    sass:
+      specifier: ^1.77.0
+      version: 1.97.1
+    terser:
+      specifier: ^5.46.0
+      version: 5.46.0
+    typescript:
+      specifier: ^5.4.5
+      version: 5.9.3
+    vite:
+      specifier: ^5.2.8
+      version: 5.4.21
+    vue:
+      specifier: ^3.5.0
+      version: 3.5.26
+
 overrides:
   '@intlify/core-base': '>=9.14.0'
   '@intlify/message-resolver': '>=9.1.11'
@@ -62,7 +104,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -76,9 +118,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -99,7 +138,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -113,9 +152,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -124,6 +160,49 @@ importers:
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/candidate-vote:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      '@noble/hashes':
+        specifier: 'catalog:'
+        version: 2.0.1
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+      vite-plugin-node-polyfills:
+        specifier: ^0.25.0
+        version: 0.25.0(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))
+
+  apps/charity-vault:
     dependencies:
       '@dcloudio/uni-app':
         specifier: 3.0.0-4060620250520001
@@ -136,10 +215,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
-      '@noble/hashes':
-        specifier: ^2.0.1
-        version: 2.0.1
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -153,18 +229,12 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
       vite:
         specifier: ^5.2.8
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
-      vite-plugin-node-polyfills:
-        specifier: ^0.25.0
-        version: 0.25.0(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))
 
   apps/coin-flip:
     dependencies:
@@ -179,7 +249,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -193,9 +263,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -216,7 +283,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -230,9 +297,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -243,41 +307,41 @@ importers:
   apps/council-governance:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-ui':
         specifier: ^1.5.5
         version: 1.5.11
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/daily-checkin:
@@ -293,7 +357,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -307,9 +371,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -330,7 +391,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -344,9 +405,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -367,7 +425,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -381,14 +439,54 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
       vite:
         specifier: ^5.2.8
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+
+  apps/event-ticket-pass:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      qrcode:
+        specifier: ^1.5.3
+        version: 1.5.3
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      '@types/qrcode':
+        specifier: ^1.5.5
+        version: 1.5.6
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/ex-files:
@@ -404,7 +502,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -418,9 +516,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -431,38 +526,38 @@ importers:
   apps/explorer:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/flashloan:
@@ -478,7 +573,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -492,9 +587,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -505,38 +597,38 @@ importers:
   apps/forever-album:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
       vue-i18n:
         specifier: ^9.1.9
         version: 9.14.5(vue@3.5.26(typescript@5.9.3))
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/garden-of-neo:
@@ -552,7 +644,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -566,9 +658,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -579,38 +668,38 @@ importers:
   apps/gas-sponsor:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/gov-merc:
@@ -626,7 +715,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -640,9 +729,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -653,38 +739,38 @@ importers:
   apps/grant-share:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/graveyard:
@@ -700,7 +786,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -714,9 +800,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -737,7 +820,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -751,9 +834,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -764,38 +844,38 @@ importers:
   apps/hall-of-fame:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/heritage-trust:
@@ -811,7 +891,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -825,9 +905,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -848,7 +925,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -862,9 +939,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -885,7 +959,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -899,9 +973,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -912,38 +983,75 @@ importers:
   apps/memorial-shrine:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+
+  apps/milestone-escrow:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/million-piece-map:
@@ -959,7 +1067,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -973,9 +1081,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -986,25 +1091,25 @@ importers:
   apps/neo-convert:
     dependencies:
       '@cityofzion/neon-core':
-        specifier: ^5.0.0
+        specifier: 'catalog:'
         version: 5.8.0(encoding@0.1.13)
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       '@noble/curves':
-        specifier: ^2.0.1
+        specifier: 'catalog:'
         version: 2.0.1
       '@noble/hashes':
-        specifier: ^2.0.1
+        specifier: 'catalog:'
         version: 2.0.1
       base-x:
         specifier: ^5.0.1
@@ -1070,17 +1175,17 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@babel/runtime':
         specifier: ^7.28.6
         version: 7.28.6
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       '@types/crypto-js':
         specifier: ^4.2.2
@@ -1089,16 +1194,16 @@ importers:
         specifier: ^1.5.5
         version: 1.5.6
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
       vite-plugin-node-polyfills:
         specifier: ^0.25.0
@@ -1107,62 +1212,62 @@ importers:
   apps/neo-gacha:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/neo-multisig:
     dependencies:
       '@cityofzion/neon-core':
-        specifier: ^5.8.0
+        specifier: 'catalog:'
         version: 5.8.0(encoding@0.1.13)
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       '@noble/curves':
-        specifier: ^2.0.1
+        specifier: 'catalog:'
         version: 2.0.1
       '@noble/hashes':
-        specifier: ^2.0.1
+        specifier: 'catalog:'
         version: 2.0.1
       base-x:
         specifier: ^5.0.1
@@ -1243,17 +1348,17 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@babel/runtime':
         specifier: ^7.28.6
         version: 7.28.6
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       '@types/crypto-js':
         specifier: ^4.2.2
@@ -1271,22 +1376,22 @@ importers:
         specifier: ^0.11.10
         version: 0.11.10
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       stream-browserify:
         specifier: ^3.0.0
         version: 3.0.0
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       util:
         specifier: ^0.12.5
         version: 0.12.5
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
       vite-plugin-node-polyfills:
         specifier: ^0.25.0
@@ -1295,229 +1400,229 @@ importers:
   apps/neo-news-today:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/neo-ns:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/neo-sign-anything:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       lucide-vue-next:
         specifier: ^0.363.0
         version: 0.363.0(vue@3.5.26(typescript@5.9.3))
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/neo-swap:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-ui':
         specifier: ^1.5.11
         version: 1.5.11
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/neo-treasury:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/neoburger:
     dependencies:
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
-        specifier: ^1.77.0
+        specifier: 'catalog:'
         version: 1.97.1
       terser:
-        specifier: ^5.46.0
+        specifier: 'catalog:'
         version: 5.46.0
       typescript:
-        specifier: ^5.4.5
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
-        specifier: ^5.2.8
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/on-chain-tarot:
@@ -1533,7 +1638,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -1547,9 +1652,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -1563,13 +1665,13 @@ importers:
         specifier: ^1.11.1
         version: 1.11.1
       '@dcloudio/uni-app':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-components':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@dcloudio/uni-h5':
-        specifier: 3.0.0-4060620250520001
+        specifier: 'catalog:'
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@lit/reactive-element':
         specifier: ^2.1.1
@@ -1579,16 +1681,16 @@ importers:
         version: 3.1.3
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       '@noble/ciphers':
         specifier: ^1.3.0
         version: 1.3.0
       '@noble/curves':
-        specifier: ^1.9.1
-        version: 1.9.7
+        specifier: 'catalog:'
+        version: 2.0.1
       '@noble/hashes':
-        specifier: ^1.8.0
-        version: 1.8.0
+        specifier: 'catalog:'
+        version: 2.0.1
       '@phosphor-icons/webcomponents':
         specifier: 2.1.5
         version: 2.1.5
@@ -1818,7 +1920,7 @@ importers:
         specifier: ^2.37.9
         version: 2.44.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.22.4)
       vue:
-        specifier: ^3.4.21
+        specifier: 'catalog:'
         version: 3.5.26(typescript@5.9.3)
       ws:
         specifier: ^7.5.1
@@ -1828,23 +1930,94 @@ importers:
         version: 3.22.4
     devDependencies:
       '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+      vite-plugin-node-polyfills:
+        specifier: ^0.25.0
+        version: 0.25.0(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))
+
+  apps/prediction-market:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      vue:
+        specifier: ^3.4.21
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
         specifier: 3.0.0-4060620250520001
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
       vite:
         specifier: ^5.2.8
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
-      vite-plugin-node-polyfills:
-        specifier: ^0.25.0
-        version: 0.25.0(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))
+
+  apps/quadratic-funding:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/red-envelope:
     dependencies:
@@ -1859,7 +2032,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -1873,9 +2046,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -1896,7 +2066,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -1910,14 +2080,125 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
       vite:
         specifier: ^5.2.8
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+
+  apps/social-karma:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      vue:
+        specifier: ^3.4.21
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 3.0.0-4060620250520001
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      sass:
+        specifier: ^1.77.0
+        version: 1.97.1
+      typescript:
+        specifier: ^5.4.5
+        version: 5.9.3
+      vite:
+        specifier: ^5.2.8
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+
+  apps/soulbound-certificate:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      qrcode:
+        specifier: ^1.5.3
+        version: 1.5.3
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      '@types/qrcode':
+        specifier: ^1.5.5
+        version: 1.5.6
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+
+  apps/stream-vault:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/time-capsule:
@@ -1933,7 +2214,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -1947,9 +2228,6 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -1957,7 +2235,7 @@ importers:
         specifier: ^5.2.8
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
-  apps/turtle-match:
+  apps/timestamp-proof:
     dependencies:
       '@dcloudio/uni-app':
         specifier: 3.0.0-4060620250520001
@@ -1970,7 +2248,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -1984,14 +2262,48 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
       vite:
         specifier: ^5.2.8
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+
+  apps/turtle-match:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   apps/unbreakable-vault:
@@ -2007,7 +2319,7 @@ importers:
         version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
       '@neo/uniapp-sdk':
         specifier: file:../../packages/@neo/uniapp-sdk
-        version: link:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
       vue:
         specifier: ^3.4.21
         version: 3.5.26(typescript@5.9.3)
@@ -2021,14 +2333,48 @@ importers:
       sass:
         specifier: ^1.77.0
         version: 1.97.1
-      terser:
-        specifier: ^5.46.0
-        version: 5.46.0
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
       vite:
         specifier: ^5.2.8
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+
+  apps/wallet-health:
+    dependencies:
+      '@dcloudio/uni-app':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(@dcloudio/types@3.4.28)(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-components':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@neo/uniapp-sdk':
+        specifier: file:../../packages/@neo/uniapp-sdk
+        version: uniapp-sdk@file:packages/@neo/uniapp-sdk
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.26(typescript@5.9.3)
+    devDependencies:
+      '@dcloudio/uni-cli-shared':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vue@3.5.26(typescript@5.9.3))
+      '@dcloudio/vite-plugin-uni':
+        specifier: 'catalog:'
+        version: 3.0.0-4060620250520001(postcss@8.5.6)(rollup@4.54.0)(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))(vue@3.5.26(typescript@5.9.3))
+      sass:
+        specifier: 'catalog:'
+        version: 1.97.1
+      terser:
+        specifier: 'catalog:'
+        version: 5.46.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
         version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
   packages/@neo/config:
@@ -2049,38 +2395,42 @@ importers:
         specifier: ^3.0.0
         version: 3.8.1
 
-  packages/@neo/multichain-sdk:
-    devDependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-      vue:
-        specifier: ^3.4.0
-        version: 3.5.26(typescript@5.9.3)
-
   packages/@neo/types:
     dependencies:
       zod:
         specifier: ^3.23.0
         version: 3.25.76
 
-  packages/@neo/uniapp-sdk:
-    devDependencies:
-      '@types/node':
-        specifier: ^25.0.3
-        version: 25.0.3
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-      vue:
-        specifier: ^3.4.0
-        version: 3.5.26(typescript@5.9.3)
-
   shared:
     dependencies:
       vue:
         specifier: ^3.0.0
         version: 3.5.26(typescript@5.9.3)
+
+  templates/react-starter:
+    dependencies:
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.27
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.7(@types/react@18.3.27)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.11
+        version: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
 
 packages:
 
@@ -2503,6 +2853,18 @@ packages:
 
   '@babel/plugin-transform-property-literals@7.27.1':
     resolution: {integrity: sha512-oThy3BCuCha8kDZ8ZkgOg2exvPYUlprMukKQXI1r1pJ47NCvxfkEy8vK+r/hT9nF0Aa4H1WUPZZjHTFtAhGfmQ==}
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+
+  '@babel/plugin-transform-react-jsx-self@7.27.1':
+    resolution: {integrity: sha512-6UzkCs+ejGdZ5mFFC/OCUrv028ab2fp1znZmCZjAOBKiBK2jXD1O+BPSfX8X2qjJ75fZBMSnQn3Rq2mrBJK2mw==}
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+
+  '@babel/plugin-transform-react-jsx-source@7.27.1':
+    resolution: {integrity: sha512-zbwoTsBruTeKB9hSq73ha66iFeJHuaFkUbwvqElnygoNbj/jHRsSeokowZFN3CZ64IvEqcmmkVe89OPXc7ldAw==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -3401,6 +3763,9 @@ packages:
   '@reown/appkit@1.8.17-wc-circular-dependencies-fix.0':
     resolution: {integrity: sha512-7JjEp+JNxRUDOa7CxOCbUbG8uYVo38ojc9FN/fuzJuJADUzKDaH287MLV9qI1ZyQyXA8qXvhXRqjtw+3xo2/7A==}
 
+  '@rolldown/pluginutils@1.0.0-beta.27':
+    resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
+
   '@rollup/plugin-inject@5.0.5':
     resolution: {integrity: sha512-2+DEJbNBoPROPkgTDNe8/1YXWcqxbN5DTjASVIOx8HS+pITXushyNiBV56RB08zuptzz8gT3YfkqriTBVycepg==}
     engines: {node: '>=14.0.0'}
@@ -3960,6 +4325,18 @@ packages:
   '@swc/helpers@0.5.18':
     resolution: {integrity: sha512-TXTnIcNJQEKwThMMqBXsZ4VGAza6bvN4pa41Rkqoio6QBKMvo+5lexeTMScGCIxtzgQJzElcvIltani+adC5PQ==}
 
+  '@types/babel__core@7.20.5':
+    resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
+
+  '@types/babel__generator@7.27.0':
+    resolution: {integrity: sha512-ufFd2Xi92OAVPYsy+P4n7/U7e68fex0+Ee8gSG9KX7eo084CWiQ4sdxktvdl0bOPupXtVJPY19zk6EwWqUQ8lg==}
+
+  '@types/babel__template@7.4.4':
+    resolution: {integrity: sha512-h/NUaSyG5EyxBIp8YRxo4RMe2/qQgvyowRwVMzhYhBCONbW8PUsg4lkFMrhgZhUe5z3L3MiLDuvyJ/CaPa2A8A==}
+
+  '@types/babel__traverse@7.28.0':
+    resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
+
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
@@ -3978,11 +4355,22 @@ packages:
   '@types/node@25.0.3':
     resolution: {integrity: sha512-W609buLVRVmeW693xKfzHeIV6nJGGz98uCPfeXI1ELMLXVeKYZ9m15fAMSaUPBHYLGFsVRcMmSCksQOrZV9BYA==}
 
+  '@types/prop-types@15.7.15':
+    resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
+
   '@types/qrcode@1.5.6':
     resolution: {integrity: sha512-te7NQcV2BOvdj2b1hCAHzAoMNuj65kNBMz0KBaxM6c3VGBOhU0dURQKOtH8CFNI/dsKkwlv32p26qYQTWoB5bw==}
 
   '@types/raf@3.4.3':
     resolution: {integrity: sha512-c4YAvMedbPZ5tEyxzQdMoOhhJ4RD3rngZIdwC2/qDN3d7JpEhB6fiBRKVY1lg5B7Wk+uPBjn5f39j1/2MY1oOw==}
+
+  '@types/react-dom@18.3.7':
+    resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
+    peerDependencies:
+      '@types/react': ^18.0.0
+
+  '@types/react@18.3.27':
+    resolution: {integrity: sha512-cisd7gxkzjBKU2GgdYrTdtQx1SORymWyaAFhaxQPK9bYO9ot3Y5OikQRvY0VYQtvwjeQnizCINJAenh/V7MK2w==}
 
   '@types/react@19.2.8':
     resolution: {integrity: sha512-3MbSL37jEchWZz2p2mjntRZtPt837ij10ApxKfgmXCTuHWagYg7iA5bqPw6C8BMPfwidlvfPI/fxOc42HLhcyg==}
@@ -4064,6 +4452,12 @@ packages:
     peerDependencies:
       terser: ^5.4.0
       vite: ^5.0.0
+
+  '@vitejs/plugin-react@4.7.0':
+    resolution: {integrity: sha512-gUu9hwfWvvEDBBmgtAowQCojwZmJ5mcLn3aufeCsitijs3+f2NsrPtlAWIR6OPiqljl96GVCUbLe0HyqIpVaoA==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    peerDependencies:
+      vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
 
   '@vitejs/plugin-vue-jsx@3.1.0':
     resolution: {integrity: sha512-w9M6F3LSEU5kszVb9An2/MmXNxocAnUb3WhRr8bHlimhDrXNt6n6D2nJQR3UXpGlZHh/EsgouOHCsM8V3Ln+WA==}
@@ -6287,6 +6681,15 @@ packages:
     resolution: {integrity: sha512-s4VSOf6yN0rvbRZGxs8Om5CWj6seneMwK3oDb4lWDH0UPhWcxwOWw5+qk24bxq87szX1ydrwylIOp2uG1ojUpA==}
     engines: {node: '>= 0.8'}
 
+  react-dom@18.3.1:
+    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
+    peerDependencies:
+      react: ^18.3.1
+
+  react-refresh@0.17.0:
+    resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
+    engines: {node: '>=0.10.0'}
+
   react@18.3.1:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
@@ -6414,6 +6817,9 @@ packages:
   saxes@6.0.0:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
     engines: {node: '>=v12.22.7'}
+
+  scheduler@0.23.2:
+    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
 
   scrypt-js@3.0.1:
     resolution: {integrity: sha512-cdwTTnqPu0Hyvf5in5asVdZocVDTNRmR7XEcJuIzMjJeSHybHl7vpB66AzwTaIg6CLSbtjcxc8fqcySfnTkccA==}
@@ -6759,9 +7165,6 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ufo@1.6.1:
-    resolution: {integrity: sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA==}
-
   ufo@1.6.3:
     resolution: {integrity: sha512-yDJTmhydvl5lJzBmy/hyOAA0d+aqCBuwl818haVdYCRrWV84o7YyeVm4QlVHStqNrrJSTb6jKuFAVqAFsr+K3Q==}
 
@@ -6782,6 +7185,9 @@ packages:
 
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
+
+  uniapp-sdk@file:packages/@neo/uniapp-sdk:
+    resolution: {directory: packages/@neo/uniapp-sdk, type: directory}
 
   unicode-canonical-property-names-ecmascript@2.0.1:
     resolution: {integrity: sha512-dA8WbNeb2a6oQzAQ55YlT5vQAWGV9WXOsi3SskE3bcCdM0P4SDd+24zS/OCacdRq5BkdsRj9q3Pg6YyQoxIGqg==}
@@ -7776,6 +8182,16 @@ snapshots:
       - supports-color
 
   '@babel/plugin-transform-property-literals@7.27.1(@babel/core@7.28.5)':
+    dependencies:
+      '@babel/core': 7.28.5
+      '@babel/helper-plugin-utils': 7.27.1
+
+  '@babel/plugin-transform-react-jsx-self@7.27.1(@babel/core@7.28.5)':
+    dependencies:
+      '@babel/core': 7.28.5
+      '@babel/helper-plugin-utils': 7.27.1
+
+  '@babel/plugin-transform-react-jsx-source@7.27.1(@babel/core@7.28.5)':
     dependencies:
       '@babel/core': 7.28.5
       '@babel/helper-plugin-utils': 7.27.1
@@ -9679,6 +10095,8 @@ snapshots:
       - utf-8-validate
       - zod
 
+  '@rolldown/pluginutils@1.0.0-beta.27': {}
+
   '@rollup/plugin-inject@5.0.5(rollup@4.54.0)':
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.54.0)
@@ -10352,6 +10770,27 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
+  '@types/babel__core@7.20.5':
+    dependencies:
+      '@babel/parser': 7.28.5
+      '@babel/types': 7.28.5
+      '@types/babel__generator': 7.27.0
+      '@types/babel__template': 7.4.4
+      '@types/babel__traverse': 7.28.0
+
+  '@types/babel__generator@7.27.0':
+    dependencies:
+      '@babel/types': 7.28.5
+
+  '@types/babel__template@7.4.4':
+    dependencies:
+      '@babel/parser': 7.28.5
+      '@babel/types': 7.28.5
+
+  '@types/babel__traverse@7.28.0':
+    dependencies:
+      '@babel/types': 7.28.5
+
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 25.0.3
@@ -10370,11 +10809,22 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
+  '@types/prop-types@15.7.15': {}
+
   '@types/qrcode@1.5.6':
     dependencies:
       '@types/node': 25.0.3
 
   '@types/raf@3.4.3': {}
+
+  '@types/react-dom@18.3.7(@types/react@18.3.27)':
+    dependencies:
+      '@types/react': 18.3.27
+
+  '@types/react@18.3.27':
+    dependencies:
+      '@types/prop-types': 15.7.15
+      csstype: 3.2.3
 
   '@types/react@19.2.8':
     dependencies:
@@ -10498,6 +10948,18 @@ snapshots:
       regenerator-runtime: 0.14.1
       systemjs: 6.15.1
       terser: 5.46.0
+      vite: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitejs/plugin-react@4.7.0(vite@5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0))':
+    dependencies:
+      '@babel/core': 7.28.5
+      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.5)
+      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.28.5)
+      '@rolldown/pluginutils': 1.0.0-beta.27
+      '@types/babel__core': 7.20.5
+      react-refresh: 0.17.0
       vite: 5.4.21(@types/node@25.0.3)(sass@1.97.1)(terser@5.46.0)
     transitivePeerDependencies:
       - supports-color
@@ -13231,7 +13693,7 @@ snapshots:
       acorn: 8.15.0
       pathe: 2.0.3
       pkg-types: 1.3.1
-      ufo: 1.6.1
+      ufo: 1.6.3
 
   module-alias@2.2.3: {}
 
@@ -13729,6 +14191,14 @@ snapshots:
       iconv-lite: 0.4.24
       unpipe: 1.0.0
 
+  react-dom@18.3.1(react@18.3.1):
+    dependencies:
+      loose-envify: 1.4.0
+      react: 18.3.1
+      scheduler: 0.23.2
+
+  react-refresh@0.17.0: {}
+
   react@18.3.1:
     dependencies:
       loose-envify: 1.4.0
@@ -13887,6 +14357,10 @@ snapshots:
   saxes@6.0.0:
     dependencies:
       xmlchars: 2.2.0
+
+  scheduler@0.23.2:
+    dependencies:
+      loose-envify: 1.4.0
 
   scrypt-js@3.0.1: {}
 
@@ -14233,8 +14707,6 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  ufo@1.6.1: {}
-
   ufo@1.6.3: {}
 
   uint8arrays@3.1.1:
@@ -14253,6 +14725,8 @@ snapshots:
 
   undici-types@7.18.2:
     optional: true
+
+  uniapp-sdk@file:packages/@neo/uniapp-sdk: {}
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 

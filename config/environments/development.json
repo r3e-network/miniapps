@@ -1,0 +1,16 @@
+{
+  "name": "development",
+  "baseURL": "http://localhost:3000",
+  "r2": {
+    "bucket": "miniapps-dev",
+    "domain": "dev-miniapps.localhost:3000",
+    "publicPath": "/miniapps/",
+    "cacheControl": "no-cache"
+  },
+  "features": {
+    "analytics": false,
+    "caching": false,
+    "versioning": false,
+    "compression": false
+  }
+}

@@ -4,7 +4,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APPS_DIR="$SCRIPT_DIR/../apps"
-OUTPUT_DIR="$SCRIPT_DIR/../../platform/host-app/public/miniapps"
+OUTPUT_DIR="$SCRIPT_DIR/../public/miniapps"
 
 mkdir -p "$OUTPUT_DIR"
 

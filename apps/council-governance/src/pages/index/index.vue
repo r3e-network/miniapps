@@ -1,16 +1,7 @@
 <template>
   <AppLayout class="theme-council-governance" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="chainType === 'evm'" class="px-5 mb-4">
-      <NeoCard variant="danger">
-        <view class="flex flex-col items-center gap-2 py-1">
-          <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-          <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-            t("switchToNeo")
-          }}</NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <ActiveProposalsTab
       v-if="activeTab === 'active' && chainType !== 'evm'"
@@ -69,11 +60,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc } from "@shared/components";
+import { AppLayout, NeoDoc, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import ActiveProposalsTab from "./components/ActiveProposalsTab.vue";
@@ -107,7 +99,7 @@ const navTabs = computed(() => [
 const activeTab = ref("active");
 
 const { address, invokeContract, invokeRead, chainType, getContractAddress, appChainId, switchToAppChain } =
-  useWallet() as any;
+  useWallet() as WalletSDK;
 const contractAddress = ref<string | null>(null);
 const selectedProposal = ref<Proposal | null>(null);
 const status = ref<{ msg: string; type: "success" | "error" | "info" } | null>(null);
@@ -368,8 +360,7 @@ const loadProposals = async () => {
     if (cached) {
       proposals.value = JSON.parse(cached);
     }
-  } catch {
-  }
+  } catch {}
 
   try {
     loadingProposals.value = true;
@@ -479,7 +470,7 @@ const docFeatures = computed(() => [
 @use "@shared/styles/tokens.scss" as *;
 @use "@shared/styles/variables.scss";
 @import "./council-governance-theme.scss";
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap");
 
 :global(page) {
   background: var(--senate-bg);
@@ -493,8 +484,8 @@ const docFeatures = computed(() => [
   gap: 24px;
   background-color: var(--senate-bg);
   /* Marble texture simulation */
-  background-image: 
-    url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJ4Ij48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC42IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI3gpIiBvcGFjaXR5PSIwLjEiLz48L3N2Zz4='),
+  background-image:
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJ4Ij48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC42IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI3gpIiBvcGFjaXR5PSIwLjEiLz48L3N2Zz4="),
     linear-gradient(to bottom, var(--senate-marble-top), var(--senate-marble-bottom));
   min-height: 100vh;
 }
@@ -507,7 +498,7 @@ const docFeatures = computed(() => [
   box-shadow: var(--senate-card-shadow) !important;
   border-radius: 2px !important;
   color: var(--senate-slate) !important;
-  
+
   &.variant-danger {
     background: var(--senate-danger-bg) !important;
     border-color: var(--senate-danger-border) !important;
@@ -521,17 +512,17 @@ const docFeatures = computed(() => [
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 700 !important;
-  
+
   &.variant-primary {
     background: var(--senate-button-gradient) !important;
     color: var(--senate-gold) !important;
     border: 1px solid var(--senate-gold) !important;
-    
+
     &:active {
       transform: translateY(1px);
     }
   }
-  
+
   &.variant-secondary {
     background: transparent !important;
     border: 1px solid var(--senate-slate) !important;
@@ -540,8 +531,9 @@ const docFeatures = computed(() => [
 }
 
 /* Typography Overrides */
-:deep(text), :deep(view) {
-  font-family: 'Times New Roman', serif;
+:deep(text),
+:deep(view) {
+  font-family: "Times New Roman", serif;
 }
 :deep(.neo-card text.font-bold) {
   font-family: var(--senate-font) !important;

@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-stream-vault" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view v-if="activeTab === 'create'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
@@ -57,12 +48,7 @@
               :hint="t('intervalHint')"
             />
 
-            <NeoInput
-              v-model="form.notes"
-              type="textarea"
-              :label="t('notes')"
-              :placeholder="t('notesPlaceholder')"
-            />
+            <NeoInput v-model="form.notes" type="textarea" :label="t('notes')" :placeholder="t('notesPlaceholder')" />
 
             <NeoButton
               variant="primary"
@@ -121,20 +107,29 @@
           <view class="vault-metrics">
             <view>
               <text class="metric-label">{{ t("totalLocked") }}</text>
-              <text class="metric-value">{{ formatAmount(stream.assetSymbol, stream.totalAmount) }} {{ stream.assetSymbol }}</text>
+              <text class="metric-value"
+                >{{ formatAmount(stream.assetSymbol, stream.totalAmount) }} {{ stream.assetSymbol }}</text
+              >
             </view>
             <view>
               <text class="metric-label">{{ t("released") }}</text>
-              <text class="metric-value">{{ formatAmount(stream.assetSymbol, stream.releasedAmount) }} {{ stream.assetSymbol }}</text>
+              <text class="metric-value"
+                >{{ formatAmount(stream.assetSymbol, stream.releasedAmount) }} {{ stream.assetSymbol }}</text
+              >
             </view>
             <view>
               <text class="metric-label">{{ t("remaining") }}</text>
-              <text class="metric-value">{{ formatAmount(stream.assetSymbol, stream.remainingAmount) }} {{ stream.assetSymbol }}</text>
+              <text class="metric-value"
+                >{{ formatAmount(stream.assetSymbol, stream.remainingAmount) }} {{ stream.assetSymbol }}</text
+              >
             </view>
           </view>
           <view class="vault-meta">
             <text class="meta-item">{{ t("intervalLabel") }}: {{ stream.intervalDays }}d</text>
-            <text class="meta-item">{{ t("rateLabel") }}: {{ formatAmount(stream.assetSymbol, stream.rateAmount) }} {{ stream.assetSymbol }}</text>
+            <text class="meta-item"
+              >{{ t("rateLabel") }}: {{ formatAmount(stream.assetSymbol, stream.rateAmount) }}
+              {{ stream.assetSymbol }}</text
+            >
           </view>
           <view class="vault-actions">
             <NeoButton
@@ -169,16 +164,23 @@
           <view class="vault-metrics">
             <view>
               <text class="metric-label">{{ t("claimable") }}</text>
-              <text class="metric-value">{{ formatAmount(stream.assetSymbol, stream.claimable) }} {{ stream.assetSymbol }}</text>
+              <text class="metric-value"
+                >{{ formatAmount(stream.assetSymbol, stream.claimable) }} {{ stream.assetSymbol }}</text
+              >
             </view>
             <view>
               <text class="metric-label">{{ t("remaining") }}</text>
-              <text class="metric-value">{{ formatAmount(stream.assetSymbol, stream.remainingAmount) }} {{ stream.assetSymbol }}</text>
+              <text class="metric-value"
+                >{{ formatAmount(stream.assetSymbol, stream.remainingAmount) }} {{ stream.assetSymbol }}</text
+              >
             </view>
           </view>
           <view class="vault-meta">
             <text class="meta-item">{{ t("intervalLabel") }}: {{ stream.intervalDays }}d</text>
-            <text class="meta-item">{{ t("rateLabel") }}: {{ formatAmount(stream.assetSymbol, stream.rateAmount) }} {{ stream.assetSymbol }}</text>
+            <text class="meta-item"
+              >{{ t("rateLabel") }}: {{ formatAmount(stream.assetSymbol, stream.rateAmount) }}
+              {{ stream.assetSymbol }}</text
+            >
           </view>
           <view class="vault-actions">
             <NeoButton
@@ -204,7 +206,7 @@
         :features="[
           { name: t('feature1Name'), desc: t('feature1Desc') },
           { name: t('feature2Name'), desc: t('feature2Desc') },
-          { name: t('feature3Name'), desc: t('feature3Desc') }
+          { name: t('feature3Name'), desc: t('feature3Desc') },
         ]"
       />
     </view>
@@ -214,15 +216,16 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton, NeoInput, NeoDoc } from "@shared/components";
+import { AppLayout, NeoCard, NeoButton, NeoInput, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain } from "@shared/utils/chain";
 import { formatGas, formatAddress, toFixed8, toFixedDecimals } from "@shared/utils/format";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult } from "@shared/utils/neo";
 
 const { t } = useI18n();
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
 
 const NEO_HASH = "0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5";
 const GAS_HASH = "0xd2a4cff31913016155e38e474a2c06d08be276cf";
@@ -352,7 +355,7 @@ const fetchStreamDetails = async (streamId: string) => {
   const contract = await ensureContractAddress();
   const details = await invokeRead({
     contractAddress: contract,
-    operation: "getStreamDetails",
+      operation: "GetStreamDetails",
     args: [{ type: "Integer", value: streamId }],
   });
   const parsed = parseInvokeResult(details) as any;
@@ -454,7 +457,7 @@ const createVault = async () => {
 
     await invokeContract({
       scriptHash: contract,
-      operation: "createStream",
+      operation: "CreateStream",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Hash160", value: beneficiary },
@@ -492,7 +495,7 @@ const claimStream = async (stream: StreamItem) => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "claimStream",
+      operation: "ClaimStream",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: stream.id },
@@ -515,7 +518,7 @@ const cancelStream = async (stream: StreamItem) => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "cancelStream",
+      operation: "CancelStream",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: stream.id },

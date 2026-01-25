@@ -1,59 +1,54 @@
 <template>
-  <AppLayout  :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="theme-time-capsule">
-      <view v-if="chainType === 'evm'" class="px-4 mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold capsule-warning-title">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 capsule-warning-desc">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-              t("switchToNeo")
-            }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <view v-if="activeTab === 'capsules' || activeTab === 'create'" class="app-container">
-        <NeoCard v-if="status" :variant="status.type === 'success' ? 'success' : status.type === 'loading' ? 'accent' : 'danger'" class="mb-4 text-center">
+        <NeoCard
+          v-if="status"
+          :variant="status.type === 'success' ? 'success' : status.type === 'loading' ? 'accent' : 'danger'"
+          class="mb-4 text-center"
+        >
           <text class="status-text font-bold uppercase tracking-wider">{{ status.msg }}</text>
         </NeoCard>
 
-      <!-- Capsules Tab -->
-      <view v-if="activeTab === 'capsules'" class="tab-content">
-        <NeoCard variant="erobo-neo" class="mb-4">
-          <text class="helper-text neutral">{{ t("fishDescription") }}</text>
-          <NeoButton
-            variant="secondary"
-            size="md"
-            block
-            :loading="isBusy"
-            :disabled="isBusy"
-            class="mt-3"
-            @click="fish"
-          >
-            {{ t("fishButton") }}
-          </NeoButton>
-        </NeoCard>
-        <CapsuleList :capsules="capsules" :current-time="currentTime" :t="t as any" @open="open" />
+        <!-- Capsules Tab -->
+        <view v-if="activeTab === 'capsules'" class="tab-content">
+          <NeoCard variant="erobo-neo" class="mb-4">
+            <text class="helper-text neutral">{{ t("fishDescription") }}</text>
+            <NeoButton
+              variant="secondary"
+              size="md"
+              block
+              :loading="isBusy"
+              :disabled="isBusy"
+              class="mt-3"
+              @click="fish"
+            >
+              {{ t("fishButton") }}
+            </NeoButton>
+          </NeoCard>
+          <CapsuleList :capsules="capsules" :current-time="currentTime" :t="t as any" @open="open" />
+        </view>
+
+        <!-- Create Tab -->
+        <view v-if="activeTab === 'create'" class="tab-content">
+          <CreateCapsuleForm
+            v-model:title="newCapsule.title"
+            v-model:content="newCapsule.content"
+            v-model:days="newCapsule.days"
+            v-model:is-public="newCapsule.isPublic"
+            v-model:category="newCapsule.category"
+            :is-loading="isBusy"
+            :can-create="canCreate"
+            :t="t as any"
+            @create="create"
+          />
+        </view>
       </view>
 
-      <!-- Create Tab -->
-      <view v-if="activeTab === 'create'" class="tab-content">
-        <CreateCapsuleForm
-          v-model:title="newCapsule.title"
-          v-model:content="newCapsule.content"
-          v-model:days="newCapsule.days"
-          v-model:is-public="newCapsule.isPublic"
-          v-model:category="newCapsule.category"
-          :is-loading="isBusy"
-          :can-create="canCreate"
-          :t="t as any"
-          @create="create"
-        />
-      </view>
-    </view>
-
-    <!-- Docs Tab -->
+      <!-- Docs Tab -->
       <view v-if="activeTab === 'docs'" class="tab-content scrollable">
         <NeoDoc
           :title="t('title')"
@@ -69,17 +64,18 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { sha256Hex } from "@shared/utils/hash";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
-import { AppLayout, NeoDoc, NeoCard, NeoButton } from "@shared/components";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
+import { AppLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 
 import CapsuleList, { type Capsule } from "./components/CapsuleList.vue";
 import CreateCapsuleForm from "./components/CreateCapsuleForm.vue";
-
 
 const { t } = useI18n();
 
@@ -91,8 +87,8 @@ const docFeatures = computed(() => [
 ]);
 
 const APP_ID = "miniapp-time-capsule";
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, isProcessing: paymentProcessing } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 const contractAddress = ref<string | null>(null);
 
@@ -162,7 +158,7 @@ const newCapsule = ref({ title: "", content: "", days: "30", isPublic: false, ca
 const status = ref<{ msg: string; type: string } | null>(null);
 const currentTime = ref(Date.now());
 const isProcessing = ref(false);
-const isBusy = computed(() => isLoading.value || isProcessing.value);
+const isBusy = computed(() => paymentProcessing.value || isProcessing.value);
 
 // Countdown timer
 let countdownInterval: number | null = null;
@@ -286,7 +282,7 @@ const fetchData = async () => {
           { contentHash: "", title: "", unlockTime: unlockTimeEvent, isPublic: isPublicEvent, isRevealed: false },
           { unlockTime: unlockTimeEvent, isPublic: isPublicEvent },
         );
-      })
+      }),
     );
 
     let resolvedCapsules = userCapsules.filter(Boolean) as Capsule[];
@@ -338,12 +334,8 @@ const create = async () => {
 
     const contract = await ensureContractAddress();
 
-    // Pay the creation fee
-    const payment = await payGAS(BURY_FEE, `time-capsule:bury:${Date.now()}`);
-    const receiptId = payment.receipt_id;
-    if (!receiptId) {
-      throw new Error(t("receiptMissing"));
-    }
+    // Pay the creation fee using usePaymentFlow
+    const { receiptId, invoke: invokeWithReceipt } = await processPayment(BURY_FEE, `time-capsule:bury:${Date.now()}`);
 
     const daysValue = Number.parseInt(newCapsule.value.days, 10);
     if (!Number.isFinite(daysValue) || daysValue < MIN_LOCK_DAYS || daysValue > MAX_LOCK_DAYS) {
@@ -357,20 +349,16 @@ const create = async () => {
     const content = newCapsule.value.content.trim();
     const contentHash = await sha256Hex(content);
 
-    // Create capsule on-chain
-    await invokeContract({
-      scriptHash: contract,
-      operation: "bury",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "String", value: contentHash },
-        { type: "String", value: newCapsule.value.title.trim().slice(0, 100) },
-        { type: "Integer", value: String(unlockTimestamp) },
-        { type: "Boolean", value: newCapsule.value.isPublic },
-        { type: "Integer", value: String(newCapsule.value.category) },
-        { type: "Integer", value: String(receiptId) },
-      ],
-    });
+    // Create capsule on-chain with receipt ID
+    await invokeWithReceipt(contract, "bury", [
+      { type: "Hash160", value: address.value },
+      { type: "String", value: contentHash },
+      { type: "String", value: newCapsule.value.title.trim().slice(0, 100) },
+      { type: "Integer", value: String(unlockTimestamp) },
+      { type: "Boolean", value: newCapsule.value.isPublic },
+      { type: "Integer", value: String(newCapsule.value.category) },
+      { type: "Integer", value: String(receiptId) },
+    ]);
 
     saveLocalContent(contentHash, content);
 
@@ -407,7 +395,7 @@ const open = async (cap: Capsule) => {
       status.value = { msg: t("revealing"), type: "loading" };
       await invokeContract({
         scriptHash: contract,
-        operation: "reveal",
+        operation: "Reveal",
         args: [
           { type: "Hash160", value: address.value },
           { type: "Integer", value: cap.id },
@@ -447,20 +435,12 @@ const fish = async () => {
     }
 
     const contract = await ensureContractAddress();
-    const payment = await payGAS(FISH_FEE, `time-capsule:fish:${Date.now()}`);
-    const receiptId = payment.receipt_id;
-    if (!receiptId) {
-      throw new Error(t("receiptMissing"));
-    }
+    const { receiptId, invoke: invokeWithReceipt } = await processPayment(FISH_FEE, `time-capsule:fish:${Date.now()}`);
 
-    await invokeContract({
-      scriptHash: contract,
-      operation: "fish",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Integer", value: String(receiptId) },
-      ],
-    });
+    await invokeWithReceipt(contract, "fish", [
+      { type: "Hash160", value: address.value },
+      { type: "Integer", value: String(receiptId) },
+    ]);
 
     const fishEvents = await listAllEvents("CapsuleFished");
     const match = fishEvents.find((evt) => {
@@ -490,8 +470,6 @@ const fish = async () => {
 
 @import "./time-capsule-theme.scss";
 
-
-
 :global(page) {
   background: var(--bg-primary);
 }
@@ -507,13 +485,13 @@ const fish = async () => {
   background: var(--capsule-radial);
   min-height: 100vh;
   position: relative;
-  
+
   /* Tech Grid Background */
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
       linear-gradient(var(--capsule-grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--capsule-grid) 1px, transparent 1px);
     background-size: 40px 40px;
@@ -546,12 +524,15 @@ const fish = async () => {
   backdrop-filter: blur(8px);
   position: relative;
   overflow: hidden;
-  
+
   /* Corner accents */
   &::after {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0; left: 0; width: 10px; height: 10px;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
     border-top: 2px solid var(--capsule-corner);
     border-left: 2px solid var(--capsule-corner);
   }
@@ -559,21 +540,21 @@ const fish = async () => {
 
 :global(.theme-time-capsule) :deep(.neo-button) {
   border-radius: 4px !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: "JetBrains Mono", monospace !important;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  
+
   &.variant-primary {
     background: linear-gradient(90deg, var(--capsule-cyan) 0%, var(--capsule-cyan-strong) 100%) !important;
     color: var(--capsule-button-text) !important;
     box-shadow: var(--capsule-button-primary-shadow) !important;
   }
-  
+
   &.variant-secondary {
     background: transparent !important;
     border: 1px solid var(--capsule-cyan) !important;
     color: var(--capsule-cyan) !important;
-    
+
     &:hover {
       background: var(--capsule-button-hover) !important;
     }
@@ -585,7 +566,7 @@ const fish = async () => {
   border: 1px solid var(--capsule-input-border) !important;
   color: var(--capsule-input-text) !important;
   font-family: monospace !important;
-  
+
   &:focus-within {
     border-color: var(--capsule-cyan) !important;
     box-shadow: 0 0 10px var(--capsule-input-focus) !important;

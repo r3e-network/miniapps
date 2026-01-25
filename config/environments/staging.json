@@ -1,0 +1,16 @@
+{
+  "name": "staging",
+  "baseURL": "https://staging-miniapps.yourdomain.com",
+  "r2": {
+    "bucket": "miniapps-staging",
+    "domain": "staging-miniapps.yourdomain.com",
+    "publicPath": "/miniapps/",
+    "cacheControl": "public, max-age=1800"
+  },
+  "features": {
+    "analytics": true,
+    "caching": true,
+    "versioning": true,
+    "compression": true
+  }
+}

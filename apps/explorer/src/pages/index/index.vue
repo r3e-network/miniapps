@@ -6,17 +6,8 @@
         <NetworkStats :mainnet-stats="mainnetStats" :testnet-stats="testnetStats" :t="t as any" />
       </view>
 
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-              t("switchToNeo")
-            }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <!-- Status Message -->
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
@@ -46,7 +37,6 @@
       </view>
     </view>
 
-
     <!-- Docs Tab -->
     <view v-if="activeTab === 'docs'" class="tab-content scrollable">
       <NeoDoc
@@ -64,8 +54,9 @@
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { formatNumber } from "@shared/utils/format";
 import { useI18n } from "@/composables/useI18n";
-import { useWallet} from "@neo/uniapp-sdk";
-import { AppLayout, NeoDoc, NeoCard, NeoButton } from "@shared/components";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
+import { AppLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import type { StatItem } from "@shared/components/NeoStats.vue";
 
@@ -73,7 +64,6 @@ import NetworkStats from "./components/NetworkStats.vue";
 import SearchPanel from "./components/SearchPanel.vue";
 import SearchResult from "./components/SearchResult.vue";
 import RecentTransactions from "./components/RecentTransactions.vue";
-
 
 const { t } = useI18n();
 
@@ -106,7 +96,7 @@ const navTabs = computed<NavTab[]>(() => [
   { id: "docs", icon: "book", label: t("docs") },
 ]);
 
-const { chainType, switchToAppChain } = useWallet() as any;
+const { chainType } = useWallet() as WalletSDK;
 
 const searchQuery = ref("");
 const selectedNetwork = ref<"mainnet" | "testnet">("mainnet");
@@ -268,7 +258,9 @@ onUnmounted(() => {
   min-height: 100vh;
   /* Scanlines */
   background-image: var(--matrix-scanlines), var(--matrix-glitch);
-  background-size: 100% 2px, 3px 100%;
+  background-size:
+    100% 2px,
+    3px 100%;
 }
 
 .tab-content {
@@ -284,7 +276,7 @@ onUnmounted(() => {
   border-radius: 0 !important;
   box-shadow: var(--matrix-card-shadow) !important;
   color: var(--matrix-green) !important;
-  
+
   &.variant-danger {
     border-color: var(--matrix-danger) !important;
     color: var(--matrix-danger) !important;
@@ -299,14 +291,15 @@ onUnmounted(() => {
   border-radius: 0 !important;
   text-transform: uppercase;
   font-family: var(--matrix-font);
-  
+
   &:active {
     background: var(--matrix-green) !important;
     color: var(--matrix-bg) !important;
   }
 }
 
-:deep(input), :deep(.neo-input) {
+:deep(input),
+:deep(.neo-input) {
   background: var(--matrix-input-bg) !important;
   border: 1px solid var(--matrix-green) !important;
   color: var(--matrix-green) !important;
@@ -314,7 +307,8 @@ onUnmounted(() => {
   border-radius: 0 !important;
 }
 
-:deep(text), :deep(view) {
+:deep(text),
+:deep(view) {
   font-family: var(--matrix-font) !important;
 }
 
@@ -334,9 +328,15 @@ onUnmounted(() => {
 }
 
 @keyframes blink {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .scrollable {

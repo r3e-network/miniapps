@@ -12,7 +12,8 @@
     "@dcloudio/uni-app": "catalog:",
     "@dcloudio/uni-components": "catalog:",
     "@dcloudio/uni-h5": "catalog:",
-    "@neo/uniapp-sdk": "file:../../packages/@neo/uniapp-sdk",
+    "@neo/uniapp-sdk": "file:../../sdk/packages/@neo/uniapp-sdk",
+    "@neo/types": "file:../../sdk/packages/@neo/types"
     "@noble/curves": "catalog:",
     "@noble/hashes": "catalog:",
     "base-x": "^5.0.1",

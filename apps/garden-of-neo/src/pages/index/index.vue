@@ -1,17 +1,10 @@
 <template>
   <AppLayout class="theme-garden-of-neo" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view v-if="activeTab === 'garden'" class="flex flex-col h-full">
-      <view v-if="chainType === 'evm'" class="p-6 pb-0">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
       <GardenTab
-        :t="t as any"
+        :t="t"
         :contract-address="contractAddress"
         :ensure-contract-address="ensureContractAddress"
         @update:stats="updateStats"
@@ -20,7 +13,7 @@
 
     <StatsTab
       v-if="activeTab === 'stats'"
-      :t="t as any"
+      :t="t"
       :total-plants="stats.totalPlants"
       :ready-to-harvest="stats.readyToHarvest"
       :total-harvested="stats.totalHarvested"
@@ -41,13 +34,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc, NeoCard, NeoButton } from "@shared/components";
+import { AppLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import GardenTab from "./components/GardenTab.vue";
 import StatsTab from "./components/StatsTab.vue";
-
 
 const { t } = useI18n();
 
@@ -71,7 +64,7 @@ const updateStats = (newStats: any) => {
 };
 
 // Wallet & Contract
-const { chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { chainType, getContractAddress } = useWallet() as WalletSDK;
 const contractAddress = ref<string | null>(null);
 
 const ensureContractAddress = async () => {
@@ -98,7 +91,7 @@ const docFeatures = computed(() => [
 @use "@shared/styles/tokens.scss" as *;
 @use "@shared/styles/variables.scss";
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap");
 @import "./garden-of-neo-theme.scss";
 
 :global(page) {
@@ -118,14 +111,16 @@ const docFeatures = computed(() => [
   font-family: var(--garden-font);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  
+
   /* Leaf Pattern */
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-image:
-      radial-gradient(circle at 4px 4px, var(--garden-pattern) 2px, transparent 0);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle at 4px 4px, var(--garden-pattern) 2px, transparent 0);
     background-size: 32px 32px;
     opacity: 0.3;
     pointer-events: none;
@@ -151,9 +146,12 @@ const docFeatures = computed(() => [
 
   /* Glass sheen */
   &::after {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
     background: linear-gradient(135deg, var(--garden-sheen) 0%, transparent 100%);
     pointer-events: none;
   }
@@ -171,13 +169,13 @@ const docFeatures = computed(() => [
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: all 0.2s ease;
-  
+
   &.variant-primary {
     background: linear-gradient(135deg, var(--garden-leaf) 0%, var(--garden-accent) 100%) !important;
     color: var(--garden-button-text) !important;
     border: none !important;
     box-shadow: var(--garden-button-shadow) !important;
-    
+
     &:active {
       transform: scale(0.96);
       box-shadow: var(--garden-button-shadow-press) !important;
@@ -187,7 +185,7 @@ const docFeatures = computed(() => [
     background: var(--garden-button-secondary-bg) !important;
     border: 2px solid var(--garden-button-secondary-border) !important;
     color: var(--garden-button-secondary-text) !important;
-    
+
     &:hover {
       background: var(--garden-button-hover-bg) !important;
     }

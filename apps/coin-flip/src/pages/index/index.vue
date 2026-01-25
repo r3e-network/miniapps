@@ -6,25 +6,34 @@
     <view class="hex-decoration hex-1" />
     <view class="hex-decoration hex-2" />
     <view class="vignette-overlay" />
-    
+
     <view class="data-stream" v-if="activeTab === 'game'">
-      <view v-for="i in 10" :key="i" class="stream-line" :style="{ left: i * 10 + '%', animationDuration: (2 + Math.random() * 3) + 's', animationDelay: (Math.random() * 5) + 's' }" />
+      <view
+        v-for="i in 10"
+        :key="i"
+        class="stream-line"
+        :style="{
+          left: i * 10 + '%',
+          animationDuration: 2 + Math.random() * 3 + 's',
+          animationDelay: Math.random() * 5 + 's',
+        }"
+      />
     </view>
 
     <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-      <view v-if="chainType === 'evm'" class="px-5 mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
-
-      <view v-if="activeTab === 'game'" class="tab-content">
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" /><view
+        v-if="activeTab === 'game'"
+        class="tab-content"
+      >
         <!-- Coin Arena -->
         <view class="arena-container">
-          <CoinArena :display-outcome="displayOutcome" :is-flipping="isFlipping" :result="result" :t="t as any" />
+          <CoinArena
+            :display-outcome="displayOutcome"
+            :is-flipping="isFlipping"
+            :result="result"
+            :t="t as (key: string) => string"
+          />
         </view>
 
         <!-- Bet Controls -->
@@ -34,7 +43,7 @@
             v-model:betAmount="betAmount"
             :is-flipping="isFlipping"
             :can-bet="canBet"
-            :t="t as any"
+            :t="t as (key: string) => string"
             @flip="flip"
           />
         </view>
@@ -45,7 +54,12 @@
         </view>
 
         <!-- Result Modal -->
-        <ResultOverlay :visible="showWinOverlay" :win-amount="winAmount" :t="t as any" @close="showWinOverlay = false" />
+        <ResultOverlay
+          :visible="showWinOverlay"
+          :win-amount="winAmount"
+          :t="t as (key: string) => string"
+          @close="showWinOverlay = false"
+        />
       </view>
 
       <!-- Stats Tab -->
@@ -72,15 +86,18 @@
 <script setup lang="ts">
 import "../../static/coin-flip.css";
 import { ref, computed, onUnmounted } from "vue";
-import { usePayments, useWallet, useEvents} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { formatNumber, sleep, toFixed8 } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { sha256Hex, sha256HexFromHex } from "@shared/utils/hash";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoStats, NeoDoc, NeoButton, type StatItem } from "@shared/components";
+import { AppLayout, NeoCard, NeoStats, NeoDoc, NeoButton, type StatItem, ChainWarning } from "@shared/components";
 import { audioManager } from "../../utils/audio";
 import type { NavTab } from "@shared/components/NavBar.vue";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
+import { useGameState } from "@shared/composables/useGameState";
 
 import CoinArena, { type GameResult } from "./components/CoinArena.vue";
 import BetControls from "./components/BetControls.vue";
@@ -103,14 +120,12 @@ const docFeatures = computed(() => [
 
 const APP_ID = "miniapp-coinflip";
 const SCRIPT_NAME = "flip-coin";
-const { payGAS } = usePayments(APP_ID);
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { list: listEvents } = useEvents();
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, waitForEvent } = usePaymentFlow(APP_ID);
 
 const betAmount = ref("1");
 const choice = ref<"heads" | "tails">("heads");
-const wins = ref(0);
-const losses = ref(0);
+const { wins, losses, winRate, totalGames, recordWin, recordLoss } = useGameState();
 const totalWon = ref(0);
 const isFlipping = ref(false);
 const result = ref<GameResult | null>(null);
@@ -125,16 +140,6 @@ const errorMessage = ref<string | null>(null);
 let errorClearTimer: ReturnType<typeof setTimeout> | null = null;
 
 const formatNum = (n: number) => formatNumber(n, 2);
-
-const waitForEvent = async (txid: string, eventName: string) => {
-  for (let attempt = 0; attempt < 20; attempt += 1) {
-    const res = await listEvents({ app_id: APP_ID, event_name: eventName, limit: 20 });
-    const match = res.events.find((evt) => evt.tx_hash === txid);
-    if (match) return match;
-    await sleep(1500);
-  }
-  return null;
-};
 
 const MAX_BET = 100;
 
@@ -152,7 +157,7 @@ const hashSeed = async (seed: string): Promise<string> => {
 
 const simulateCoinFlip = async (
   seed: string,
-  playerChoice: boolean
+  playerChoice: boolean,
 ): Promise<{ won: boolean; outcome: "heads" | "tails" }> => {
   const hashHex = await hashSeed(seed);
   const rand = hexToBigInt(hashHex);
@@ -221,37 +226,28 @@ const flip = async () => {
   showWinOverlay.value = false;
 
   try {
-    if (!address.value) {
-      await connect();
-    }
-    if (!address.value) {
-      throw new Error(t("connectWallet"));
-    }
     const contract = await ensureContractAddress();
-
-    const payment = await payGAS(betAmount.value, `coinflip:${choice.value}`);
-    const receiptId = payment.receipt_id;
-    if (!receiptId) {
-      throw new Error(t("receiptMissing"));
-    }
 
     const amountBase = toFixed8(betAmount.value);
     if (amountBase === "0") {
       throw new Error(t("invalidBetAmount"));
     }
 
-    const initiateTx = await invokeContract({
-      scriptHash: contract,
-      operation: "initiateBet",
-      args: [
-        { type: "Hash160", value: address.value as string },
-        { type: "Integer", value: amountBase },
-        { type: "Boolean", value: choice.value === "heads" },
-        { type: "Integer", value: String(receiptId) },
-      ],
-    });
+    // Process payment and get invoke function
+    const { receiptId, invoke: invokeWithReceipt } = await processPayment(
+      betAmount.value,
+      `coinflip:${choice.value}:${betAmount.value}`,
+    );
 
-    const initiateTxid = String((initiateTx as any)?.txid || (initiateTx as any)?.txHash || "");
+    // Initiate bet using the invoke function from payment flow
+    const initiateResult = (await invokeWithReceipt("initiateBet", [
+      { type: "Hash160", value: address.value as string },
+      { type: "Integer", value: amountBase },
+      { type: "Boolean", value: choice.value === "heads" },
+      { type: "Integer", value: String(receiptId) },
+    ])) as { txid: string; receiptId: string };
+
+    const initiateTxid = initiateResult.txid;
     const initiatedEvent = initiateTxid ? await waitForEvent(initiateTxid, "BetInitiated") : null;
     if (!initiatedEvent) {
       throw new Error(t("betPending"));
@@ -266,7 +262,7 @@ const flip = async () => {
       throw new Error(t("betMissing"));
     }
 
-    audioManager.play('flip');
+    audioManager.play("flip");
     const playerChoice = choice.value === "heads";
     const simulated = await simulateCoinFlip(seed, playerChoice);
 
@@ -275,8 +271,8 @@ const flip = async () => {
     isFlipping.value = false;
     result.value = { won: simulated.won, outcome: simulated.outcome.toUpperCase() };
 
-    if (simulated.won) audioManager.play('win');
-    else audioManager.play('lose');
+    if (simulated.won) audioManager.play("win");
+    else audioManager.play("lose");
 
     const scriptHash = await ensureScriptHash();
     const settleTx = await invokeContract({
@@ -301,12 +297,12 @@ const flip = async () => {
         const payoutValue = Number(payoutRaw || 0) / 1e8;
 
         if (simulated.won) {
-          wins.value++;
+          recordWin(payoutValue);
           totalWon.value += payoutValue;
           winAmount.value = payoutValue.toFixed(2);
           showWinOverlay.value = true;
         } else {
-          losses.value++;
+          recordLoss();
         }
       }
     }
@@ -375,8 +371,14 @@ onUnmounted(() => {
 }
 
 @keyframes toast-in {
-  from { transform: translate(-50%, -20px); opacity: 0; }
-  to { transform: translate(-50%, 0); opacity: 1; }
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
 }
 
 .scrollable {

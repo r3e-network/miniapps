@@ -1,146 +1,137 @@
 <template>
-  <AppLayout  :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="theme-million-piece">
-      <view v-if="chainType === 'evm'" class="px-4 mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold map-warning-title">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 map-warning-desc">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-              t("switchToNeo")
-            }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <view v-if="activeTab === 'map'" class="tab-content">
-      <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
-        <text class="font-bold">{{ status.msg }}</text>
-      </NeoCard>
+        <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
+          <text class="font-bold">{{ status.msg }}</text>
+        </NeoCard>
 
-      <!-- Pixel Art Territory Map -->
-      <NeoCard variant="erobo" class="map-card">
-        <view class="map-container">
-          <!-- Coordinate Display -->
-          <view class="coordinate-display">
-            <text class="coord-label">{{ t("coordinates") }}:</text>
-            <text class="coord-value">X: {{ selectedX }} / Y: {{ selectedY }}</text>
-          </view>
-
-          <!-- Zoom Controls -->
-          <view class="zoom-controls">
-            <view class="zoom-btn" @click="zoomOut">
-              <text>-</text>
+        <!-- Pixel Art Territory Map -->
+        <NeoCard variant="erobo" class="map-card">
+          <view class="map-container">
+            <!-- Coordinate Display -->
+            <view class="coordinate-display">
+              <text class="coord-label">{{ t("coordinates") }}:</text>
+              <text class="coord-value">X: {{ selectedX }} / Y: {{ selectedY }}</text>
             </view>
-            <text class="zoom-level">{{ zoomLevel }}x</text>
-            <view class="zoom-btn" @click="zoomIn">
-              <text>+</text>
-            </view>
-          </view>
 
-          <!-- Pixel Grid Map -->
-          <view class="pixel-map-wrapper">
-            <view class="pixel-map" :style="{ transform: `scale(${zoomLevel})` }">
-              <view
-                v-for="(tile, i) in tiles"
-                :key="i"
-                :class="[
-                  'pixel',
-                  tile.owned && 'pixel-owned',
-                  tile.selected && 'pixel-selected',
-                  tile.isYours && 'pixel-yours',
-                ]"
-                :style="{ backgroundColor: getTileColor(tile) }"
-                @click="selectTile(i)"
-              >
-                <view v-if="tile.selected" class="pixel-cursor"></view>
+            <!-- Zoom Controls -->
+            <view class="zoom-controls">
+              <view class="zoom-btn" @click="zoomOut">
+                <text>-</text>
+              </view>
+              <text class="zoom-level">{{ zoomLevel }}x</text>
+              <view class="zoom-btn" @click="zoomIn">
+                <text>+</text>
+              </view>
+            </view>
+
+            <!-- Pixel Grid Map -->
+            <view class="pixel-map-wrapper">
+              <view class="pixel-map" :style="{ transform: `scale(${zoomLevel})` }">
+                <view
+                  v-for="(tile, i) in tiles"
+                  :key="i"
+                  :class="[
+                    'pixel',
+                    tile.owned && 'pixel-owned',
+                    tile.selected && 'pixel-selected',
+                    tile.isYours && 'pixel-yours',
+                  ]"
+                  :style="{ backgroundColor: getTileColor(tile) }"
+                  @click="selectTile(i)"
+                >
+                  <view v-if="tile.selected" class="pixel-cursor"></view>
+                </view>
+              </view>
+            </view>
+
+            <!-- Map Legend -->
+            <view class="map-legend">
+              <view class="legend-item">
+                <view class="legend-color legend-available"></view>
+                <text class="legend-text">{{ t("available") }}</text>
+              </view>
+              <view class="legend-item">
+                <view class="legend-color legend-yours"></view>
+                <text class="legend-text">{{ t("yourTerritory") }}</text>
+              </view>
+              <view class="legend-item">
+                <view class="legend-color legend-others"></view>
+                <text class="legend-text">{{ t("othersTerritory") }}</text>
               </view>
             </view>
           </view>
+        </NeoCard>
 
-          <!-- Map Legend -->
-          <view class="map-legend">
-            <view class="legend-item">
-              <view class="legend-color legend-available"></view>
-              <text class="legend-text">{{ t("available") }}</text>
+        <!-- Territory Purchase Panel -->
+        <NeoCard variant="erobo-neo">
+          <NeoCard variant="erobo-neo" flat class="territory-info">
+            <view class="info-row">
+              <text class="info-label">{{ t("position") }}:</text>
+              <text class="info-value">{{ t("tile") }} #{{ selectedTile }} ({{ selectedX }}, {{ selectedY }})</text>
             </view>
-            <view class="legend-item">
-              <view class="legend-color legend-yours"></view>
-              <text class="legend-text">{{ t("yourTerritory") }}</text>
+            <view class="info-row">
+              <text class="info-label">{{ t("status") }}:</text>
+              <text :class="['info-value', tiles[selectedTile].owned ? 'status-owned' : 'status-free']">
+                {{ tiles[selectedTile].owned ? t("occupied") : t("available") }}
+              </text>
             </view>
-            <view class="legend-item">
-              <view class="legend-color legend-others"></view>
-              <text class="legend-text">{{ t("othersTerritory") }}</text>
+            <view class="info-row price-row">
+              <text class="info-label">{{ t("price") }}:</text>
+              <text class="info-value price-value">{{ tilePrice }} GAS</text>
             </view>
-          </view>
-        </view>
-      </NeoCard>
+          </NeoCard>
+          <NeoButton
+            variant="primary"
+            size="lg"
+            block
+            :loading="isPurchasing"
+            :disabled="tiles[selectedTile].owned"
+            @click="purchaseTile"
+          >
+            {{ isPurchasing ? t("claiming") : tiles[selectedTile].owned ? t("alreadyClaimed") : t("claimNow") }}
+          </NeoButton>
+        </NeoCard>
+      </view>
 
-      <!-- Territory Purchase Panel -->
-      <NeoCard variant="erobo-neo">
-        <NeoCard variant="erobo-neo" flat class="territory-info">
-          <view class="info-row">
-            <text class="info-label">{{ t("position") }}:</text>
-            <text class="info-value">{{ t("tile") }} #{{ selectedTile }} ({{ selectedX }}, {{ selectedY }})</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ t("status") }}:</text>
-            <text :class="['info-value', tiles[selectedTile].owned ? 'status-owned' : 'status-free']">
-              {{ tiles[selectedTile].owned ? t("occupied") : t("available") }}
-            </text>
-          </view>
-          <view class="info-row price-row">
-            <text class="info-label">{{ t("price") }}:</text>
-            <text class="info-value price-value">{{ tilePrice }} GAS</text>
+      <!-- Stats Tab -->
+      <view v-if="activeTab === 'stats'" class="tab-content scrollable">
+        <!-- Territory Stats -->
+        <NeoCard variant="erobo" class="mb-4">
+          <view class="stats-grid">
+            <NeoCard flat variant="erobo-neo" class="flex flex-col items-center p-3 text-center">
+              <text class="stat-value">{{ ownedTiles }}</text>
+              <text class="stat-label">{{ t("tilesOwned") }}</text>
+            </NeoCard>
+            <NeoCard flat variant="erobo-neo" class="flex flex-col items-center p-3 text-center">
+              <text class="stat-value">{{ coverage }}%</text>
+              <text class="stat-label">{{ t("mapControl") }}</text>
+            </NeoCard>
+            <NeoCard flat variant="erobo-neo" class="flex flex-col items-center p-3 text-center">
+              <text class="stat-value">{{ formatNum(totalSpent) }}</text>
+              <text class="stat-label">{{ t("gasSpent") }}</text>
+            </NeoCard>
           </view>
         </NeoCard>
-        <NeoButton
-          variant="primary"
-          size="lg"
-          block
-          :loading="isPurchasing"
-          :disabled="tiles[selectedTile].owned"
-          @click="purchaseTile"
-        >
-          {{ isPurchasing ? t("claiming") : tiles[selectedTile].owned ? t("alreadyClaimed") : t("claimNow") }}
-        </NeoButton>
-      </NeoCard>
-    </view>
 
-    <!-- Stats Tab -->
-      <view v-if="activeTab === 'stats'" class="tab-content scrollable">
-      <!-- Territory Stats -->
-      <NeoCard variant="erobo" class="mb-4">
-        <view class="stats-grid">
-          <NeoCard flat variant="erobo-neo" class="flex flex-col items-center p-3 text-center">
-            <text class="stat-value">{{ ownedTiles }}</text>
-            <text class="stat-label">{{ t("tilesOwned") }}</text>
-          </NeoCard>
-          <NeoCard flat variant="erobo-neo" class="flex flex-col items-center p-3 text-center">
-            <text class="stat-value">{{ coverage }}%</text>
-            <text class="stat-label">{{ t("mapControl") }}</text>
-          </NeoCard>
-          <NeoCard flat variant="erobo-neo" class="flex flex-col items-center p-3 text-center">
-            <text class="stat-value">{{ formatNum(totalSpent) }}</text>
-            <text class="stat-label">{{ t("gasSpent") }}</text>
-          </NeoCard>
-        </view>
-      </NeoCard>
+        <NeoCard variant="erobo">
+          <NeoStats :stats="statsData" />
+        </NeoCard>
+      </view>
 
-      <NeoCard variant="erobo">
-        <NeoStats :stats="statsData" />
-      </NeoCard>
-    </view>
-
-    <!-- Docs Tab -->
+      <!-- Docs Tab -->
       <view v-if="activeTab === 'docs'" class="tab-content scrollable">
-      <NeoDoc
-        :title="t('title')"
-        :subtitle="t('docSubtitle')"
-        :description="t('docDescription')"
-        :steps="docSteps"
-        :features="docFeatures"
-      />
+        <NeoDoc
+          :title="t('title')"
+          :subtitle="t('docSubtitle')"
+          :description="t('docDescription')"
+          :steps="docSteps"
+          :features="docFeatures"
+        />
       </view>
       <Fireworks :active="status?.type === 'success'" :duration="3000" />
     </view>
@@ -149,13 +140,23 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
-import { formatNumber, sleep } from "@shared/utils/format";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
+import { formatNumber } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { useI18n } from "@/composables/useI18n";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult } from "@shared/utils/neo";
-import { AppLayout, NeoButton, NeoCard, NeoStats, NeoDoc, Fireworks, type StatItem } from "@shared/components";
-
+import {
+  AppLayout,
+  NeoButton,
+  NeoCard,
+  NeoStats,
+  NeoDoc,
+  Fireworks,
+  type StatItem,
+  ChainWarning,
+} from "@shared/components";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();
 
@@ -173,8 +174,8 @@ const docFeatures = computed(() => [
 ]);
 
 const APP_ID = "miniapp-millionpiecemap";
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS } = usePayments(APP_ID);
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
 const GRID_SIZE = 64;
@@ -190,7 +191,7 @@ const TERRITORY_COLORS = [
   "var(--map-territory-5)", // Yellow
   "var(--map-territory-6)", // Soft Purple
   "var(--map-territory-7)", // Orange
-  "var(--map-territory-8)"  // Blue
+  "var(--map-territory-8)", // Blue
 ];
 
 type Tile = {
@@ -251,7 +252,7 @@ const waitForEvent = async (txid: string, eventName: string) => {
     const res = await listEvents({ app_id: APP_ID, event_name: eventName, limit: 25 });
     const match = res.events.find((evt) => evt.tx_hash === txid);
     if (match) return match;
-    await sleep(1500);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
   }
   return null;
 };
@@ -316,7 +317,7 @@ const loadTiles = async () => {
       tiles.value.map(async (tile) => {
         const res = await invokeRead({
           contractHash: contract,
-          operation: "getPiece",
+          operation: "GetPiece",
           args: [
             { type: "Integer", value: String(tile.x) },
             { type: "Integer", value: String(tile.y) },
@@ -357,22 +358,23 @@ const purchaseTile = async () => {
     }
     const contract = await ensureContractAddress();
     const tile = tiles.value[selectedTile.value];
-    const payment = await payGAS(tilePrice.value.toString(), `map:claim:${tile.x}:${tile.y}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(tilePrice.value.toString(), `map:claim:${tile.x}:${tile.y}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
-    const tx = await invokeContract({
-      scriptHash: contract,
-      operation: "claimPiece",
-      args: [
+    const tx = await invoke(
+      "claimPiece",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "Integer", value: String(tile.x) },
         { type: "Integer", value: String(tile.y) },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
-    const txid = String((tx as any)?.txid || (tx as any)?.txHash || "");
+      contract,
+    );
+    const txid = String(
+      (tx as { txid?: string; txHash?: string })?.txid || (tx as { txid?: string; txHash?: string })?.txHash || "",
+    );
     const evt = txid ? await waitForEvent(txid, "PieceClaimed") : null;
     if (!evt) {
       throw new Error(t("claimPending"));
@@ -411,10 +413,12 @@ watch(address, async () => {
   flex-direction: column;
   gap: 20px;
   background-color: var(--map-sea);
-  background-image: 
+  background-image:
     repeating-linear-gradient(45deg, transparent 0, transparent 40px, var(--map-grid) 40px, var(--map-grid) 80px),
     radial-gradient(var(--map-paper) 20%, transparent 20%);
-  background-size: 200px 200px, 40px 40px;
+  background-size:
+    200px 200px,
+    40px 40px;
   min-height: 100vh;
 }
 
@@ -424,12 +428,13 @@ watch(address, async () => {
   background: var(--map-bg);
   box-shadow: var(--map-shadow);
   position: relative;
-  
+
   &::after {
-    content: 'X';
+    content: "X";
     position: absolute;
-    top: 10px; right: 10px;
-    font-family: 'Times New Roman', serif;
+    top: 10px;
+    right: 10px;
+    font-family: "Times New Roman", serif;
     font-weight: bold;
     color: var(--map-red);
     font-size: 24px;
@@ -463,7 +468,7 @@ watch(address, async () => {
   cursor: pointer;
   background: var(--map-paper);
   transition: all 0.2s;
-  
+
   &.has-selection {
     z-index: 10;
   }
@@ -473,9 +478,10 @@ watch(address, async () => {
     z-index: 20;
     position: relative;
     &::after {
-      content: 'X';
+      content: "X";
       position: absolute;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
       color: var(--map-red);
       font-weight: bold;
@@ -496,7 +502,7 @@ watch(address, async () => {
   border: 2px solid var(--map-border) !important;
   box-shadow: var(--map-card-shadow-lite) !important;
   border-radius: 4px !important;
-  
+
   &.variant-erobo-neo {
     background: var(--map-paper) !important;
   }
@@ -509,17 +515,17 @@ watch(address, async () => {
 
 :global(.theme-million-piece) :deep(.neo-button) {
   border-radius: 4px !important;
-  font-family: 'Times New Roman', serif !important;
+  font-family: "Times New Roman", serif !important;
   text-transform: uppercase;
   font-weight: 800 !important;
   letter-spacing: 0.1em;
-  
+
   &.variant-primary {
     background: var(--map-red) !important;
     color: var(--map-button-text) !important;
     border: 2px solid var(--map-border) !important;
     box-shadow: 4px 4px 0 var(--map-border) !important;
-    
+
     &:active {
       transform: translate(2px, 2px);
       box-shadow: 2px 2px 0 var(--map-border) !important;
@@ -535,7 +541,7 @@ watch(address, async () => {
   color: var(--map-ink);
   border: 1px solid var(--map-border);
   border-radius: 4px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-weight: 700;
   font-size: 14px;
 }

@@ -3,6 +3,7 @@ packages:
   - "packages/*/*"
   - "shared"
   - "templates/*"
+  - "sdk/packages/*"
 
 catalogs:
   default:

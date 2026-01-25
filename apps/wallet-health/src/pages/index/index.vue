@@ -112,7 +112,7 @@
         :features="[
           { name: t('feature1Name'), desc: t('feature1Desc') },
           { name: t('feature2Name'), desc: t('feature2Desc') },
-          { name: t('feature3Name'), desc: t('feature3Desc') }
+          { name: t('feature3Name'), desc: t('feature3Desc') },
         ]"
       />
     </view>
@@ -122,6 +122,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { AppLayout, NeoCard, NeoButton, NeoStats, NeoDoc, AppIcon } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
@@ -130,7 +131,7 @@ import { formatFixed8 } from "@shared/utils/format";
 import { parseInvokeResult } from "@shared/utils/neo";
 
 const { t } = useI18n();
-const { address, connect, invokeRead, chainType, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeRead, chainType, switchToAppChain } = useWallet() as WalletSDK;
 
 const NEO_HASH = "0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5";
 const GAS_HASH = "0xd2a4cff31913016155e38e474a2c06d08be276cf";

@@ -1,16 +1,7 @@
 <template>
   <AppLayout class="theme-hall-of-fame" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="chainType === 'evm'" class="mb-4">
-      <NeoCard variant="danger">
-        <view class="flex flex-col items-center gap-2 py-1">
-          <text class="text-center font-bold">{{ t("wrongChain") }}</text>
-          <text class="text-xs text-center opacity-80">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-            t("switchToNeo")
-          }}</NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <view class="app-container">
       <!-- Status Message -->
@@ -48,7 +39,12 @@
 
         <!-- Leaderboard List -->
         <view class="leaderboard-list">
-          <NeoCard v-for="(entrant, index) in leaderboard" :key="entrant.id" :variant="index === 0 ? 'erobo-neo' : 'erobo'" class="entrant-card-glass">
+          <NeoCard
+            v-for="(entrant, index) in leaderboard"
+            :key="entrant.id"
+            :variant="index === 0 ? 'erobo-neo' : 'erobo'"
+            class="entrant-card-glass"
+          >
             <view class="entrant-inner">
               <!-- Rank -->
               <view class="rank-glass" :class="'rank-' + (index + 1)">
@@ -96,7 +92,9 @@
 
         <NeoCard v-if="!isLoading && leaderboard.length === 0" variant="erobo" class="empty-state-card">
           <view class="empty-state-content">
-            <text class="empty-state-title">{{ fetchError ? t("leaderboardUnavailable") : t("leaderboardEmpty") }}</text>
+            <text class="empty-state-title">{{
+              fetchError ? t("leaderboardUnavailable") : t("leaderboardEmpty")
+            }}</text>
             <text v-if="fetchError" class="empty-state-subtitle">{{ t("tryAgain") }}</text>
           </view>
         </NeoCard>
@@ -119,20 +117,21 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useWallet, usePayments} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { initTheme, listenForThemeChanges } from "@shared/utils/theme";
 import { formatNumber } from "@shared/utils/format";
-import { AppLayout, NeoButton, NeoCard, NeoDoc } from "@shared/components";
+import { AppLayout, NeoButton, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import type { NavTab } from "@shared/components/NavBar.vue";
-
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();
 
 const APP_ID = "miniapp-hall-of-fame";
-const { address, connect, chainType, switchToAppChain } = useWallet() as any;
-const { payGAS } = usePayments(APP_ID);
+const { address, connect, chainType } = useWallet() as WalletSDK;
+const { processPayment } = usePaymentFlow(APP_ID);
 
 type Category = "people" | "community" | "developer";
 type Period = "day" | "week" | "month" | "all";
@@ -240,7 +239,7 @@ async function handleVote(entrant: Entrant) {
 
   try {
     // First, process the GAS payment
-    await payGAS("1", `vote:${entrant.id}:${entrant.name}`);
+    await processPayment("1", `vote:${entrant.id}:${entrant.name}`);
 
     // Then, persist the vote to the backend
     const response = await fetch("/api/hall-of-fame/vote", {
@@ -281,7 +280,7 @@ onMounted(async () => {
 @use "@shared/styles/variables.scss";
 
 @import "./hall-of-fame-theme.scss";
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap");
 
 :global(page) {
   background: var(--bg-primary);
@@ -308,12 +307,15 @@ onMounted(async () => {
   box-shadow: var(--hof-shadow) !important;
   color: var(--text-primary) !important;
   position: relative;
-  
+
   /* Frame Inner Shadow */
   &::after {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     box-shadow: var(--hof-shadow-inner);
     pointer-events: none;
   }
@@ -342,19 +344,19 @@ onMounted(async () => {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 700 !important;
-  
+
   &.variant-primary {
     background: linear-gradient(135deg, var(--hof-accent), var(--hof-accent-strong)) !important;
     color: var(--hof-button-text) !important;
     border: 1px solid var(--hof-accent-border) !important;
     box-shadow: var(--hof-button-shadow) !important;
-    
+
     &:active {
       transform: translateY(1px);
       box-shadow: none !important;
     }
   }
-  
+
   &.variant-secondary {
     background: var(--hof-secondary-bg) !important;
     border: 1px solid var(--hof-frame) !important;
@@ -408,7 +410,7 @@ onMounted(async () => {
   font-size: 12px;
   color: var(--text-muted);
   cursor: pointer;
-  
+
   &.active {
     background: var(--hof-accent);
     color: var(--hof-button-text);
@@ -442,9 +444,18 @@ onMounted(async () => {
   text-align: center;
   color: var(--text-muted);
 
-  &.rank-1 { color: var(--hof-accent); font-size: 32px; }
-  &.rank-2 { color: var(--text-muted); font-size: 28px; }
-  &.rank-3 { color: var(--hof-bronze); font-size: 28px; }
+  &.rank-1 {
+    color: var(--hof-accent);
+    font-size: 32px;
+  }
+  &.rank-2 {
+    color: var(--text-muted);
+    font-size: 28px;
+  }
+  &.rank-3 {
+    color: var(--hof-bronze);
+    font-size: 28px;
+  }
 }
 
 .avatar-glass {
@@ -501,7 +512,9 @@ onMounted(async () => {
 
 .progress-bar-glass {
   position: absolute;
-  left: 0; top: 0; bottom: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
   background: var(--hof-progress);
   border-radius: 2px;
 
@@ -512,14 +525,21 @@ onMounted(async () => {
 
 .progress-glow {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(90deg, transparent, var(--hof-glow), transparent);
   animation: shimmer 2s infinite;
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .empty-state-card {

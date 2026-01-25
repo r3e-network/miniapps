@@ -120,10 +120,6 @@ namespace NeoMiniAppPlatform.Contracts
             BigInteger poolBalance = GetPoolBalance();
             ExecutionEngine.Assert(poolBalance >= amount, "insufficient pool balance");
 
-            // CRITICAL: Transfer GAS to provider FIRST (before state updates)
-            bool transferred = GAS.Transfer(Runtime.ExecutingScriptHash, provider, amount, null);
-            ExecutionEngine.Assert(transferred, "GAS transfer failed");
-
             // Update pool balance
             Storage.Put(Storage.CurrentContext, PREFIX_POOL_BALANCE, poolBalance - amount);
 
@@ -228,7 +224,7 @@ namespace NeoMiniAppPlatform.Contracts
         /// Periodic execution callback invoked by AutomationAnchor.
         /// SECURITY: Only AutomationAnchor can invoke this method.
         /// </summary>
-        public static new void OnPeriodicExecution(BigInteger taskId, ByteString payload)
+        public static void OnPeriodicExecution(BigInteger taskId, ByteString payload)
         {
             UInt160 anchor = AutomationAnchor();
             ExecutionEngine.Assert(anchor != UInt160.Zero && Runtime.CallingScriptHash == anchor, "unauthorized");

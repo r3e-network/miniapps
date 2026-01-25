@@ -1,46 +1,23 @@
 <template>
   <AppLayout class="theme-neo-swap" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning -->
-    <view v-if="chainType === 'evm'" class="chain-warning">
-      <view class="warning-content">
-        <text class="warning-icon">⚠️</text>
-        <view class="warning-text">
-          <text class="warning-title">{{ t("wrongChain") }}</text>
-          <text class="warning-desc">{{ t("wrongChainMessage") }}</text>
-        </view>
-        <view class="switch-btn" @click="() => switchToAppChain()">
-          {{ t("switchToNeo") }}
-        </view>
-      </view>
-    </view>
-
-    <SwapTab v-if="activeTab === 'swap'" :t="t as any" />
-    <PoolTab v-if="activeTab === 'pool'" :t="t as any" />
-
-    <!-- Docs Tab -->
-    <view v-if="activeTab === 'docs'" class="docs-container">
-      <NeoDoc
-        :title="t('title')"
-        :subtitle="t('docSubtitle')"
-        :description="t('docDescription')"
-        :steps="docSteps"
-        :features="docFeatures"
-      />
-    </view>
-  </AppLayout>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')"
+  /></AppLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc } from "@shared/components";
+import { AppLayout, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import SwapTab from "./components/SwapTab.vue";
 import PoolTab from "./components/PoolTab.vue";
 
 const { t } = useI18n();
-const { chainType, switchToAppChain } = useWallet() as any;
+const { chainType } = useWallet() as WalletSDK;
 
 const navTabs = computed<NavTab[]>(() => [
   { id: "swap", icon: "swap", label: t("tabSwap") },
@@ -114,7 +91,7 @@ const docFeatures = computed(() => [
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background: var(--swap-warning-btn-hover-bg);
   }

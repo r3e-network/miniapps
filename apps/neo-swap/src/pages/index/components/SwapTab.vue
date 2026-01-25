@@ -209,9 +209,9 @@ const minReceived = computed(() => {
 // Methods
 function getTokenIcon(symbol: string): string {
   // Use relative paths that work within the MiniApp's context
-  if (symbol === "NEO") return "./static/neo-token.png";
-  if (symbol === "GAS") return "./static/gas-token.png";
-  return "./static/logo.png";
+  if (symbol === "NEO") return "/neo-token.png";
+  if (symbol === "GAS") return "/gas-token.png";
+  return "/logo.png";
 }
 
 function formatBalance(balance: number): string {

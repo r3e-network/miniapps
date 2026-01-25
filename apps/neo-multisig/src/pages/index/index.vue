@@ -1,5 +1,7 @@
 <template>
   <AppLayout class="theme-neo-multisig" :tabs="tabs" :active-tab="activeTab" @tab-change="handleTabChange">
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
     <view class="multisig-container">
       <!-- Animated Background -->
       <view class="bg-effects">
@@ -47,17 +49,9 @@
           <view class="load-input-row">
             <view class="input-wrapper">
               <text class="input-icon">🔗</text>
-              <input
-                type="text"
-                class="load-input"
-                :placeholder="t('loadPlaceholder')"
-                v-model="idInput"
-              />
+              <input type="text" class="load-input" :placeholder="t('loadPlaceholder')" v-model="idInput" />
             </view>
-            <view 
-              :class="['load-btn', { disabled: !idInput }]"
-              @click="loadTransaction"
-            >
+            <view :class="['load-btn', { disabled: !idInput }]" @click="loadTransaction">
               <text class="load-btn-text">{{ t("loadButton") }}</text>
             </view>
           </view>
@@ -82,12 +76,7 @@
 
         <!-- History List -->
         <view v-else class="history-list">
-          <view 
-            v-for="item in history" 
-            :key="item.id" 
-            class="history-card"
-            @click="openHistory(item.id)"
-          >
+          <view v-for="item in history" :key="item.id" class="history-card" @click="openHistory(item.id)">
             <view class="history-icon">
               <text class="icon-text">{{ getStatusIcon(item.status) }}</text>
             </view>
@@ -123,7 +112,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { AppLayout } from "@shared/components";
+import { AppLayout, ChainWarning } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
 
 const { t } = useI18n();
@@ -136,12 +125,8 @@ const activeTab = ref("home");
 const idInput = ref("");
 const history = ref<any[]>([]);
 
-const pendingCount = computed(() => 
-  history.value.filter(h => h.status === "pending" || h.status === "ready").length
-);
-const completedCount = computed(() => 
-  history.value.filter(h => h.status === "broadcasted").length
-);
+const pendingCount = computed(() => history.value.filter((h) => h.status === "pending" || h.status === "ready").length);
+const completedCount = computed(() => history.value.filter((h) => h.status === "broadcasted").length);
 
 onMounted(() => {
   const saved = uni.getStorageSync("multisig_history");
@@ -175,30 +160,42 @@ const openHistory = (id: string) => {
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case "pending": return "⏳";
-    case "ready": return "✅";
-    case "broadcasted": return "🚀";
-    case "cancelled": return "❌";
-    case "expired": return "⏰";
-    default: return "📄";
+    case "pending":
+      return "⏳";
+    case "ready":
+      return "✅";
+    case "broadcasted":
+      return "🚀";
+    case "cancelled":
+      return "❌";
+    case "expired":
+      return "⏰";
+    default:
+      return "📄";
   }
 };
 
 const statusLabel = (status: string) => {
   switch (status) {
-    case "pending": return t("statusPending");
-    case "ready": return t("statusReady");
-    case "broadcasted": return t("statusBroadcasted");
-    case "cancelled": return t("statusCancelled");
-    case "expired": return t("statusExpired");
-    default: return t("statusUnknown");
+    case "pending":
+      return t("statusPending");
+    case "ready":
+      return t("statusReady");
+    case "broadcasted":
+      return t("statusBroadcasted");
+    case "cancelled":
+      return t("statusCancelled");
+    case "expired":
+      return t("statusExpired");
+    default:
+      return t("statusUnknown");
   }
 };
 
-const shorten = (str: string) => str ? str.slice(0, 8) + "..." + str.slice(-6) : "";
+const shorten = (str: string) => (str ? str.slice(0, 8) + "..." + str.slice(-6) : "");
 const formatDate = (ts: string) => {
   const date = new Date(ts);
-  return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };
 </script>
 
@@ -251,15 +248,20 @@ const formatDate = (ts: string) => {
 .grid-overlay {
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(var(--multi-grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--multi-grid-line) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(30px, -20px); }
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(30px, -20px);
+  }
 }
 
 // Hero Section
@@ -338,7 +340,7 @@ const formatDate = (ts: string) => {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: var(--multi-action-shadow);
-  
+
   &:active {
     transform: scale(0.98);
     box-shadow: var(--multi-action-shadow-press);
@@ -409,7 +411,7 @@ const formatDate = (ts: string) => {
 .load-section {
   position: relative;
   z-index: 50;
-  
+
   .load-label {
     display: block;
     font-size: 12px;
@@ -440,7 +442,7 @@ const formatDate = (ts: string) => {
   transition: all 0.2s ease;
   position: relative;
   z-index: 100;
-  
+
   &:focus-within {
     border-color: var(--multi-input-focus-border);
     background: var(--multi-input-focus-bg);
@@ -461,13 +463,13 @@ const formatDate = (ts: string) => {
   color: var(--multi-text);
   font-size: 14px;
   padding: 14px 0;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   outline: none !important;
   min-height: 48px;
   width: 100%;
   -webkit-appearance: none;
   appearance: none;
-  
+
   &::placeholder {
     color: var(--multi-text-soft);
   }
@@ -480,12 +482,12 @@ const formatDate = (ts: string) => {
   padding: 14px 24px;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:active:not(.disabled) {
     background: var(--multi-button-active-bg);
     border-color: var(--multi-button-active-border);
   }
-  
+
   &.disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -577,7 +579,7 @@ const formatDate = (ts: string) => {
   padding: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:active {
     background: var(--multi-accent-soft);
     border-color: var(--multi-accent-border);
@@ -607,7 +609,7 @@ const formatDate = (ts: string) => {
   font-size: 14px;
   font-weight: 600;
   color: var(--multi-text);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   margin-bottom: 4px;
 }
 
@@ -621,7 +623,7 @@ const formatDate = (ts: string) => {
 .status-badge {
   padding: 4px 10px;
   border-radius: 8px;
-  
+
   &.pending {
     background: var(--multi-warning-soft);
   }
@@ -644,12 +646,22 @@ const formatDate = (ts: string) => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  
-  .pending & { color: var(--multi-warning); }
-  .ready & { color: var(--multi-info); }
-  .broadcasted & { color: var(--multi-accent); }
-  .cancelled & { color: var(--multi-error); }
-  .expired & { color: var(--multi-text-dim); }
+
+  .pending & {
+    color: var(--multi-warning);
+  }
+  .ready & {
+    color: var(--multi-info);
+  }
+  .broadcasted & {
+    color: var(--multi-accent);
+  }
+  .cancelled & {
+    color: var(--multi-error);
+  }
+  .expired & {
+    color: var(--multi-text-dim);
+  }
 }
 
 // Stats Row

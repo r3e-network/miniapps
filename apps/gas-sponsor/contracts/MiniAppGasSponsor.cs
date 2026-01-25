@@ -149,12 +149,6 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_SPONSORS, 0);
             Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_BENEFICIARIES, 0);
         }
-
-        public static new void Update(ByteString nef, string manifest, object data)
-        {
-            ValidateAdmin();
-            ContractManagement.Update(nef, manifest, data);
-        }
         #endregion
 
         #region Read Methods

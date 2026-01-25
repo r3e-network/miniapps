@@ -1,0 +1,53 @@
+/**
+ * Miniapp Theme Variables
+ *
+ * Define your app-specific theme variables here.
+ * Use semantic names and reference the shared theme variables.
+ */
+
+:global(.theme-template) {
+  /* ===== Primary Colors ===== */
+  --template-bg-primary: #0f172a;
+  --template-text-primary: #f8fafc;
+  --template-text-secondary: rgba(248, 250, 252, 0.7);
+  --template-text-tertiary: rgba(248, 250, 252, 0.5);
+
+  /* ===== Card Styles ===== */
+  --template-card-bg: rgba(255, 255, 255, 0.03);
+  --template-card-border: rgba(255, 255, 255, 0.1);
+  --template-card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+  /* ===== Accent Colors ===== */
+  --template-accent-primary: #3b82f6;
+  --template-accent-secondary: #8b5cf6;
+  --template-accent-success: #10b981;
+  --template-accent-warning: #f59e0b;
+  --template-accent-error: #ef4444;
+
+  /* ===== Semantic Mappings ===== */
+  --bg-primary: var(--template-bg-primary);
+  --text-primary: var(--template-text-primary);
+  --text-secondary: var(--template-text-secondary);
+  --text-tertiary: var(--template-text-tertiary);
+  --bg-card: var(--template-card-bg);
+  --border-color: var(--template-card-border);
+  --card-shadow: var(--template-card-shadow);
+  --accent-primary: var(--template-accent-primary);
+  --accent-success: var(--template-accent-success);
+  --accent-error: var(--template-accent-error);
+}
+
+/**
+ * Light Theme Override
+ */
+:global(.theme-light .theme-template),
+:global([data-theme="light"] .theme-template) {
+  --template-bg-primary: #f8fafc;
+  --template-text-primary: #0f172a;
+  --template-text-secondary: rgba(15, 23, 42, 0.7);
+  --template-text-tertiary: rgba(15, 23, 42, 0.5);
+
+  --template-card-bg: rgba(255, 255, 255, 0.85);
+  --template-card-border: rgba(15, 23, 42, 0.1);
+  --template-card-shadow: 0 4px 15px rgba(15, 23, 42, 0.12);
+}

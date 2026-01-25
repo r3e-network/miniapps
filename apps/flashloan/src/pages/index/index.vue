@@ -1,16 +1,9 @@
 <template>
-  <AppLayout  :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content theme-flashloan">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold flash-warning-title">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 flash-warning-desc">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <!-- Instruction Mode Banner -->
       <NeoCard variant="warning" class="mb-4 text-center">
@@ -28,6 +21,7 @@
         :is-loading="isLoading"
         :t="t as any"
         @lookup="lookupLoan"
+        @request-loan="handleRequestLoan"
       />
     </view>
 
@@ -53,12 +47,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import { useWallet, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { formatNumber, formatAddress, formatGas } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton } from "@shared/components";
+import { AppLayout, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 
 import FlowVisualization from "./components/FlowVisualization.vue";
@@ -67,7 +62,6 @@ import LoanRequestForm from "./components/LoanRequestForm.vue";
 import SimulationStats from "./components/SimulationStats.vue";
 import RecentLoansTable from "./components/RecentLoansTable.vue";
 import FlashloanDocs from "./components/FlashloanDocs.vue";
-
 
 const { t } = useI18n();
 
@@ -101,7 +95,7 @@ type ExecutedLoan = {
 };
 
 const APP_ID = "miniapp-flashloan";
-const { chainType, invokeRead, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, chainType, invokeRead, invokeContract, getContractAddress } = useWallet() as WalletSDK;
 const { list: listEvents } = useEvents();
 
 const contractAddress = ref<string | null>(null);
@@ -254,7 +248,51 @@ const fetchLoanStats = async () => {
 const fetchData = async () => {
   try {
     await Promise.all([fetchPoolBalance(), fetchLoanStats()]);
-  } catch {
+  } catch {}
+};
+
+const toFixed8 = (value: string | number): string => {
+  const num = Number(value);
+  if (Number.isNaN(num) || num <= 0) return "0";
+  return Math.floor(num * 100000000).toString();
+};
+
+const toGas = (value: unknown): number => {
+  const num = toNumber(value);
+  return num / 100000000;
+};
+
+const handleRequestLoan = async (data: { amount: string; callbackContract: string; callbackMethod: string }) => {
+  if (!address.value) {
+    status.value = { msg: t("connectWallet"), type: "error" };
+    return;
+  }
+
+  isLoading.value = true;
+  status.value = null;
+
+  try {
+    const contract = await ensureContractAddress();
+    const amountInt = toFixed8(data.amount);
+
+    await invokeContract({
+      scriptHash: contract,
+      operation: "RequestLoan",
+      args: [
+        { type: "Hash160", value: address.value },
+        { type: "Integer", value: amountInt },
+        { type: "Hash160", value: data.callbackContract },
+        { type: "String", value: data.callbackMethod },
+      ],
+    });
+
+    status.value = { msg: t("loanRequested"), type: "success" };
+    await fetchPoolBalance();
+    await fetchLoanStats();
+  } catch (e: any) {
+    status.value = { msg: e.message || t("error"), type: "error" };
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -286,10 +324,10 @@ watch(chainType, () => fetchData());
 
   /* Circuit Line Overlay */
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
       linear-gradient(var(--flash-grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--flash-grid) 1px, transparent 1px);
     background-size: 50px 50px;
@@ -306,7 +344,7 @@ watch(chainType, () => fetchData());
   border-radius: 8px !important;
   color: var(--flash-text) !important;
   backdrop-filter: blur(8px);
-  
+
   &.variant-warning {
     background: var(--flash-warning-bg) !important;
     border-color: var(--flash-accent-yellow) !important;
@@ -317,16 +355,16 @@ watch(chainType, () => fetchData());
 
 .theme-flashloan :deep(.neo-button) {
   border-radius: 4px !important;
-  font-family: 'Consolas', 'Monaco', monospace !important;
+  font-family: "Consolas", "Monaco", monospace !important;
   text-transform: uppercase;
   font-weight: 700 !important;
   letter-spacing: 0.05em;
-  
+
   &.variant-primary {
     background: linear-gradient(90deg, var(--flash-accent-blue) 0%, var(--flash-accent-cyan) 100%) !important;
     color: var(--flash-button-text) !important;
     box-shadow: var(--flash-button-shadow) !important;
-    
+
     &:active {
       transform: scale(0.98);
       box-shadow: var(--flash-button-shadow-pressed) !important;

@@ -1,16 +1,7 @@
 <template>
   <AppLayout class="theme-on-chain-tarot" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="chainType === 'evm'" class="px-4 mb-4">
-      <NeoCard variant="danger">
-        <view class="flex flex-col items-center gap-2 py-1">
-          <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-          <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-            t("switchToNeo")
-          }}</NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <view v-if="activeTab === 'game'" class="tab-content mystical-bg">
       <!-- Mystical Background Decorations -->
@@ -57,13 +48,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { parseStackItem } from "@shared/utils/neo";
-import { sleep } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc } from "@shared/components";
+import { AppLayout, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 import AppStatus from "./components/AppStatus.vue";
 import GameArea from "./components/GameArea.vue";
@@ -71,7 +63,6 @@ import ReadingDisplay from "./components/ReadingDisplay.vue";
 import StatisticsTab from "./components/StatisticsTab.vue";
 import type { Card } from "./components/TarotCard.vue";
 import { TAROT_DECK } from "./components/tarot-data";
-
 
 const { t } = useI18n();
 
@@ -88,8 +79,8 @@ const docFeatures = computed(() => [
   { name: t("feature2Name"), desc: t("feature2Desc") },
 ]);
 const APP_ID = "miniapp-onchaintarot";
-const { address, connect, invokeContract, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { address, connect, invokeContract, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, isLoading } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
 // Use the imported full deck
@@ -108,7 +99,7 @@ const waitForEvent = async (txid: string, eventName: string) => {
     const res = await listEvents({ app_id: APP_ID, event_name: eventName, limit: 25 });
     const match = res.events.find((evt) => evt.tx_hash === txid);
     if (match) return match;
-    await sleep(1500);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
   }
   return null;
 };
@@ -121,7 +112,7 @@ const waitForReading = async (readingId: string) => {
       return String(values[0] ?? "") === String(readingId);
     });
     if (match) return match;
-    await sleep(1500);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
   }
   return null;
 };
@@ -145,25 +136,25 @@ const draw = async () => {
     if (!address.value) throw new Error(t("connectWallet"));
     const contract = await ensureContractAddress();
 
-    const payment = await payGAS("0.05", `tarot:${Date.now()}`);
-    const receiptId = payment.receipt_id;
-    if (!receiptId) throw new Error(t("receiptMissing"));
+    const { receiptId, invoke } = await processPayment("0.05", `tarot:${Date.now()}`);
 
     const prompt = question.value.trim() || t("defaultQuestion");
     // Contract signature: RequestReading(user, question, spreadType, category, receiptId)
-    const tx = await invokeContract({
-      scriptHash: contract,
-      operation: "requestReading",
-      args: [
+    const tx = await invoke(
+      "requestReading",
+      [
         { type: "Hash160", value: address.value },
         { type: "String", value: prompt.slice(0, 200) },
         { type: "Integer", value: "0" }, // spreadType: 0 = single card
         { type: "Integer", value: "0" }, // category: 0 = general
         { type: "Integer", value: receiptId },
       ],
-    });
+      contract,
+    );
 
-    const txid = String((tx as any)?.txid || (tx as any)?.txHash || "");
+    const txid = String(
+      (tx as { txid?: string; txHash?: string })?.txid || (tx as { txid?: string; txHash?: string })?.txHash || "",
+    );
     const requestedEvt = txid ? await waitForEvent(txid, "ReadingRequested") : null;
     if (!requestedEvt) throw new Error(t("readingPending"));
     const requestedValues = Array.isArray((requestedEvt as any)?.state)
@@ -265,13 +256,35 @@ onMounted(async () => {
   position: absolute;
   font-size: 20px; /* Smaller, more subtle stars */
   color: var(--tarot-star-text);
-  text-shadow: 0 0 5px var(--tarot-star-glow), 0 0 10px var(--tarot-accent);
+  text-shadow:
+    0 0 5px var(--tarot-star-glow),
+    0 0 10px var(--tarot-accent);
   animation: twinkle 4s infinite ease-in-out;
 }
-.star-1 { top: 10%; left: 15%; animation-delay: 0s; font-size: 16px; }
-.star-2 { top: 25%; right: 20%; animation-delay: 1.2s; font-size: 12px; }
-.star-3 { bottom: 15%; left: 10%; animation-delay: 2.5s; font-size: 14px; }
-.star-4 { bottom: 30%; right: 10%; animation-delay: 3.8s; font-size: 18px; }
+.star-1 {
+  top: 10%;
+  left: 15%;
+  animation-delay: 0s;
+  font-size: 16px;
+}
+.star-2 {
+  top: 25%;
+  right: 20%;
+  animation-delay: 1.2s;
+  font-size: 12px;
+}
+.star-3 {
+  bottom: 15%;
+  left: 10%;
+  animation-delay: 2.5s;
+  font-size: 14px;
+}
+.star-4 {
+  bottom: 30%;
+  right: 10%;
+  animation-delay: 3.8s;
+  font-size: 18px;
+}
 
 .moon-decoration {
   position: absolute;
@@ -285,13 +298,25 @@ onMounted(async () => {
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .scrollable {
@@ -317,7 +342,7 @@ onMounted(async () => {
   border: 1px solid var(--tarot-button-border) !important;
   color: var(--tarot-button-text) !important;
   box-shadow: 0 0 15px var(--tarot-moon-glow) !important;
-  
+
   &:active {
     transform: scale(0.98);
   }

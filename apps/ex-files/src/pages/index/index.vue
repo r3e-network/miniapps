@@ -1,16 +1,9 @@
 <template>
-  <AppLayout  :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="theme-ex-files">
       <view v-if="activeTab === 'files' || activeTab === 'upload' || activeTab === 'stats'" class="app-container">
-        <view v-if="chainType === 'evm'" class="mb-4">
-          <NeoCard variant="danger">
-            <view class="flex flex-col items-center gap-2 py-1">
-              <text class="text-center font-bold noir-warning-title">{{ t("wrongChain") }}</text>
-              <text class="text-xs text-center opacity-80 noir-warning-desc">{{ t("wrongChainMessage") }}</text>
-              <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{ t("switchToNeo") }}</NeoButton>
-            </view>
-          </NeoCard>
-        </view>
+        <!-- Chain Warning - Framework Component -->
+        <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
         <StatusMessage :status="status" />
 
@@ -65,21 +58,22 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { sha256Hex } from "@shared/utils/hash";
 import { formatHash } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc, NeoCard, NeoStats } from "@shared/components";
+import { AppLayout, NeoDoc, NeoCard, NeoStats, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import type { StatItem } from "@shared/components/NeoStats.vue";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 import StatusMessage from "./components/StatusMessage.vue";
 import QueryRecordForm, { type RecordItem } from "./components/QueryRecordForm.vue";
 import MemoryArchive from "./components/MemoryArchive.vue";
 import UploadForm from "./components/UploadForm.vue";
-
 
 const { t } = useI18n();
 
@@ -93,8 +87,8 @@ const APP_ID = "miniapp-exfiles";
 const CREATE_FEE = "0.1";
 const QUERY_FEE = "0.05";
 
-const { address, connect, invokeRead, invokeContract, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { address, connect, invokeRead, invokeContract, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, isLoading } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
 const activeTab = ref("files");
@@ -227,23 +221,22 @@ const createRecord = async () => {
     }
     await ensureContractAddress();
     const hashHex = await sha256Hex(recordContent.value.trim());
-    const payment = await payGAS(CREATE_FEE, `create:${hashHex.slice(0, 8)}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(CREATE_FEE, `create:${hashHex.slice(0, 8)}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
     // Contract signature: CreateRecord(creator, dataHash, rating, category, receiptId)
-    await invokeContract({
-      scriptHash: contractAddress.value as string,
-      operation: "createRecord",
-      args: [
+    await invoke(
+      "CreateRecord",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "ByteArray", value: hashHex },
         { type: "Integer", value: rating },
         { type: "Integer", value: recordCategory.value },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contractAddress.value as string,
+    );
     showStatus(t("recordCreated"), "success");
     recordContent.value = "";
     recordRating.value = "3";
@@ -252,16 +245,6 @@ const createRecord = async () => {
   } catch (e: any) {
     showStatus(e.message || t("error"), "error");
   }
-};
-
-const waitForEvent = async (txid: string, eventName: string) => {
-  for (let attempt = 0; attempt < 20; attempt += 1) {
-    const res = await listEvents({ app_id: APP_ID, event_name: eventName, limit: 20 });
-    const match = res.events.find((evt: any) => evt.tx_hash === txid);
-    if (match) return match;
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-  }
-  return null;
 };
 
 const queryRecord = async () => {
@@ -277,21 +260,22 @@ const queryRecord = async () => {
     const input = queryInput.value.trim();
     const isHash = /^(0x)?[0-9a-fA-F]{64}$/.test(input);
     const hashHex = isHash ? input.replace(/^0x/, "") : await sha256Hex(input);
-    const payment = await payGAS(QUERY_FEE, `query:${hashHex.slice(0, 8)}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(QUERY_FEE, `query:${hashHex.slice(0, 8)}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
-    const tx = await invokeContract({
-      scriptHash: contractAddress.value as string,
-      operation: "queryByHash",
-      args: [
+    const tx = await invoke(
+      "queryByHash",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "ByteArray", value: hashHex },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
-    const txid = String((tx as any)?.txid || (tx as any)?.txHash || "");
+      contractAddress.value as string,
+    );
+    const txid = String(
+      (tx as { txid?: string; txHash?: string })?.txid || (tx as { txid?: string; txHash?: string })?.txHash || "",
+    );
     if (txid) {
       const evt = await waitForEvent(txid, "RecordQueried");
       if (evt) {
@@ -329,7 +313,7 @@ onMounted(async () => {
 @use "@shared/styles/variables.scss";
 
 @import "./ex-files-theme.scss";
-@import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Special+Elite&display=swap");
 
 :global(page) {
   background: var(--bg-primary);
@@ -342,12 +326,14 @@ onMounted(async () => {
   flex-direction: column;
   gap: 24px;
   background-color: var(--noir-bg);
-  background-image: 
+  background-image:
     linear-gradient(var(--noir-grid), var(--noir-grid)),
     radial-gradient(circle at 1px 1px, var(--noir-ink-line) 1px, transparent 0);
-  background-size: auto, 4px 4px;
+  background-size:
+    auto,
+    4px 4px;
   min-height: 100vh;
-  font-family: 'Special Elite', 'Courier Prime', monospace;
+  font-family: "Special Elite", "Courier Prime", monospace;
 }
 
 /* Noir Component Overrides */
@@ -355,37 +341,42 @@ onMounted(async () => {
   background: var(--noir-paper) !important;
   border: 1px solid var(--noir-border) !important;
   border-radius: 2px !important;
-  box-shadow: 4px 4px 8px var(--noir-shadow), inset 0 0 40px var(--noir-card-glow) !important;
+  box-shadow:
+    4px 4px 8px var(--noir-shadow),
+    inset 0 0 40px var(--noir-card-glow) !important;
   color: var(--noir-text) !important;
   position: relative;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 2px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
     background: var(--noir-ink-line);
   }
 }
 
 :global(.theme-ex-files) :deep(.neo-button) {
   border-radius: 2px !important;
-  font-family: 'Special Elite', monospace !important;
+  font-family: "Special Elite", monospace !important;
   text-transform: uppercase;
   font-weight: 700 !important;
   letter-spacing: 0.1em;
   box-shadow: var(--noir-button-shadow) !important;
-  
+
   &.variant-primary {
     background: var(--noir-button-primary-bg) !important;
     color: var(--noir-button-primary-text) !important;
     border: 1px solid var(--noir-button-primary-border) !important;
-    
+
     &:active {
       transform: translate(1px, 1px);
       box-shadow: var(--noir-button-shadow-press) !important;
     }
   }
-  
+
   &.variant-secondary {
     background: transparent !important;
     border: 2px solid var(--noir-button-secondary-border) !important;
@@ -397,7 +388,7 @@ onMounted(async () => {
   background: var(--noir-input-bg) !important;
   border: 1px solid var(--noir-input-border) !important;
   border-radius: 0 !important;
-  font-family: 'Special Elite', monospace !important;
+  font-family: "Special Elite", monospace !important;
   color: var(--noir-input-text) !important;
 }
 

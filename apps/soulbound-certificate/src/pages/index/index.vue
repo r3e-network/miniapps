@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-soulbound-certificate" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
     <view v-if="activeTab === 'templates'" class="tab-content">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-            <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-              {{ t("switchToNeo") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
@@ -22,8 +13,18 @@
           <NeoInput v-model="form.name" :label="t('templateName')" :placeholder="t('templateNamePlaceholder')" />
           <NeoInput v-model="form.issuerName" :label="t('issuerName')" :placeholder="t('issuerNamePlaceholder')" />
           <NeoInput v-model="form.category" :label="t('category')" :placeholder="t('categoryPlaceholder')" />
-          <NeoInput v-model="form.maxSupply" type="number" :label="t('maxSupply')" :placeholder="t('maxSupplyPlaceholder')" />
-          <NeoInput v-model="form.description" type="textarea" :label="t('description')" :placeholder="t('descriptionPlaceholder')" />
+          <NeoInput
+            v-model="form.maxSupply"
+            type="number"
+            :label="t('maxSupply')"
+            :placeholder="t('maxSupplyPlaceholder')"
+          />
+          <NeoInput
+            v-model="form.description"
+            type="textarea"
+            :label="t('description')"
+            :placeholder="t('descriptionPlaceholder')"
+          />
 
           <NeoButton
             variant="primary"
@@ -214,7 +215,7 @@
         :features="[
           { name: t('feature1Name'), desc: t('feature1Desc') },
           { name: t('feature2Name'), desc: t('feature2Desc') },
-          { name: t('feature3Name'), desc: t('feature3Desc') }
+          { name: t('feature3Name'), desc: t('feature3Desc') },
         ]"
       />
     </view>
@@ -222,8 +223,16 @@
 
   <NeoModal :visible="issueModalOpen" :title="t('issueTitle')" :closeable="true" @close="closeIssueModal">
     <view class="form-group">
-      <NeoInput v-model="issueForm.recipient" :label="t('issueRecipient')" :placeholder="t('issueRecipientPlaceholder')" />
-      <NeoInput v-model="issueForm.recipientName" :label="t('recipientName')" :placeholder="t('recipientNamePlaceholder')" />
+      <NeoInput
+        v-model="issueForm.recipient"
+        :label="t('issueRecipient')"
+        :placeholder="t('issueRecipientPlaceholder')"
+      />
+      <NeoInput
+        v-model="issueForm.recipientName"
+        :label="t('recipientName')"
+        :placeholder="t('recipientNamePlaceholder')"
+      />
       <NeoInput v-model="issueForm.achievement" :label="t('achievement')" :placeholder="t('achievementPlaceholder')" />
       <NeoInput v-model="issueForm.memo" :label="t('memo')" :placeholder="t('memoPlaceholder')" />
     </view>
@@ -243,14 +252,15 @@
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import QRCode from "qrcode";
 import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton, NeoInput, NeoModal, NeoDoc } from "@shared/components";
+import { AppLayout, NeoCard, NeoButton, NeoInput, NeoModal, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, parseInvokeResult } from "@shared/utils/neo";
 
 const { t } = useI18n();
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress, switchToAppChain } = useWallet() as any;
+const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
 
 const activeTab = ref("templates");
 const navTabs = computed<NavTab[]>(() => [
@@ -408,7 +418,7 @@ const fetchTemplateIds = async (issuerAddress: string) => {
   const contract = await ensureContractAddress();
   const result = await invokeRead({
     contractAddress: contract,
-    operation: "getIssuerTemplates",
+      operation: "GetIssuerTemplates",
     args: [
       { type: "Hash160", value: issuerAddress },
       { type: "Integer", value: "0" },
@@ -428,7 +438,7 @@ const fetchTemplateDetails = async (templateId: string) => {
   const contract = await ensureContractAddress();
   const details = await invokeRead({
     contractAddress: contract,
-    operation: "getTemplateDetails",
+      operation: "GetTemplateDetails",
     args: [{ type: "Integer", value: templateId }],
   });
   const parsed = parseInvokeResult(details) as any;
@@ -458,7 +468,7 @@ const refreshCertificates = async () => {
     const contract = await ensureContractAddress();
     const tokenResult = await invokeRead({
       contractAddress: contract,
-      operation: "tokensOf",
+      operation: "TokensOf",
       args: [{ type: "Hash160", value: address.value }],
     });
     const parsed = parseInvokeResult(tokenResult);
@@ -468,25 +478,28 @@ const refreshCertificates = async () => {
     }
     const tokenIds = parsed.map((value) => String(value || "")).filter(Boolean);
 
-    const details = await Promise.all(tokenIds.map(async (tokenId) => {
-      const detailResult = await invokeRead({
-        contractAddress: contract,
-        operation: "getCertificateDetails",
-        args: [{ type: "ByteArray", value: encodeTokenId(tokenId) }],
-      });
-      const detailParsed = parseInvokeResult(detailResult) as any;
-      return parseCertificate(detailParsed, tokenId);
-    }));
+    const details = await Promise.all(
+      tokenIds.map(async (tokenId) => {
+        const detailResult = await invokeRead({
+          contractAddress: contract,
+          operation: "GetCertificateDetails",
+          args: [{ type: "ByteArray", value: encodeTokenId(tokenId) }],
+        });
+        const detailParsed = parseInvokeResult(detailResult) as any;
+        return parseCertificate(detailParsed, tokenId);
+      }),
+    );
 
     certificates.value = details.filter(Boolean) as CertificateItem[];
-    await Promise.all(certificates.value.map(async (cert) => {
-      if (!certQrs[cert.tokenId]) {
-        try {
-          certQrs[cert.tokenId] = await QRCode.toDataURL(cert.tokenId, { margin: 1 });
-        } catch {
+    await Promise.all(
+      certificates.value.map(async (cert) => {
+        if (!certQrs[cert.tokenId]) {
+          try {
+            certQrs[cert.tokenId] = await QRCode.toDataURL(cert.tokenId, { margin: 1 });
+          } catch {}
         }
-      }
-    }));
+      }),
+    );
   } catch (e: any) {
     setStatus(e.message || t("contractMissing"), "error");
   } finally {
@@ -530,7 +543,7 @@ const createTemplate = async () => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "createTemplate",
+      operation: "CreateTemplate",
       args: [
         { type: "Hash160", value: address.value },
         { type: "String", value: name },
@@ -587,7 +600,7 @@ const issueCertificate = async () => {
 
     await invokeContract({
       scriptHash: contract,
-      operation: "issueCertificate",
+      operation: "IssueCertificate",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Hash160", value: recipient },
@@ -619,7 +632,7 @@ const toggleTemplate = async (template: TemplateItem) => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "setTemplateActive",
+      operation: "SetTemplateActive",
       args: [
         { type: "Hash160", value: address.value },
         { type: "Integer", value: template.id },
@@ -647,7 +660,7 @@ const lookupCertificate = async () => {
     const contract = await ensureContractAddress();
     const detailResult = await invokeRead({
       contractAddress: contract,
-      operation: "getCertificateDetails",
+      operation: "GetCertificateDetails",
       args: [{ type: "ByteArray", value: encodeTokenId(tokenId) }],
     });
     const detailParsed = parseInvokeResult(detailResult) as any;
@@ -680,7 +693,7 @@ const revokeCertificate = async () => {
     const contract = await ensureContractAddress();
     await invokeContract({
       scriptHash: contract,
-      operation: "revokeCertificate",
+      operation: "RevokeCertificate",
       args: [
         { type: "Hash160", value: address.value },
         { type: "ByteArray", value: encodeTokenId(tokenId) },
@@ -701,7 +714,7 @@ const copyTokenId = (tokenId: string) => {
     data: tokenId,
     success: () => {
       setStatus(t("copied"), "success");
-    }
+    },
   });
 };
 

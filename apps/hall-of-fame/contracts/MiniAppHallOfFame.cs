@@ -131,12 +131,6 @@ namespace NeoMiniAppPlatform.Contracts
             InitializeCategory("projects");
         }
 
-        public static new void Update(ByteString nef, string manifest, object data)
-        {
-            ValidateAdmin();
-            ContractManagement.Update(nef, manifest, data);
-        }
-
         private static void InitializeCategory(string category)
         {
             var key = GetCategoryKey(category);

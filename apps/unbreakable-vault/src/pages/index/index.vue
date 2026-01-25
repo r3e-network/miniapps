@@ -1,16 +1,7 @@
 <template>
   <AppLayout class="theme-unbreakable-vault" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-    <view v-if="chainType === 'evm'" class="px-4 mb-4">
-      <NeoCard variant="danger">
-        <view class="flex flex-col items-center gap-2 py-1">
-          <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
-          <text class="text-xs text-center opacity-80 text-white">{{ t("wrongChainMessage") }}</text>
-          <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">
-            {{ t("switchToNeo") }}
-          </NeoButton>
-        </view>
-      </NeoCard>
-    </view>
+    <!-- Chain Warning - Framework Component -->
+    <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <view v-if="activeTab === 'create'" class="tab-content scrollable">
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-3 text-center">
@@ -38,13 +29,25 @@
           <view class="input-group">
             <text class="input-label">{{ t("difficultyLabel") }}</text>
             <view class="difficulty-actions">
-              <NeoButton size="sm" :variant="vaultDifficulty === 1 ? 'primary' : 'secondary'" @click="vaultDifficulty = 1">
+              <NeoButton
+                size="sm"
+                :variant="vaultDifficulty === 1 ? 'primary' : 'secondary'"
+                @click="vaultDifficulty = 1"
+              >
                 {{ t("difficultyEasy") }}
               </NeoButton>
-              <NeoButton size="sm" :variant="vaultDifficulty === 2 ? 'primary' : 'secondary'" @click="vaultDifficulty = 2">
+              <NeoButton
+                size="sm"
+                :variant="vaultDifficulty === 2 ? 'primary' : 'secondary'"
+                @click="vaultDifficulty = 2"
+              >
                 {{ t("difficultyMedium") }}
               </NeoButton>
-              <NeoButton size="sm" :variant="vaultDifficulty === 3 ? 'primary' : 'secondary'" @click="vaultDifficulty = 3">
+              <NeoButton
+                size="sm"
+                :variant="vaultDifficulty === 3 ? 'primary' : 'secondary'"
+                @click="vaultDifficulty = 3"
+              >
                 {{ t("difficultyHard") }}
               </NeoButton>
             </view>
@@ -89,12 +92,7 @@
       <NeoCard v-if="myVaults.length > 0" variant="erobo" class="recent-vaults mt-4">
         <text class="section-title">{{ t("myVaults") }}</text>
         <view class="vault-list">
-          <view
-            v-for="vault in myVaults"
-            :key="vault.id"
-            class="vault-item"
-            @click="selectVault(vault.id)"
-          >
+          <view v-for="vault in myVaults" :key="vault.id" class="vault-item" @click="selectVault(vault.id)">
             <view class="vault-meta">
               <text class="vault-id">#{{ vault.id }}</text>
               <text class="vault-bounty">{{ formatGas(vault.bounty) }} GAS</text>
@@ -182,12 +180,7 @@
           <text class="empty-text">{{ t("noRecentVaults") }}</text>
         </view>
         <view v-else class="vault-list">
-          <view
-            v-for="vault in recentVaults"
-            :key="vault.id"
-            class="vault-item"
-            @click="selectVault(vault.id)"
-          >
+          <view v-for="vault in recentVaults" :key="vault.id" class="vault-item" @click="selectVault(vault.id)">
             <view class="vault-meta">
               <text class="vault-id">#{{ vault.id }}</text>
               <text class="vault-bounty">{{ formatGas(vault.bounty) }} GAS</text>
@@ -212,14 +205,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { useWallet, usePayments, useEvents} from "@neo/uniapp-sdk";
+import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { sha256Hex } from "@shared/utils/hash";
 import { normalizeScriptHash, parseInvokeResult, parseStackItem, addressToScriptHash } from "@shared/utils/neo";
 import { bytesToHex, formatAddress, formatGas, toFixed8 } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard } from "@shared/components";
-
+import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard, ChainWarning } from "@shared/components";
+import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();
 
@@ -227,8 +221,8 @@ const APP_ID = "miniapp-unbreakablevault";
 const MIN_BOUNTY = 1;
 const ATTEMPT_FEE = 0.1;
 
-const { address, connect, chainType, invokeContract, invokeRead, getContractAddress, switchToAppChain } = useWallet() as any;
-const { payGAS, isLoading } = usePayments(APP_ID);
+const { address, connect, chainType, invokeContract, invokeRead, getContractAddress } = useWallet() as WalletSDK;
+const { processPayment, isLoading } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
 const activeTab = ref("create");
@@ -283,10 +277,10 @@ const canAttempt = computed(() => {
   const status = vaultDetails.value?.status;
   return Boolean(
     vaultIdInput.value &&
-      attemptSecret.value.trim() &&
-      vaultDetails.value &&
-      String(vaultDetails.value.id) === String(vaultIdInput.value) &&
-      status === "active",
+    attemptSecret.value.trim() &&
+    vaultDetails.value &&
+    String(vaultDetails.value.id) === String(vaultIdInput.value) &&
+    status === "active",
   );
 });
 
@@ -345,8 +339,7 @@ const loadRecentVaults = async () => {
       })
       .filter(Boolean) as { id: string; creator: string; bounty: number }[];
     recentVaults.value = vaults;
-  } catch {
-  }
+  } catch {}
 };
 
 const loadMyVaults = async () => {
@@ -364,22 +357,21 @@ const loadMyVaults = async () => {
         const id = String(values[0] ?? "");
         const creator = String(values[1] ?? "");
         const bountyValue = Number(values[2] ?? 0);
-        
+
         const creatorHash = normalizeScriptHash(addressToScriptHash(creator));
-        
+
         if (!id || creatorHash !== myHash) return null;
-        
-        return { 
-          id, 
+
+        return {
+          id,
           bounty: bountyValue,
-          created: evt.created_at ? new Date(evt.created_at).getTime() : Date.now()
+          created: evt.created_at ? new Date(evt.created_at).getTime() : Date.now(),
         };
       })
       .filter(Boolean) as { id: string; bounty: number; created: number }[];
-      
+
     myVaults.value = vaults.sort((a, b) => b.created - a.created);
-  } catch {
-  }
+  } catch {}
 };
 
 const createVault = async () => {
@@ -396,14 +388,12 @@ const createVault = async () => {
     const bountyInt = toFixed8(amount);
     const hash = secretHash.value || (await sha256Hex(secret.value));
 
-    const payment = await payGAS(String(amount), `vault:create:${hash.slice(0, 10)}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(String(amount), `vault:create:${hash.slice(0, 10)}`);
     if (!receiptId) throw new Error(t("receiptMissing"));
 
-    const res = await invokeContract({
-      scriptHash: contract,
-      operation: "createVault",
-      args: [
+    const res = await invoke(
+      "createVault",
+      [
         { type: "Hash160", value: address.value as string },
         { type: "ByteArray", value: hash },
         { type: "Integer", value: bountyInt },
@@ -412,7 +402,8 @@ const createVault = async () => {
         { type: "String", value: vaultDescription.value.trim().slice(0, 300) },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contract,
+    );
 
     const vaultId = String((res as any)?.result || (res as any)?.stack?.[0]?.value || "");
     createdVaultId.value = vaultId || createdVaultId.value;
@@ -437,7 +428,7 @@ const loadVault = async () => {
     const contract = await ensureContractAddress();
     const res = await invokeRead({
       contractAddress: contract,
-      operation: "getVaultDetails",
+      operation: "GetVaultDetails",
       args: [{ type: "Integer", value: vaultIdInput.value }],
     });
     const parsed = parseInvokeResult(res);
@@ -485,20 +476,19 @@ const attemptBreak = async () => {
     const contract = await ensureContractAddress();
 
     const feeBase = vaultDetails.value?.attemptFee ?? toFixed8(ATTEMPT_FEE);
-    const payment = await payGAS(formatGas(feeBase), `vault:attempt:${vaultIdInput.value}`);
-    const receiptId = payment.receipt_id;
+    const { receiptId, invoke } = await processPayment(formatGas(feeBase), `vault:attempt:${vaultIdInput.value}`);
     if (!receiptId) throw new Error(t("receiptMissing"));
 
-    const res = await invokeContract({
-      scriptHash: contract,
-      operation: "attemptBreak",
-      args: [
+    const res = await invoke(
+      "attemptBreak",
+      [
         { type: "Integer", value: vaultIdInput.value },
         { type: "Hash160", value: address.value as string },
         { type: "ByteArray", value: toHex(attemptSecret.value) },
         { type: "Integer", value: String(receiptId) },
       ],
-    });
+      contract,
+    );
 
     const success = Boolean((res as any)?.stack?.[0]?.value ?? (res as any)?.result);
     status.value = {
@@ -557,9 +547,15 @@ const docFeatures = computed(() => [
   background-color: var(--vault-bg);
   font-family: var(--vault-font);
   /* Brushed Metal Texture */
-  background-image: 
+  background-image:
     linear-gradient(90deg, var(--vault-metal-light) 0%, transparent 100%),
-    repeating-linear-gradient(45deg, var(--vault-metal-dark) 0px, var(--vault-metal-dark) 1px, transparent 1px, transparent 10px);
+    repeating-linear-gradient(
+      45deg,
+      var(--vault-metal-dark) 0px,
+      var(--vault-metal-dark) 1px,
+      transparent 1px,
+      transparent 10px
+    );
 }
 
 .tab-content {
@@ -576,14 +572,18 @@ const docFeatures = computed(() => [
 :deep(.neo-card) {
   background: var(--vault-bg) !important;
   border-radius: 20px !important;
-  box-shadow: 9px 9px 16px var(--vault-shadow-dark), -9px -9px 16px var(--vault-shadow-light) !important;
+  box-shadow:
+    9px 9px 16px var(--vault-shadow-dark),
+    -9px -9px 16px var(--vault-shadow-light) !important;
   color: var(--vault-text) !important;
   border: none !important;
   padding: 24px !important;
-  
+
   &.variant-danger {
     background: var(--vault-danger-bg) !important;
-    box-shadow: 5px 5px 10px var(--vault-danger-shadow-dark), -5px -5px 10px var(--vault-danger-shadow-light) !important;
+    box-shadow:
+      5px 5px 10px var(--vault-danger-shadow-dark),
+      -5px -5px 10px var(--vault-danger-shadow-light) !important;
     color: var(--vault-danger-text) !important;
   }
 }
@@ -598,49 +598,77 @@ const docFeatures = computed(() => [
   letter-spacing: 0.05em;
   color: var(--vault-text) !important;
   transition: all 0.2s ease;
-  
+
   &.variant-primary {
     background: var(--vault-button-bg);
-    box-shadow: 5px 5px 10px var(--vault-shadow-dark), -5px -5px 10px var(--vault-shadow-light) !important;
+    box-shadow:
+      5px 5px 10px var(--vault-shadow-dark),
+      -5px -5px 10px var(--vault-shadow-light) !important;
     border: none !important;
-    color: var(--vault-button-text) !important; 
-    
+    color: var(--vault-button-text) !important;
+
     &:active {
-      box-shadow: inset 5px 5px 10px var(--vault-shadow-dark), inset -5px -5px 10px var(--vault-shadow-light) !important;
+      box-shadow:
+        inset 5px 5px 10px var(--vault-shadow-dark),
+        inset -5px -5px 10px var(--vault-shadow-light) !important;
     }
   }
-  
+
   &.variant-secondary {
     background: var(--vault-bg) !important;
-    box-shadow: 5px 5px 10px var(--vault-shadow-dark), -5px -5px 10px var(--vault-shadow-light) !important;
+    box-shadow:
+      5px 5px 10px var(--vault-shadow-dark),
+      -5px -5px 10px var(--vault-shadow-light) !important;
     border: none !important;
-    
+
     &:active {
-      box-shadow: inset 5px 5px 10px var(--vault-shadow-dark), inset -5px -5px 10px var(--vault-shadow-light) !important;
+      box-shadow:
+        inset 5px 5px 10px var(--vault-shadow-dark),
+        inset -5px -5px 10px var(--vault-shadow-light) !important;
     }
   }
 }
 
-:deep(input), :deep(.neo-input) {
+:deep(input),
+:deep(.neo-input) {
   background: var(--vault-bg) !important;
   border-radius: 12px !important;
-  box-shadow: inset 5px 5px 10px var(--vault-shadow-dark), inset -5px -5px 10px var(--vault-shadow-light) !important;
+  box-shadow:
+    inset 5px 5px 10px var(--vault-shadow-dark),
+    inset -5px -5px 10px var(--vault-shadow-light) !important;
   border: none !important;
   color: var(--vault-text-strong) !important;
   padding: 12px 16px !important;
-  
+
   &:focus {
-    box-shadow: inset 2px 2px 5px var(--vault-shadow-dark), inset -2px -2px 5px var(--vault-shadow-light) !important;
+    box-shadow:
+      inset 2px 2px 5px var(--vault-shadow-dark),
+      inset -2px -2px 5px var(--vault-shadow-light) !important;
     color: var(--vault-text-strong) !important;
   }
 }
 
-.scrollable { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.scrollable {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-.form-group { display: flex; flex-direction: column; gap: 24px; }
-.input-group { display: flex; flex-direction: column; gap: 12px; }
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-.difficulty-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.difficulty-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 /* Override buttons in difficulty to look like toggles */
 .difficulty-actions :deep(.neo-button) {
   flex: 1;
@@ -667,7 +695,9 @@ const docFeatures = computed(() => [
   padding: 16px;
   border-radius: 12px;
   background: var(--vault-bg);
-  box-shadow: inset 3px 3px 7px var(--vault-shadow-dark), inset -3px -3px 7px var(--vault-shadow-light);
+  box-shadow:
+    inset 3px 3px 7px var(--vault-shadow-dark),
+    inset -3px -3px 7px var(--vault-shadow-light);
 }
 
 .hash-label {
@@ -681,49 +711,120 @@ const docFeatures = computed(() => [
 }
 
 .hash-value {
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   font-size: 12px;
   word-break: break-all;
   color: var(--vault-text);
 }
 
-.vault-created { text-align: center; }
-.vault-created-label { font-size: 12px; text-transform: uppercase; color: var(--vault-text-muted); }
-.vault-created-id { font-size: 32px; font-weight: 800; color: var(--vault-text-strong); margin-top: 8px; }
+.vault-created {
+  text-align: center;
+}
+.vault-created-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--vault-text-muted);
+}
+.vault-created-id {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--vault-text-strong);
+  margin-top: 8px;
+}
 
-.vault-details { display: flex; flex-direction: column; gap: 16px; }
-.vault-detail-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--vault-divider); padding-bottom: 8px; }
-.vault-detail-row:last-child { border-bottom: none; }
+.vault-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.vault-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--vault-divider);
+  padding-bottom: 8px;
+}
+.vault-detail-row:last-child {
+  border-bottom: none;
+}
 
-.detail-label { font-size: 12px; text-transform: uppercase; color: var(--vault-text-muted); }
-.detail-value { font-weight: 700; font-size: 14px; color: var(--vault-text-strong); }
+.detail-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--vault-text-muted);
+}
+.detail-value {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--vault-text-strong);
+}
 
-.mono { font-family: 'Fira Code', monospace; }
+.mono {
+  font-family: "Fira Code", monospace;
+}
 
-.recent-vaults { display: flex; flex-direction: column; gap: 16px; }
-.section-title { font-size: 14px; font-weight: 800; color: var(--vault-text); margin-bottom: 8px; }
+.recent-vaults {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.section-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--vault-text);
+  margin-bottom: 8px;
+}
 
-.vault-list { display: flex; flex-direction: column; gap: 16px; }
+.vault-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
 .vault-item {
   padding: 16px;
   border-radius: 16px;
   background: var(--vault-bg);
-  box-shadow: 5px 5px 10px var(--vault-shadow-dark), -5px -5px 10px var(--vault-shadow-light);
+  box-shadow:
+    5px 5px 10px var(--vault-shadow-dark),
+    -5px -5px 10px var(--vault-shadow-light);
   cursor: pointer;
   transition: transform 0.1s;
-  
+
   &:active {
-    box-shadow: inset 3px 3px 7px var(--vault-shadow-dark), inset -3px -3px 7px var(--vault-shadow-light);
+    box-shadow:
+      inset 3px 3px 7px var(--vault-shadow-dark),
+      inset -3px -3px 7px var(--vault-shadow-light);
     transform: scale(0.99);
   }
 }
 
-.vault-meta { display: flex; justify-content: space-between; font-weight: 700; }
-.vault-id { font-size: 14px; color: var(--vault-text-strong); }
-.vault-bounty { font-size: 14px; color: var(--vault-accent); }
-.vault-creator { font-size: 12px; color: var(--vault-text-subtle); margin-top: 6px; }
+.vault-meta {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.vault-id {
+  font-size: 14px;
+  color: var(--vault-text-strong);
+}
+.vault-bounty {
+  font-size: 14px;
+  color: var(--vault-accent);
+}
+.vault-creator {
+  font-size: 12px;
+  color: var(--vault-text-subtle);
+  margin-top: 6px;
+}
 
-.empty-state { text-align: center; padding: 24px; opacity: 0.5; }
-.empty-text { font-size: 13px; font-style: italic; }
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  opacity: 0.5;
+}
+.empty-text {
+  font-size: 13px;
+  font-style: italic;
+}
 </style>

@@ -1,17 +1,8 @@
 <template>
   <AppLayout class="theme-grant-share" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="app-container">
-      <view v-if="chainType === 'evm'" class="mb-4">
-        <NeoCard variant="danger">
-          <view class="flex flex-col items-center gap-2 py-1">
-            <text class="status-title">{{ t("wrongChain") }}</text>
-            <text class="status-detail">{{ t("wrongChainMessage") }}</text>
-            <NeoButton size="sm" variant="secondary" class="mt-2" @click="() => switchToAppChain()">{{
-              t("switchToNeo")
-            }}</NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <!-- Chain Warning - Framework Component -->
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <!-- Status Message -->
       <NeoCard v-if="statusMessage" :variant="statusType === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
@@ -22,7 +13,6 @@
       <view v-if="activeTab === 'grants'" class="tab-content">
         <!-- Active Grants Section -->
         <view class="grants-section">
-
           <view v-if="loading" class="empty-state">
             <text class="empty-text">{{ t("loading") }}</text>
           </view>
@@ -37,7 +27,14 @@
 
           <!-- Grant Cards -->
           <view v-else class="grants-list">
-            <NeoCard v-for="grant in grants" :key="grant.id" variant="erobo-neo" class="grant-card-neo clickable" hoverable @click="goToDetail(grant)">
+            <NeoCard
+              v-for="grant in grants"
+              :key="grant.id"
+              variant="erobo-neo"
+              class="grant-card-neo clickable"
+              hoverable
+              @click="goToDetail(grant)"
+            >
               <view class="grant-card-header">
                 <view class="grant-info">
                   <text class="grant-title-glass">{{ grant.title }}</text>
@@ -113,22 +110,22 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useWallet} from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
+import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoButton, NeoCard, NeoDoc } from "@shared/components";
+import { AppLayout, NeoButton, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
-
 
 const { t, locale } = useI18n();
 
 function goToDetail(grant: Grant) {
   try {
-    uni.setStorageSync('current_grant_detail', grant);
+    uni.setStorageSync("current_grant_detail", grant);
   } catch (e) {
-    console.error('Failed to save grant detail', e);
+    console.error("Failed to save grant detail", e);
   }
   uni.navigateTo({
-    url: `/pages/detail/index?id=${grant.id}`
+    url: `/pages/detail/index?id=${grant.id}`,
   });
 }
 
@@ -138,7 +135,7 @@ const docFeatures = computed(() => [
   { name: t("feature2Name"), desc: t("feature2Desc") },
 ]);
 
-const { chainType, switchToAppChain } = useWallet() as any;
+const { chainType } = useWallet() as WalletSDK;
 
 interface Grant {
   id: string;
@@ -313,7 +310,7 @@ onMounted(() => {
   flex-direction: column;
   gap: 24px;
   background-color: var(--eco-bg);
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 10%, var(--eco-bg-pattern) 0%, transparent 40%),
     radial-gradient(circle at 90% 90%, var(--eco-bg-pattern) 0%, transparent 40%);
   min-height: 100vh;
@@ -326,7 +323,7 @@ onMounted(() => {
   border-radius: 12px !important;
   box-shadow: var(--eco-card-shadow) !important;
   color: var(--eco-text) !important;
-  
+
   &.variant-erobo-neo {
     background: var(--eco-card-bg) !important;
     border-color: var(--eco-card-accent-border) !important;
@@ -348,19 +345,19 @@ onMounted(() => {
 :deep(.neo-button) {
   border-radius: 99px !important;
   font-weight: 700 !important;
-  
+
   &.variant-primary {
     background: var(--eco-button-primary-bg) !important;
     color: var(--eco-button-primary-text) !important;
     border: none !important;
     box-shadow: var(--eco-button-primary-shadow) !important;
-    
+
     &:active {
       transform: translateY(1px);
       box-shadow: none !important;
     }
   }
-  
+
   &.variant-secondary {
     background: var(--eco-button-secondary-bg) !important;
     color: var(--eco-button-secondary-text) !important;
@@ -494,18 +491,26 @@ onMounted(() => {
   font-weight: 700;
   text-transform: uppercase;
   border-radius: 20px;
-  
+
   &.active {
-    background: var(--eco-badge-active-bg); color: var(--eco-badge-active-text);
+    background: var(--eco-badge-active-bg);
+    color: var(--eco-badge-active-text);
   }
-  &.review, &.voting, &.discussion {
-    background: var(--eco-badge-review-bg); color: var(--eco-badge-review-text);
+  &.review,
+  &.voting,
+  &.discussion {
+    background: var(--eco-badge-review-bg);
+    color: var(--eco-badge-review-text);
   }
   &.executed {
-    background: var(--eco-badge-executed-bg); color: var(--eco-badge-executed-text);
+    background: var(--eco-badge-executed-bg);
+    color: var(--eco-badge-executed-text);
   }
-  &.cancelled, &.rejected, &.expired {
-    background: var(--eco-badge-cancel-bg); color: var(--eco-badge-cancel-text);
+  &.cancelled,
+  &.rejected,
+  &.expired {
+    background: var(--eco-badge-cancel-bg);
+    color: var(--eco-badge-cancel-text);
   }
 }
 
@@ -542,13 +547,19 @@ onMounted(() => {
   border-radius: 6px;
 }
 .stat-chip.accept {
-  background: var(--eco-chip-accept-bg); color: var(--eco-chip-accept-text); border: 1px solid var(--eco-chip-accept-border);
+  background: var(--eco-chip-accept-bg);
+  color: var(--eco-chip-accept-text);
+  border: 1px solid var(--eco-chip-accept-border);
 }
 .stat-chip.reject {
-  background: var(--eco-chip-reject-bg); color: var(--eco-chip-reject-text); border: 1px solid var(--eco-chip-reject-border);
+  background: var(--eco-chip-reject-bg);
+  color: var(--eco-chip-reject-text);
+  border: 1px solid var(--eco-chip-reject-border);
 }
 .stat-chip.comments {
-  background: var(--eco-chip-neutral-bg); color: var(--eco-chip-neutral-text); border: 1px solid var(--eco-chip-neutral-border);
+  background: var(--eco-chip-neutral-bg);
+  color: var(--eco-chip-neutral-text);
+  border: 1px solid var(--eco-chip-neutral-border);
 }
 
 .proposal-actions {
