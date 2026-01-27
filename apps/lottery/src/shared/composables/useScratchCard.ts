@@ -70,7 +70,7 @@ export function useScratchCard() {
       const ticketId = txResult.receiptId || "0";
 
       return { ticketId };
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e.message || "Failed to buy ticket");
       throw e;
     } finally {
@@ -119,7 +119,7 @@ export function useScratchCard() {
         tier,
         revealed,
       };
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e.message || "Failed to reveal ticket");
       throw e;
     } finally {
@@ -158,7 +158,7 @@ export function useScratchCard() {
         prize: isRevealed ? prize : undefined,
         seed: isRevealed ? seed : undefined,
       };
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("[ScratchCard] Failed to get ticket:", e);
       return null;
     }
@@ -178,7 +178,7 @@ export function useScratchCard() {
 
       const parsed = parseInvokeResult(result);
       return Number(parsed ?? 0);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("[ScratchCard] Failed to get ticket count:", e);
       return 0;
     }
@@ -199,7 +199,7 @@ export function useScratchCard() {
       }
 
       return tickets;
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("[ScratchCard] Failed to load tickets:", e);
       return [];
     }

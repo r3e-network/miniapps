@@ -215,7 +215,7 @@ type EnvelopeItem = {
 
 const envelopes = ref<EnvelopeItem[]>([]);
 
-const parseEnvelopeData = (data: any) => {
+const parseEnvelopeData = (data: unknown) => {
   if (!data) return null;
   if (Array.isArray(data)) {
     return {
@@ -262,7 +262,7 @@ const ensureContractAddress = async () => {
 const fetchEnvelopeDetails = async (
   contract: string,
   envelopeId: string,
-  eventData?: any,
+  eventData?: unknown,
 ): Promise<EnvelopeItem | null> => {
   try {
     const envRes = await invokeRead({
@@ -327,7 +327,7 @@ const loadEnvelopes = async () => {
       }),
     );
     envelopes.value = list.filter(Boolean).sort((a, b) => Number(b!.id) - Number(a!.id)) as EnvelopeItem[];
-  } catch (e: any) {
+  } catch (e: unknown) {
     status.value = { msg: e?.message || t("error"), type: "error" };
   } finally {
     loadingEnvelopes.value = false;
@@ -391,7 +391,7 @@ const create = async () => {
     amount.value = "";
     count.value = "";
     await loadEnvelopes();
-  } catch (e: any) {
+  } catch (e: unknown) {
     status.value = { msg: e?.message || t("error"), type: "error" };
   }
 };
@@ -478,7 +478,7 @@ const claim = async (env: EnvelopeItem, fromModal = false) => {
 
     // Refresh list
     await loadEnvelopes();
-  } catch (e: any) {
+  } catch (e: unknown) {
     status.value = { msg: e?.message || t("error"), type: "error" };
     // Close opening modal on error to show the toast
     showOpeningModal.value = false;

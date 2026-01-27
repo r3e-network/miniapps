@@ -306,7 +306,7 @@ const flip = async () => {
         }
       }
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     errorMessage.value = e?.message || t("error");
     isFlipping.value = false;
     if (errorClearTimer) clearTimeout(errorClearTimer);

@@ -39,29 +39,9 @@ namespace NeoMiniAppPlatform.Contracts
         private static readonly byte[] PREFIX_ENVELOPE_ID = new byte[] { 0x40 };
         private static readonly byte[] PREFIX_ENVELOPES = new byte[] { 0x41 };
         private static readonly byte[] PREFIX_GRABBER = new byte[] { 0x42 };
-        private static readonly byte[] PREFIX_REQUEST_TO_ENVELOPE = new byte[] { 0x43 }; // Legacy/Unused in 1-phase
+        private static readonly byte[] PREFIX_REQUEST_TO_ENVELOPE = new byte[] { 0x43 };
         private static readonly byte[] PREFIX_AMOUNTS = new byte[] { 0x44 };
         private static readonly byte[] PREFIX_USER_STATS = new byte[] { 0x45 };
-        // PREFIX_USER_BADGES collision? MiniAppBase uses 0x0C.
-        // Let's use 0x46 for RedEnvelope specific badges if needed, or re-use base?
-        // MiniAppBase handles badges generically. 
-        // But RedEnvelope might want its own badge storage if it tracks specific badge data?
-        // Actually Base handles PREFIX_USER_BADGES. 
-        // RedEnvelope.cs in Step 475 had PREFIX_USER_BADGES = 0x46. 
-        // If we inherit MiniAppBase, we should use Base's badge system OR override prefixes?
-        // Base PREFIX_USER_BADGES is 0x0C.
-        // Let's use Base's badges. Remove local definition or map it.
-        // Use local definition for safety to match previous data layout if existing?
-        // User rules: "Refine... existing codebase". If previous version used 0x46, we should stick to it 
-        // OR migrate. Since we are refactoring, sticking to 0x46 is safer for data compatibility if we were upgrading.
-        // But Base class uses 0x0C. 
-        // Let's define it here as PREFIX_APP_USER_BADGES to avoid name collision with Base.PREFIX_USER_BADGES.
-        // Stats.cs calls CheckUserBadges -> AwardBadge (Base method).
-        // Base method uses PREFIX_USER_BADGES (0x0C).
-        // If we want to use Base's system, we use 0x0C.
-        // If we want to keep old data (0x46), we have a problem.
-        // Assuming this is a new deployment or major upgrade where we accept data migration or loss (user said "Create a new codebase" in context of task, but likely maintaining).
-        // Let's stick to Base for consistency.
         
         private static readonly byte[] PREFIX_TOTAL_ENVELOPES = new byte[] { 0x47 };
         private static readonly byte[] PREFIX_TOTAL_DISTRIBUTED = new byte[] { 0x48 };

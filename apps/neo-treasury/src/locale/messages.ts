@@ -1,0 +1,23 @@
+export const messages = {
+  title: { en: "Neo Treasury", zh: "Neo 国库" },
+  docSubtitle: { en: "Community treasury management", zh: "社区国库管理" },
+  docDescription: {
+    en: "Neo Treasury enables transparent community fund management with on-chain governance.",
+    zh: "Neo 国库实现透明的社区资金管理，支持链上治理。",
+  },
+  feature1Name: { en: "Transparent Funds", zh: "透明资金" },
+  feature1Desc: { en: "All transactions recorded on-chain.", zh: "所有交易链上可查。" },
+  feature2Name: { en: "Community Governance", zh: "社区治理" },
+  feature2Desc: { en: "Vote on fund allocation.", zh: "投票决定资金分配。" },
+  feature3Name: { en: "Multi-sig Security", zh: "多签安全" },
+  feature3Desc: { en: "Protected by multi-signature.", zh: "多重签名保护。" },
+  balance: { en: "Balance", zh: "余额" },
+  deposit: { en: "Deposit", zh: "存入" },
+  withdraw: { en: "Withdraw", zh: "提取" },
+  proposals: { en: "Proposals", zh: "提案" },
+  history: { en: "History", zh: "历史" },
+  connectWallet: { en: "Connect Wallet", zh: "连接钱包" },
+  loading: { en: "Loading...", zh: "加载中..." },
+  error: { en: "Error", zh: "错误" },
+  success: { en: "Success", zh: "成功" },
+};
