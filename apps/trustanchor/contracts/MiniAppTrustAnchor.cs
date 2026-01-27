@@ -10,6 +10,13 @@ using Neo.SmartContract.Framework.Services;
 
 namespace NeoMiniAppPlatform.Contracts
 {
+    // Event delegates
+    public delegate void AgentRegisteredHandler(UInt160 agent, string displayName);
+    public delegate void AgentUnregisteredHandler(UInt160 agent);
+    public delegate void DelegationCreatedHandler(UInt160 delegator, UInt160 delegatee, BigInteger votingPower);
+    public delegate void DelegationChangedHandler(UInt160 delegator, UInt160 oldDelegatee, UInt160 newDelegatee);
+    public delegate void DelegationRevokedHandler(UInt160 delegator, UInt160 delegatee);
+
     [DisplayName("MiniAppTrustAnchor")]
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Version", "1.0.0")]
@@ -25,11 +32,29 @@ namespace NeoMiniAppPlatform.Contracts
         private static readonly byte[] PREFIX_TOTAL_AGENTS = new byte[] { 0x05 };
         private static readonly byte[] PREFIX_ACTIVE_AGENTS = new byte[] { 0x06 };
         private static readonly byte[] PREFIX_VOTING_POWER = new byte[] { 0x07 };
+        private static readonly byte[] PREFIX_AGENT_INDEX = new byte[] { 0x08 };
+
+        // Events
+        [DisplayName("AgentRegistered")]
+        public static event AgentRegisteredHandler OnAgentRegistered;
+
+        [DisplayName("AgentUnregistered")]
+        public static event AgentUnregisteredHandler OnAgentUnregistered;
+
+        [DisplayName("DelegationCreated")]
+        public static event DelegationCreatedHandler OnDelegationCreated;
+
+        [DisplayName("DelegationChanged")]
+        public static event DelegationChangedHandler OnDelegationChanged;
+
+        [DisplayName("DelegationRevoked")]
+        public static event DelegationRevokedHandler OnDelegationRevoked;
 
         public struct AgentInfo
         {
             public UInt160 AgentAddress;
             public string DisplayName;
+            public string MetadataUri;
             public BigInteger ReputationScore;
             public BigInteger TotalDelegators;
             public BigInteger TotalVotingPower;
@@ -83,6 +108,15 @@ namespace NeoMiniAppPlatform.Contracts
         public static BigInteger GetActiveAgentCount()
         {
             return (BigInteger)Storage.Get(Storage.CurrentContext, PREFIX_ACTIVE_AGENTS);
+        }
+
+        [Safe]
+        public static UInt160 GetAgentByIndex(BigInteger index)
+        {
+            ByteString key = Helper.Concat((ByteString)PREFIX_AGENT_INDEX, index.ToByteArray());
+            ByteString data = Storage.Get(Storage.CurrentContext, key);
+            if (data == null) return UInt160.Zero;
+            return (UInt160)data;
         }
 
         [Safe]
@@ -151,6 +185,7 @@ namespace NeoMiniAppPlatform.Contracts
             {
                 AgentAddress = sender,
                 DisplayName = displayName,
+                MetadataUri = metadataUri ?? "",
                 ReputationScore = 0,
                 TotalDelegators = 0,
                 TotalVotingPower = 0,
@@ -161,8 +196,14 @@ namespace NeoMiniAppPlatform.Contracts
             ByteString key = Helper.Concat((ByteString)PREFIX_AGENT, (ByteString)sender);
             Storage.Put(Storage.CurrentContext, key, StdLib.Serialize(newAgent));
 
+            // Add to agent index
+            ByteString indexKey = Helper.Concat((ByteString)PREFIX_AGENT_INDEX, total.ToByteArray());
+            Storage.Put(Storage.CurrentContext, indexKey, (ByteString)sender);
+
             Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_AGENTS, total + 1);
             Storage.Put(Storage.CurrentContext, PREFIX_ACTIVE_AGENTS, GetActiveAgentCount() + 1);
+
+            OnAgentRegistered(sender, displayName);
         }
 
         public static void UnregisterAgent()
@@ -176,6 +217,8 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, key, StdLib.Serialize(agent));
 
             Storage.Put(Storage.CurrentContext, PREFIX_ACTIVE_AGENTS, GetActiveAgentCount() - 1);
+
+            OnAgentUnregistered(sender);
         }
 
         public static void DelegateTo(UInt160 delegatee)
@@ -187,7 +230,7 @@ namespace NeoMiniAppPlatform.Contracts
             AgentInfo agent = GetAgentInfo(delegatee);
             if (!agent.IsActive) throw new Exception("Agent not active");
 
-            BigInteger power = GetVotingPower(delegator);
+            BigInteger power = CalculateVotingPower(delegator);
             if (power <= 0) throw new Exception("No voting power");
 
             DelegationInfo existing = GetDelegationInfo(delegator);
@@ -232,10 +275,15 @@ namespace NeoMiniAppPlatform.Contracts
 
             Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_DELEGATIONS, GetTotalDelegations() + 1);
             UpdateVotingPower(delegator, 0);
+
+            OnDelegationCreated(delegator, delegatee, power);
         }
 
         private static void ChangeDelegation(UInt160 delegator, UInt160 oldDel, UInt160 newDel, BigInteger power)
         {
+            // Recalculate current voting power
+            BigInteger currentPower = CalculateVotingPower(delegator);
+
             AgentInfo oldAgent = GetAgentInfo(oldDel);
             oldAgent.TotalDelegators--;
             oldAgent.TotalVotingPower -= power;
@@ -244,15 +292,18 @@ namespace NeoMiniAppPlatform.Contracts
 
             AgentInfo newAgent = GetAgentInfo(newDel);
             newAgent.TotalDelegators++;
-            newAgent.TotalVotingPower += power;
+            newAgent.TotalVotingPower += currentPower;
             ByteString newKey = Helper.Concat((ByteString)PREFIX_AGENT, (ByteString)newDel);
             Storage.Put(Storage.CurrentContext, newKey, StdLib.Serialize(newAgent));
 
             DelegationInfo d = GetDelegationInfo(delegator);
             d.Delegatee = newDel;
+            d.VotingPower = currentPower;
             d.DelegationTime = Runtime.Time;
             ByteString key = Helper.Concat((ByteString)PREFIX_DELEGATION, (ByteString)delegator);
             Storage.Put(Storage.CurrentContext, key, StdLib.Serialize(d));
+
+            OnDelegationChanged(delegator, oldDel, newDel);
         }
 
         private static void RevokeDelegationInternal(UInt160 delegator)
@@ -270,6 +321,8 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Delete(Storage.CurrentContext, Helper.Concat((ByteString)PREFIX_DELEGATION, (ByteString)delegator));
             Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_DELEGATIONS, GetTotalDelegations() - 1);
             UpdateVotingPower(delegator, power);
+
+            OnDelegationRevoked(delegator, delegatee);
         }
 
         private static void UpdateVotingPower(UInt160 account, BigInteger newPower)
