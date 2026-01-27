@@ -92,6 +92,35 @@ namespace NeoMiniAppPlatform.Contracts
             return (UInt160)data;
         }
 
+        /// <summary>
+        /// Transfer admin rights to a new address
+        /// </summary>
+        public static void SetAdmin(UInt160 newAdmin)
+        {
+            ValidateAdmin();
+            if (newAdmin == UInt160.Zero) throw new Exception("Invalid new admin");
+            Storage.Put(Storage.CurrentContext, PREFIX_ADMIN, (ByteString)newAdmin);
+        }
+
+        /// <summary>
+        /// Admin can force unregister a malicious agent
+        /// </summary>
+        public static void ForceUnregisterAgent(UInt160 agentAddress)
+        {
+            ValidateAdmin();
+            AgentInfo agent = GetAgentInfo(agentAddress);
+            if (!agent.IsActive) throw new Exception("Agent not active");
+            
+            agent.IsActive = false;
+            ByteString key = Helper.Concat((ByteString)PREFIX_AGENT, (ByteString)agentAddress);
+            Storage.Put(Storage.CurrentContext, key, StdLib.Serialize(agent));
+            
+            Storage.Put(Storage.CurrentContext, PREFIX_ACTIVE_AGENTS, GetActiveAgentCount() - 1);
+            Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_AGENTS, GetTotalAgents() - 1);
+            
+            OnAgentUnregistered(agentAddress);
+        }
+
         [Safe]
         public static BigInteger GetTotalDelegations()
         {
@@ -116,7 +145,11 @@ namespace NeoMiniAppPlatform.Contracts
             ByteString key = Helper.Concat((ByteString)PREFIX_AGENT_INDEX, index.ToByteArray());
             ByteString data = Storage.Get(Storage.CurrentContext, key);
             if (data == null) return UInt160.Zero;
-            return (UInt160)data;
+            UInt160 agentAddr = (UInt160)data;
+            // Check if agent is still active
+            AgentInfo agent = GetAgentInfo(agentAddr);
+            if (!agent.IsActive) return UInt160.Zero;
+            return agentAddr;
         }
 
         [Safe]
@@ -217,6 +250,7 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, key, StdLib.Serialize(agent));
 
             Storage.Put(Storage.CurrentContext, PREFIX_ACTIVE_AGENTS, GetActiveAgentCount() - 1);
+            Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_AGENTS, GetTotalAgents() - 1);
 
             OnAgentUnregistered(sender);
         }
@@ -281,12 +315,16 @@ namespace NeoMiniAppPlatform.Contracts
 
         private static void ChangeDelegation(UInt160 delegator, UInt160 oldDel, UInt160 newDel, BigInteger power)
         {
-            // Recalculate current voting power
+            // Get stored delegation to use original voting power for old agent
+            DelegationInfo oldDelegation = GetDelegationInfo(delegator);
+            BigInteger oldPower = oldDelegation.VotingPower;
+            
+            // Recalculate current voting power for new delegation
             BigInteger currentPower = CalculateVotingPower(delegator);
 
             AgentInfo oldAgent = GetAgentInfo(oldDel);
             oldAgent.TotalDelegators--;
-            oldAgent.TotalVotingPower -= power;
+            oldAgent.TotalVotingPower -= oldPower;  // Use stored value, not passed parameter
             ByteString oldKey = Helper.Concat((ByteString)PREFIX_AGENT, (ByteString)oldDel);
             Storage.Put(Storage.CurrentContext, oldKey, StdLib.Serialize(oldAgent));
 
