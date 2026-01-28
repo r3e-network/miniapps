@@ -53,6 +53,13 @@ namespace NeoMiniAppPlatform.Contracts
             BigInteger streakBonus = 0;
             bool wonJackpot = false;
 
+            // SECURITY FIX: Mark as resolved BEFORE transfer to prevent reentrancy
+            bet.Resolved = true;
+            bet.Won = won;
+            bet.Payout = payout;
+            bet.StreakBonus = streakBonus;
+            StoreBet(betId, bet);
+
             if (won)
             {
                 BigInteger platformFee = bet.Amount * PLATFORM_FEE_PERCENT / 100;
@@ -80,18 +87,17 @@ namespace NeoMiniAppPlatform.Contracts
                     }
                 }
 
+                // Update payout in storage after calculations
+                bet.Payout = payout;
+                bet.StreakBonus = streakBonus;
+                StoreBet(betId, bet);
+
                 bool transferred = GAS.Transfer(Runtime.ExecutingScriptHash, bet.Player, payout);
                 ExecutionEngine.Assert(transferred, "transfer failed");
 
                 BigInteger totalPaid = GetTotalPaid();
                 Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_PAID, totalPaid + payout);
             }
-
-            bet.Resolved = true;
-            bet.Won = won;
-            bet.Payout = payout;
-            bet.StreakBonus = streakBonus;
-            StoreBet(betId, bet);
 
             UpdatePlayerStats(bet.Player, bet.Amount, won, payout, wonJackpot);
 

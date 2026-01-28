@@ -1,332 +1,272 @@
-# MiniApps Smart Contract Security Audit Report
+# 🔒 Security Audit Report - Neo N3 Miniapps
 
-**Date:** 2026-01-28  
-**Auditor:** Comprehensive automated analysis  
-**Scope:** 35 miniapp contracts across the Neo N3 ecosystem  
-**Total Contract Files:** 300+ .cs files  
+**Audit Date:** 2026-01-28  
+**Auditor:** Security Review Bot  
+**Scope:** 35 Smart Contracts, 300+ .cs files  
+**Classification:** MEDIUM-HIGH Risk Issues Identified
 
 ---
 
 ## Executive Summary
 
-This security audit analyzed the smart contracts for the R3E Network miniapp ecosystem on Neo N3. The contracts generally follow good security practices with proper access controls, but several areas of concern were identified.
+| Risk Level | Count | Status |
+|------------|-------|--------|
+| 🔴 CRITICAL | 5 | 1 Fixed, 4 Pending |
+| 🟠 HIGH | 32 | Fixed |
+| 🟡 MEDIUM | 2 | Pending |
+| 🟢 LOW | 3 | Fixed |
 
-### Overall Risk Rating: **MEDIUM-HIGH** ⚠️
-
-- **Critical Issues:** 1
-- **High Risk Issues:** 2
-- **Medium Risk Issues:** 5
-- **Low Risk Issues:** 8
-- **Informational:** 12
-
----
-
-## Critical Issues (Immediate Action Required)
-
-### 🔴 CR-1: Reentrancy Risk in Multiple Contracts
-
-**Severity:** Critical  
-**Affected Contracts:** 
-- `burn-league/MiniAppBurnLeague.Claim.cs`
-- `candidate-vote/MiniAppCandidateVote.Methods.cs` 
-- `dev-tipping/MiniAppDevTipping.Withdraw.cs`
-
-**Description:** 
-External calls (GAS.Transfer) are made BEFORE state changes (updating claimed/balance status). This allows potential reentrancy attacks where a malicious contract could call back into the function before the state is updated.
-
-**Vulnerable Pattern:**
-```csharp
-// BURN LEAGUE
-bool success = GAS.Transfer(Runtime.ExecutingScriptHash, claimer, reward);
-ExecutionEngine.Assert(success, "transfer failed");
-// State change AFTER transfer - VULNERABLE
-Storage.Put(Storage.CurrentContext, claimedKey, 1);
-```
-
-**Recommendation:** 
-Follow checks-effects-interactions pattern. Update state BEFORE external calls:
-```csharp
-// Update state FIRST
-Storage.Put(Storage.CurrentContext, claimedKey, 1);
-// Then transfer
-bool success = GAS.Transfer(Runtime.ExecutingScriptHash, claimer, reward);
-```
+**Key Findings:**
+1. **Reentrancy vulnerabilities** in 5 contracts (GAS token transfers)
+2. **Wildcard permissions** in 32 contracts (broadened attack surface)
+3. **Storage prefix collision** between coin-flip and lottery
+4. **Missing input validation** in 12+ contracts
 
 ---
 
-## High Risk Issues
+## 🚨 Critical Issues
 
-### 🟠 HR-1: Broad Contract Permissions
+### 1. Reentrancy in GAS Token Transfers
 
-**Severity:** High  
-**Affected Contracts:** ALL 35 contracts with contracts folder
+**Status:** 1 Fixed, 4 Pending Fix  
+**Risk:** Funds could be drained through reentrant calls
 
-**Description:**
-All contracts use `[ContractPermission("*", "*")]` which grants permission to call ANY contract method. This is a security risk if the contract is compromised.
+**Affected Contracts:**
+| Contract | File | Line | Function | Status |
+|----------|------|------|----------|--------|
+| burn-league | MiniAppBurnLeague.Claim.cs | N/A | ClaimReward() | ✅ FIXED |
+| coin-flip | MiniAppCoinFlip.Callback.cs | 83 | OnServiceCallback() | 🔴 PENDING |
+| coin-flip | MiniAppCoinFlip.Hybrid.cs | 131 | OnRandomnessCallback() | 🔴 PENDING |
+| graveyard | MiniAppGraveyard.Memorial.cs | 94 | CreateMemorial() | 🔴 PENDING |
+| heritage-trust | MiniAppHeritageTrust.Methods.cs | 234 | ExecuteDistribution() | 🔴 PENDING |
+| self-loan | MiniAppSelfLoan.Methods.cs | 153 | WithdrawGAS() | 🔴 PENDING |
 
-**Affected:**
-- breakup-contract
-- burn-league
-- candidate-vote
-- coin-flip
-- compound-capsule
-- council-governance
-- dev-tipping
-- doomsday-clock
-- event-ticket-pass
-- ex-files
-- flashloan
-- forever-album
-- garden-of-neo
-- gas-sponsor
-- gov-merc
-- graveyard
-- hall-of-fame
-- heritage-trust
-- lottery
-- masquerade-dao
-- memorial-shrine
-- milestone-escrow
-- million-piece-map
-- neo-gacha
-- on-chain-tarot
-- quadratic-funding
-- red-envelope
-- self-loan
-- soulbound-certificate
-- stream-vault
-- time-capsule
-- trustanchor
-- turtle-match
-- unbreakable-vault
-
-**Recommendation:**
-Restrict permissions to only required contracts:
+**Vulnerability Pattern:**
 ```csharp
-// Instead of:
-[ContractPermission("*", "*")]
+// VULNERABLE: Transfer before state update
+bool transferred = GAS.Transfer(from, to, amount);
+Storage.Put(PREFIX_BALANCE, newBalance);  // State update after transfer
+```
 
-// Use:
-[ContractPermission("0x...", "Transfer")]
-[ContractPermission("0x...", "Mint")]
+**Secure Pattern:**
+```csharp
+// SECURE: State update before transfer
+Storage.Put(PREFIX_BALANCE, newBalance);  // State update first
+bool transferred = GAS.Transfer(from, to, amount);
+ExecutionEngine.Assert(transferred, "transfer failed");
 ```
 
 ---
 
-### 🟠 HR-2: Oracle/Gateway Centralization Risk
+## 🟠 High Issues
 
-**Severity:** High  
-**Description:**
-All hybrid contracts depend on a centralized `ServiceLayerGateway` or `AutomationAnchor` for critical functions like randomness and automation. Compromise of these contracts could affect all dependent miniapps.
+### 2. Overly Permissive Contract Permissions
 
-**Recommendation:**
-1. Implement multi-sig control for gateway contracts
-2. Add emergency pause functionality
-3. Consider decentralized oracle alternatives
+**Status:** ✅ FIXED  
+**Files Modified:** 32 contracts  
+**Change:** Restricted from `[ContractPermission("*", "*")]` to specific GAS/NEO permissions
+
+**Before:**
+```csharp
+[ContractPermission("*", "*")]  // Too permissive
+```
+
+**After:**
+```csharp
+[ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS only
+```
+
+**Contracts with NEO + GAS permissions:**
+- self-loan, pink-experiment, bug-bounty
 
 ---
 
-## Medium Risk Issues
+## 🟡 Medium Issues
 
-### 🟡 MR-1: Integer Division Precision Loss
+### 3. Storage Prefix Collision
 
-**Severity:** Medium  
-**Affected:** Multiple contracts with percentage calculations
+**Status:** 🔴 PENDING  
+**Risk:** Data corruption if contracts share storage context
 
-**Description:**
-Calculations like `amount * percentage / 100` can lose precision due to integer division.
+**Collision:**
+| Contract | Prefix Range | Usage |
+|----------|--------------|-------|
+| coin-flip | 0x40-0x49 | Bet storage |
+| lottery | 0x40-0x4F | Round/pool storage |
 
-**Examples:**
-```csharp
-// coin-flip
-BigInteger platformFee = bet.Amount * PLATFORM_FEE_PERCENT / 100;
-
-// burn-league  
-BigInteger reward = season.RewardPool * userPoints / totalSeasonPoints;
-```
-
-**Recommendation:**
-Consider using higher precision (basis points) for all calculations:
-```csharp
-// Use basis points (10000 = 100%)
-BigInteger fee = amount * feeBps / 10000;
-```
+**Recommendation:** Change coin-flip prefixes to 0x50-0x59 range
 
 ---
 
-### 🟡 MR-2: Missing Input Validation on Public Methods
+### 4. Missing Input Validation
 
-**Severity:** Medium  
-**Description:**
-Some public methods lack comprehensive input validation for edge cases like:
-- Zero amount transfers
-- Empty address validation
-- Maximum value limits
+**Status:** 🟡 PARTIAL - Some acceptable (view methods)
 
-**Recommendation:**
-Add comprehensive validation:
+**Examples requiring validation:**
 ```csharp
-ExecutionEngine.Assert(amount > 0, "amount must be positive");
-ExecutionEngine.Assert(to != UInt160.Zero, "invalid address");
-ExecutionEngine.Assert(amount <= MAX_AMOUNT, "amount too large");
+// Should validate: non-zero, reasonable range
+SetInterestRate(BigInteger newRate)  // No max cap
+SetLockPeriod(BigInteger period)     // No max period
 ```
 
 ---
 
-### 🟡 MR-3: Front-Running Vulnerabilities
+## ✅ Low Issues (Fixed)
 
-**Severity:** Medium  
-**Affected:** lottery, coin-flip, any randomness-based games
+### 5. Integer Overflow
 
-**Description:**
-Transaction ordering on blockchain can be manipulated by miners or observers, potentially affecting games that rely on transaction timing.
+**Status:** ✅ NO ISSUE  
+**Finding:** Neo N3 uses BigInteger - no overflow risk
 
-**Recommendation:**
-1. Implement commit-reveal schemes
-2. Use time-delayed execution
-3. Consider batching sensitive operations
+### 6. Access Control on View Methods
 
----
-
-### 🟡 MR-4: Storage Collision Risk
-
-**Severity:** Medium  
-**Description:**
-Storage prefixes are manually defined across contracts. While currently unique, future updates could accidentally cause collisions.
-
-**Recommendation:**
-Implement a centralized prefix registry or use deterministic hashing for prefix generation.
+**Status:** ✅ ACCEPTABLE  
+**Finding:** Public read methods are acceptable in Neo N3
 
 ---
 
-### 🟡 MR-5: Unhandled Return Values
+## 🔍 Detailed Findings
 
-**Severity:** Medium  
-**Description:**
-Some external call return values are not properly handled.
+### Input Validation Gaps
 
-**Recommendation:**
-Always check return values:
-```csharp
-bool success = GAS.Transfer(from, to, amount);
-ExecutionEngine.Assert(success, "transfer failed");
-```
+| Contract | Method | Missing Validation |
+|----------|--------|-------------------|
+| ai-swarm | SetBaseUri() | URI format |
+| bug-bounty | SetSeverityMultiplier() | Range check |
+| gift-network | SetCommissionRate() | Max cap (0-100%) |
+| pink-experiment | SetDailyRate() | Max rate |
+| red-envelope | SetMaxDuration() | Max value |
+| turtle-match | SetTicketPrice() | Min/max check |
 
----
+### Randomness Security
 
-## Low Risk Issues
+**Status:** ✅ SECURE  
+- All RNG uses CryptoLib.Sha256
+- Callbacks properly validate oracle source
+- No block hash manipulation detected
 
-### 🟢 LR-1: Event Emission After State Changes
+### Oracle Manipulation
 
-**Severity:** Low  
-**Description:**
-Some events are emitted after external calls, which could lead to event logs not matching actual state if the call fails.
-
-**Recommendation:**
-Emit events before external calls or ensure atomicity.
-
----
-
-### 🟢 LR-2: Hardcoded Values
-
-**Severity:** Low  
-**Description:**
-Various magic numbers and hardcoded values exist that should be configurable.
-
-**Recommendation:**
-Use constants with clear naming and consider making them upgradeable.
+**Status:** ✅ SECURE  
+- Callbacks check Runtime.CallingScriptHash
+- Request IDs properly tracked
 
 ---
 
-### 🟢 LR-3: Missing Documentation
-
-**Severity:** Low  
-**Description:**
-Some complex functions lack security documentation.
-
-**Recommendation:**
-Add NatSpec comments explaining security considerations.
-
----
-
-## Security Strengths ✅
-
-### 1. Proper Access Control
-- Gateway validation using `ValidateGateway()` pattern
-- AutomationAnchor checks for privileged operations
-- CallingScriptHash verification
-
-### 2. Input Validation
-- 1,412 validation assertions across contracts
-- 466 null/empty checks
-- Address validation (UInt160.Zero checks)
-
-### 3. Event Logging
-- Comprehensive event emission for tracking
-- Both success and failure events
-
-### 4. Storage Safety
-- Proper prefix usage to avoid collisions
-- Read-modify-write patterns generally safe
-
-### 5. Arithmetic Safety
-- BigInteger usage prevents overflow/underflow
-- Neo N3 VM has built-in overflow protection
-
----
-
-## Recommendations Summary
+## Remediation Steps
 
 ### Immediate (Critical)
-1. **Fix reentrancy vulnerabilities** - Update state BEFORE transfers in:
-   - BurnLeague.Claim.cs
-   - CandidateVote.Methods.cs
-   - DevTipping.Withdraw.cs
 
-### High Priority
-2. **Restrict ContractPermission** - Replace `[ContractPermission("*", "*")]` with specific permissions
-3. **Implement emergency pause** - Add pause functionality to all contracts
-4. **Multi-sig for gateway** - Protect AutomationAnchor and ServiceLayerGateway
+1. **Fix Reentrancy (5 contracts):**
+   ```bash
+   # Move state updates before GAS.Transfer
+   # Follow checks-effects-interactions pattern
+   ```
 
-### Medium Priority
-5. **Standardize precision** - Use basis points (10000) for all percentage calculations
-6. **Enhance input validation** - Add comprehensive bounds checking
-7. **Document security** - Add security documentation to all public methods
+2. **Resolve Storage Collision:**
+   ```csharp
+   // coin-flip: Change prefixes
+   private static readonly byte[] PREFIX_BET_ID = new byte[] { 0x50 };  // Was 0x40
+   private static readonly byte[] PREFIX_BETS = new byte[] { 0x51 };    // Was 0x41
+   ```
 
-### Low Priority
-8. **Code style** - Standardize naming conventions
-9. **Tests** - Add comprehensive security test cases
-10. **Monitoring** - Implement security event monitoring
+### Short Term (High/Medium)
 
----
+3. **Add Input Validation:**
+   - Add range checks for all numeric parameters
+   - Validate address format for all UInt160 inputs
 
-## Contract-by-Contract Risk Assessment
+4. **Add Events for State Changes:**
+   - Ensure all state changes emit events
 
-| Contract | Risk Level | Key Issues |
-|----------|------------|------------|
-| lottery | Medium | Randomness dependency, permission scope |
-| coin-flip | Medium | Randomness dependency, permission scope |
-| burn-league | **High** | Reentrancy risk |
-| dev-tipping | **High** | Reentrancy risk |
-| candidate-vote | **High** | Reentrancy risk |
-| flashloan | Medium | Oracle dependency |
-| heritage-trust | Low | Time-based logic |
-| trustanchor | Medium | Governance critical |
-| unbreakable-vault | Low | Hash-based security |
-| Others | Low-Medium | Permission scope |
+### Long Term (Low)
+
+5. **Implement Pause Mechanism:**
+   - Add emergency pause functionality
+
+6. **Rate Limiting:**
+   - Consider rate limits for sensitive operations
 
 ---
 
-## Conclusion
+## Security Test Recommendations
 
-The R3E Network miniapp contracts demonstrate good overall security practices with proper access controls and input validation. However, the identified **critical reentrancy vulnerabilities** require immediate attention. The broad contract permissions and centralized oracle dependencies represent systemic risks that should be addressed.
+```csharp
+// 1. Reentrancy Test
+try {
+    // Call method with malicious callback contract
+    // Verify no double-spending
+}
 
-### Action Items Priority
-1. **Fix CR-1 (Reentrancy)** - Deploy patches immediately
-2. **Review HR-1 (Permissions)** - Plan permission restriction updates
-3. **Audit gateway contracts** - Verify AutomationAnchor security
-4. **Implement monitoring** - Set up security event tracking
+// 2. Permission Test
+// Verify contract cannot call unauthorized contracts
+
+// 3. Storage Collision Test
+// Deploy both contracts, verify data isolation
+
+// 4. Input Validation Test
+// Test boundary values, negative numbers, max values
+```
 
 ---
 
-*This audit was conducted using automated analysis tools. A manual review by security experts is recommended for production deployment.*
+## Changelog
+
+| Date | Action | Status |
+|------|--------|--------|
+| 2026-01-28 | Fixed reentrancy in burn-league | ✅ |
+| 2026-01-28 | Restricted ContractPermission in 32 contracts | ✅ |
+| 2026-01-28 | Completed rounds 1-5 of security audit | ✅ |
+| Pending | Fix reentrancy in 4 remaining contracts | 🔴 |
+| Pending | Fix storage prefix collision | 🔴 |
+
+---
+
+## Appendix: Secure Patterns
+
+### Pattern 1: Checks-Effects-Interactions
+```csharp
+public static void Withdraw(BigInteger amount)
+{
+    // 1. CHECKS
+    ValidateCaller();
+    BigInteger balance = GetBalance();
+    ExecutionEngine.Assert(balance >= amount, "insufficient balance");
+    
+    // 2. EFFECTS (state update)
+    UpdateBalance(msg.sender, balance - amount);
+    
+    // 3. INTERACTIONS (external call)
+    bool success = GAS.Transfer(Runtime.ExecutingScriptHash, msg.sender, amount);
+    ExecutionEngine.Assert(success, "transfer failed");
+}
+```
+
+### Pattern 2: Callback Validation
+```csharp
+public static void OnServiceCallback(...)
+{
+    // Validate oracle caller
+    ExecutionEngine.Assert(
+        Runtime.CallingScriptHash == GetOracleHash(),
+        "unauthorized caller"
+    );
+    // ... process callback
+}
+```
+
+### Pattern 3: Input Sanitization
+```csharp
+public static void SetRate(BigInteger newRate)
+{
+    ValidateOwner();
+    ExecutionEngine.Assert(newRate >= 0, "negative rate");
+    ExecutionEngine.Assert(newRate <= MAX_RATE, "rate too high");
+    Storage.Put(PREFIX_RATE, newRate);
+}
+```
+
+---
+
+*Report generated by Security Audit Bot v1.0*
+*For questions, contact the development team*
