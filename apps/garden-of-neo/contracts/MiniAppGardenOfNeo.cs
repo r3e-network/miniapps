@@ -27,7 +27,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. GardenOfNeo is a complete blockchain-powered gardening platform with multiple seed types, garden plots, seasonal events, watering/fertilizing mechanics, achievements, and plant trading.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppGardenOfNeo : MiniAppBase
     {
         #region App Constants

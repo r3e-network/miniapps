@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "On-chain encrypted memory burial with paid forgetting",
   "description_zh": "墓地 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "tools",
+  "category_name": "Tools",
+  "category_name_zh": "工具",
   "tags": [
     "memories",
     "privacy",

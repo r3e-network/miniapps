@@ -43,7 +43,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. BurnLeague is a competitive GAS burning platform with seasons, leaderboards, achievements, and team competitions. Burn GAS to earn points, climb rankings, and share in seasonal reward pools.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]
     public partial class MiniAppBurnLeague : MiniAppBase
     {
         #region App Constants

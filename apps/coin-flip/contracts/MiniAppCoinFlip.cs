@@ -21,7 +21,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "Provably fair coin flip game with jackpot and achievements")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]
     public partial class MiniAppCoinFlip : MiniAppGameComputeBase
     {
         #region App Constants

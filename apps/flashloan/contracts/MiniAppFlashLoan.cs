@@ -38,7 +38,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Version", "3.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. FlashLoan is a flash lending protocol for atomic borrowing. Use it to borrow and repay in one transaction, you can access instant liquidity without collateral.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppFlashLoan : MiniAppServiceBase
     {
         #region App Constants

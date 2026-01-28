@@ -25,7 +25,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "3.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. TimeCapsule stores message hashes with time locks, recipients, fishing rewards, and gifting.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppTimeCapsule : MiniAppTimeLockBase
     {
         #region App Constants

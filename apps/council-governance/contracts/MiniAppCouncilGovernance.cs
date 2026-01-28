@@ -39,7 +39,8 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Version", "3.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. CouncilGovernance is a decentralized governance application for council voting. Use it to create and vote on proposals, you can participate in on-chain governance with vote delegation and badge rewards.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
+    [ContractPermission("0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5", "*")]  // NEO token
     public partial class MiniAppCouncilGovernance : MiniAppBase
     {
         #region App Constants

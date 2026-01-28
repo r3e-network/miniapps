@@ -34,7 +34,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "1.0.0")]
     [ManifestExtra("Description", "区块链灵位 - 永恒存在，永恒记忆。将逝者的记忆永久铭刻于区块链之上。")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppMemorialShrine : MiniAppServiceBase
     {
         #region App Constants

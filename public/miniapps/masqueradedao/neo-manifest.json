@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Masquerade DAO - Neo MiniApp",
   "description_zh": "化妆舞会 DAO - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "governance",
+  "category_name": "Governance",
+  "category_name_zh": "治理",
   "tags": [],
   "developer": {
     "name": "R3E Network",

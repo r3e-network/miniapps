@@ -26,7 +26,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "3.0.0")]
     [ManifestExtra("Description", "Lottery jackpot gaming with provable random draws")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppLottery : MiniAppGameComputeBase
     {
         #region App Constants

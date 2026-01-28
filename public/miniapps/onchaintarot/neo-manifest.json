@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "On-Chain Tarot - Neo MiniApp",
   "description_zh": "链上塔罗牌 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "games",
+  "category_name": "Games",
+  "category_name_zh": "游戏",
   "tags": [],
   "developer": {
     "name": "R3E Network",

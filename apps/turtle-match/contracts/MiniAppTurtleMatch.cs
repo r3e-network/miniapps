@@ -19,7 +19,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "1.0.0")]
     [ManifestExtra("Description", "Turtle Match blindbox game with color matching")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppTurtleMatch : MiniAppGameComputeBase
     {
         #region App Constants

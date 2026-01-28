@@ -27,7 +27,8 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "Neo R3E Network MiniApp. CompoundCapsule is a NEO savings platform with tiered APY.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
+    [ContractPermission("0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5", "*")]  // NEO token
     public partial class MiniAppCompoundCapsule : MiniAppBase
     {
         #region App Constants

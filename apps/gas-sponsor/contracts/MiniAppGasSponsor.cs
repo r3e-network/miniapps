@@ -42,7 +42,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. GasSponsor is a complete decentralized gas sponsorship marketplace with pool types, whitelists, expiration, badges, and beneficiary tracking.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppGasSponsor : MiniAppBase
     {
         #region App Constants

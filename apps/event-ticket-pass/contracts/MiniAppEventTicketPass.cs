@@ -24,7 +24,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "1.0.0")]
     [ManifestExtra("Description", "Event Ticket Pass issues NEP-11 tickets with QR check-in support.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]
     public partial class MiniAppEventTicketPass : MiniAppBase
     {
         #region App Constants

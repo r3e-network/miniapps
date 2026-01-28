@@ -29,7 +29,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "3.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. NeoGacha is an on-chain blind box marketplace with escrowed prizes, transparent odds, and verifiable randomness.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppNeoGacha : MiniAppGameComputeBase
     {
         #region App Constants

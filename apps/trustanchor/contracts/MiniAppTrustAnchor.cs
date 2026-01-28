@@ -21,7 +21,8 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Version", "1.0.0")]
     [ManifestExtra("Description", "Non-profit voting delegation for Neo N3 governance")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
+    [ContractPermission("0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5", "*")]  // NEO token
     public class MiniAppTrustAnchor : SmartContract
     {
         private const int MAX_AGENTS = 21;

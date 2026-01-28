@@ -46,7 +46,8 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "HeritageTrust locks NEO/GAS, converts NEO to bNEO for GAS rewards, and releases NEO + GAS, NEO + rewards, or rewards-only monthly after inactivity.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
+    [ContractPermission("0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5", "*")]  // NEO token
     public partial class MiniAppHeritageTrust : MiniAppBase
     {
         #region App Constants

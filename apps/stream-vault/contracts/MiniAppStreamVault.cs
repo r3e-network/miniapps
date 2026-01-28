@@ -29,7 +29,8 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "1.0.0")]
     [ManifestExtra("Description", "StreamVault creates time-based release vaults for payrolls and subscriptions.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
+    [ContractPermission("0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5", "*")]  // NEO token
     public partial class MiniAppStreamVault : MiniAppBase
     {
         #region App Constants

@@ -15,7 +15,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "1.0.0")]
     [ManifestExtra("Description", "On-chain photo album with optional client-side encryption.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public class MiniAppForeverAlbum : MiniAppBase
     {
         private const string APP_ID = "miniapp-forever-album";

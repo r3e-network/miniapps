@@ -26,7 +26,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. MillionPieceMap is a complete collaborative world map ownership platform with 10,000 pieces, 100 regions, trading marketplace, customization, achievements, and region completion bonuses.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppMillionPieceMap : MiniAppBase
     {
         #region App Constants

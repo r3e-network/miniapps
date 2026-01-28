@@ -59,6 +59,34 @@
       "news_integration": null
     },
     {
+      "app_id": "miniapp-event-ticket-pass",
+      "name": "Event Ticket",
+      "name_zh": "活动门票",
+      "description": "Issue NEP-11 event tickets with QR check-in.",
+      "description_zh": "活动门票 - Neo N3 去中心化应用",
+      "icon": "/miniapps/event-ticket-pass/static/logo.png",
+      "banner": "/miniapps/event-ticket-pass/static/banner.png",
+      "entry_url": "/miniapps/event-ticket-pass/index.html",
+      "category": "social",
+      "status": "active",
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
       "app_id": "miniapp-exfiles",
       "name": "Ex Files",
       "name_zh": "前任文件",
@@ -125,10 +153,7 @@
       "entry_url": "/miniapps/grant-share/index.html",
       "category": "social",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -199,6 +224,31 @@
       "news_integration": null
     },
     {
+      "app_id": "miniapp-neo-news-today",
+      "name": "Neo News Today",
+      "name_zh": "Neo 今日资讯",
+      "description": "Neo News Today - Neo MiniApp",
+      "description_zh": "Neo 今日资讯 - Neo N3 去中心化应用",
+      "icon": "/miniapps/neo-news-today/static/logo.png",
+      "banner": "/miniapps/neo-news-today/static/banner.png",
+      "entry_url": "/miniapps/neo-news-today/index.html",
+      "category": "social",
+      "status": "active",
+      "supportedChains": [],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
       "app_id": "__UNI__RED_ENVELOPE",
       "name": "Red Envelope",
       "name_zh": "红包",
@@ -237,6 +287,59 @@
       "entry_url": "/miniapps/social-karma/index.html",
       "category": "social",
       "status": "active",
+      "supportedChains": [],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
+      "app_id": "miniapp-soulbound-certificate",
+      "name": "Soulbound Certificate",
+      "name_zh": "灵魂绑定证书",
+      "description": "Issue non-transferable NEP-11 certificates.",
+      "description_zh": "灵魂绑定证书 - Neo N3 去中心化应用",
+      "icon": "/miniapps/soulbound-certificate/static/logo.png",
+      "banner": "/miniapps/soulbound-certificate/static/banner.png",
+      "entry_url": "/miniapps/soulbound-certificate/index.html",
+      "category": "social",
+      "status": "active",
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
+      "app_id": "miniapp-time-capsule",
+      "name": "Time Capsule",
+      "name_zh": "时间胶囊",
+      "description": "Seal message hashes until a future date with public fishing.",
+      "description_zh": "时间胶囊 - Neo N3 去中心化应用",
+      "icon": "/miniapps/time-capsule/static/logo.png",
+      "banner": "/miniapps/time-capsule/static/banner.png",
+      "entry_url": "/miniapps/time-capsule/index.html",
+      "category": "social",
+      "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
         "neo-n3-testnet"
@@ -256,7 +359,176 @@
     }
   ],
   "nft": [],
-  "governance": [],
+  "governance": [
+    {
+      "app_id": "miniapp-candidate-vote",
+      "name": "Candidate Vote",
+      "name_zh": "候选人投票",
+      "description": "Vote for platform candidate and earn GAS rewards",
+      "description_zh": "候选人投票 - Neo N3 去中心化应用",
+      "icon": "/miniapps/candidate-vote/static/logo.png",
+      "banner": "/miniapps/candidate-vote/static/banner.png",
+      "entry_url": "/miniapps/candidate-vote/index.html",
+      "category": "governance",
+      "status": "active",
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
+      "app_id": "__UNI__COUNCIL_GOVERNANCE",
+      "name": "Council Governance",
+      "name_zh": "理事会治理",
+      "description": "Participate in DAO governance and council voting",
+      "description_zh": "理事会治理 - Neo N3 去中心化应用",
+      "icon": "/miniapps/council-governance/static/logo.png",
+      "banner": "/miniapps/council-governance/static/banner.png",
+      "entry_url": "/miniapps/council-governance/index.html",
+      "category": "governance",
+      "status": "active",
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
+      "app_id": "miniapp-gov-merc",
+      "name": "Gov Merc",
+      "name_zh": "Gov Merc",
+      "description": "Marketplace for governance voting power delegation",
+      "description_zh": "Gov Merc - Neo N3 去中心化应用",
+      "icon": "/miniapps/gov-merc/static/logo.png",
+      "banner": "/miniapps/gov-merc/static/banner.png",
+      "entry_url": "/miniapps/gov-merc/index.html",
+      "category": "governance",
+      "status": "active",
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
+      "app_id": "__UNI__GUARDIAN_POLICY",
+      "name": "Guardian Policy",
+      "name_zh": "守护者策略",
+      "description": "Guardian Policy - Neo MiniApp",
+      "description_zh": "守护者策略 - Neo N3 去中心化应用",
+      "icon": "/miniapps/guardian-policy/static/logo.png",
+      "banner": "/miniapps/guardian-policy/static/banner.png",
+      "entry_url": "/miniapps/guardian-policy/index.html",
+      "category": "governance",
+      "status": "active",
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
+      "app_id": "__UNI__MASQUERADE_DAO",
+      "name": "Masquerade DAO",
+      "name_zh": "化妆舞会 DAO",
+      "description": "Masquerade DAO - Neo MiniApp",
+      "description_zh": "化妆舞会 DAO - Neo N3 去中心化应用",
+      "icon": "/miniapps/masquerade-dao/static/logo.png",
+      "banner": "/miniapps/masquerade-dao/static/banner.png",
+      "entry_url": "/miniapps/masquerade-dao/index.html",
+      "category": "governance",
+      "status": "active",
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    },
+    {
+      "app_id": "__UNI__TRUSTANCHOR",
+      "name": "Trust Anchor",
+      "name_zh": "信任锚点",
+      "description": "Non-profit voting delegation for Neo N3 governance. Delegate your voting power to candidates with proven reputation and active contribution. Zero fees, 100% of GAS rewards to stakers.",
+      "description_zh": "信任锚点 - Neo N3 去中心化应用",
+      "icon": "/miniapps/trustanchor/static/logo.png",
+      "banner": "/miniapps/trustanchor/static/banner.png",
+      "entry_url": "/miniapps/trustanchor/index.html",
+      "category": "governance",
+      "status": "active",
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
+      "chainContracts": {},
+      "permissions": {
+        "payments": false,
+        "governance": false,
+        "rng": false,
+        "datafeed": false,
+        "automation": false,
+        "confidential": false
+      },
+      "limits": null,
+      "stats_display": null,
+      "news_integration": null
+    }
+  ],
   "utility": [
     {
       "app_id": "__UNI__EXPLORER",
@@ -267,12 +539,9 @@
       "icon": "/miniapps/explorer/static/logo.png",
       "banner": "/miniapps/explorer/static/banner.png",
       "entry_url": "/miniapps/explorer/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -315,34 +584,6 @@
       "news_integration": null
     },
     {
-      "app_id": "miniapp-candidate-vote",
-      "name": "Candidate Vote",
-      "name_zh": "候选人投票",
-      "description": "Vote for platform candidate and earn GAS rewards",
-      "description_zh": "候选人投票 - Neo N3 去中心化应用",
-      "icon": "/miniapps/candidate-vote/static/logo.png",
-      "banner": "/miniapps/candidate-vote/static/banner.png",
-      "entry_url": "/miniapps/candidate-vote/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
       "app_id": "__UNI__CHARITY",
       "name": "Charity Vault",
       "name_zh": "慈善金库",
@@ -353,10 +594,7 @@
       "entry_url": "/miniapps/charity-vault/index.html",
       "category": "finance",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -407,35 +645,7 @@
       "icon": "/miniapps/compound-capsule/static/logo.png",
       "banner": "/miniapps/compound-capsule/static/banner.png",
       "entry_url": "/miniapps/compound-capsule/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
-      "app_id": "__UNI__COUNCIL_GOVERNANCE",
-      "name": "Council Governance",
-      "name_zh": "理事会治理",
-      "description": "Participate in DAO governance and council voting",
-      "description_zh": "理事会治理 - Neo N3 去中心化应用",
-      "icon": "/miniapps/council-governance/static/logo.png",
-      "banner": "/miniapps/council-governance/static/banner.png",
-      "entry_url": "/miniapps/council-governance/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -491,35 +701,7 @@
       "icon": "/miniapps/doomsday-clock/static/logo.png",
       "banner": "/miniapps/doomsday-clock/static/banner.png",
       "entry_url": "/miniapps/doomsday-clock/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
-      "app_id": "miniapp-event-ticket-pass",
-      "name": "Event Ticket",
-      "name_zh": "活动门票",
-      "description": "Issue NEP-11 event tickets with QR check-in.",
-      "description_zh": "活动门票 - Neo N3 去中心化应用",
-      "icon": "/miniapps/event-ticket-pass/static/logo.png",
-      "banner": "/miniapps/event-ticket-pass/static/banner.png",
-      "entry_url": "/miniapps/event-ticket-pass/index.html",
-      "category": "other",
+      "category": "games",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -547,7 +729,7 @@
       "icon": "/miniapps/flashloan/static/logo.png",
       "banner": "/miniapps/flashloan/static/banner.png",
       "entry_url": "/miniapps/flashloan/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -575,7 +757,7 @@
       "icon": "/miniapps/garden-of-neo/static/logo.png",
       "banner": "/miniapps/garden-of-neo/static/banner.png",
       "entry_url": "/miniapps/garden-of-neo/index.html",
-      "category": "other",
+      "category": "games",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -603,35 +785,7 @@
       "icon": "/miniapps/gas-sponsor/static/logo.png",
       "banner": "/miniapps/gas-sponsor/static/banner.png",
       "entry_url": "/miniapps/gas-sponsor/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
-      "app_id": "miniapp-gov-merc",
-      "name": "Gov Merc",
-      "name_zh": "Gov Merc",
-      "description": "Marketplace for governance voting power delegation",
-      "description_zh": "Gov Merc - Neo N3 去中心化应用",
-      "icon": "/miniapps/gov-merc/static/logo.png",
-      "banner": "/miniapps/gov-merc/static/banner.png",
-      "entry_url": "/miniapps/gov-merc/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -659,35 +813,7 @@
       "icon": "/miniapps/graveyard/static/logo.png",
       "banner": "/miniapps/graveyard/static/banner.png",
       "entry_url": "/miniapps/graveyard/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
-      "app_id": "__UNI__GUARDIAN_POLICY",
-      "name": "Guardian Policy",
-      "name_zh": "守护者策略",
-      "description": "Guardian Policy - Neo MiniApp",
-      "description_zh": "守护者策略 - Neo N3 去中心化应用",
-      "icon": "/miniapps/guardian-policy/static/logo.png",
-      "banner": "/miniapps/guardian-policy/static/banner.png",
-      "entry_url": "/miniapps/guardian-policy/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -715,7 +841,7 @@
       "icon": "/miniapps/heritage-trust/static/logo.png",
       "banner": "/miniapps/heritage-trust/static/banner.png",
       "entry_url": "/miniapps/heritage-trust/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -763,34 +889,6 @@
       "news_integration": null
     },
     {
-      "app_id": "__UNI__MASQUERADE_DAO",
-      "name": "Masquerade DAO",
-      "name_zh": "化妆舞会 DAO",
-      "description": "Masquerade DAO - Neo MiniApp",
-      "description_zh": "化妆舞会 DAO - Neo N3 去中心化应用",
-      "icon": "/miniapps/masquerade-dao/static/logo.png",
-      "banner": "/miniapps/masquerade-dao/static/banner.png",
-      "entry_url": "/miniapps/masquerade-dao/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
       "app_id": "miniapp-milestone-escrow",
       "name": "Milestone Escrow",
       "name_zh": "里程碑托管",
@@ -799,7 +897,7 @@
       "icon": "/miniapps/milestone-escrow/static/logo.png",
       "banner": "/miniapps/milestone-escrow/static/banner.png",
       "entry_url": "/miniapps/milestone-escrow/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -855,7 +953,7 @@
       "icon": "/miniapps/neoburger/static/logo.png",
       "banner": "/miniapps/neoburger/static/banner.png",
       "entry_url": "/miniapps/neoburger/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -883,12 +981,9 @@
       "icon": "/miniapps/neo-convert/static/logo.png",
       "banner": "/miniapps/neo-convert/static/banner.png",
       "entry_url": "/miniapps/neo-convert/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -939,12 +1034,9 @@
       "icon": "/miniapps/neo-multisig/static/logo.png",
       "banner": "/miniapps/neo-multisig/static/banner.png",
       "entry_url": "/miniapps/neo-multisig/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -967,35 +1059,7 @@
       "icon": "/miniapps/neo-ns/static/logo.png",
       "banner": "/miniapps/neo-ns/static/banner.png",
       "entry_url": "/miniapps/neo-ns/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
-      "app_id": "miniapp-neo-news-today",
-      "name": "Neo News Today",
-      "name_zh": "Neo 今日资讯",
-      "description": "Neo News Today - Neo MiniApp",
-      "description_zh": "Neo 今日资讯 - Neo N3 去中心化应用",
-      "icon": "/miniapps/neo-news-today/static/logo.png",
-      "banner": "/miniapps/neo-news-today/static/banner.png",
-      "entry_url": "/miniapps/neo-news-today/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -1023,12 +1087,9 @@
       "icon": "/miniapps/neo-sign-anything/static/logo.png",
       "banner": "/miniapps/neo-sign-anything/static/banner.png",
       "entry_url": "/miniapps/neo-sign-anything/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -1051,7 +1112,7 @@
       "icon": "/miniapps/neo-swap/static/logo.png",
       "banner": "/miniapps/neo-swap/static/banner.png",
       "entry_url": "/miniapps/neo-swap/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -1079,12 +1140,9 @@
       "icon": "/miniapps/neo-treasury/static/logo.png",
       "banner": "/miniapps/neo-treasury/static/banner.png",
       "entry_url": "/miniapps/neo-treasury/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -1107,7 +1165,7 @@
       "icon": "/miniapps/on-chain-tarot/static/logo.png",
       "banner": "/miniapps/on-chain-tarot/static/banner.png",
       "entry_url": "/miniapps/on-chain-tarot/index.html",
-      "category": "other",
+      "category": "games",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -1135,12 +1193,9 @@
       "icon": "/miniapps/piggy-bank/static/logo.png",
       "banner": "/miniapps/piggy-bank/static/banner.png",
       "entry_url": "/miniapps/piggy-bank/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -1163,12 +1218,9 @@
       "icon": "/miniapps/prediction-market/static/logo.png",
       "banner": "/miniapps/prediction-market/static/banner.png",
       "entry_url": "/miniapps/prediction-market/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -1191,7 +1243,7 @@
       "icon": "/miniapps/quadratic-funding/static/logo.png",
       "banner": "/miniapps/quadratic-funding/static/banner.png",
       "entry_url": "/miniapps/quadratic-funding/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -1219,35 +1271,7 @@
       "icon": "/miniapps/self-loan/static/logo.png",
       "banner": "/miniapps/self-loan/static/banner.png",
       "entry_url": "/miniapps/self-loan/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
-      "app_id": "miniapp-soulbound-certificate",
-      "name": "Soulbound Certificate",
-      "name_zh": "灵魂绑定证书",
-      "description": "Issue non-transferable NEP-11 certificates.",
-      "description_zh": "灵魂绑定证书 - Neo N3 去中心化应用",
-      "icon": "/miniapps/soulbound-certificate/static/logo.png",
-      "banner": "/miniapps/soulbound-certificate/static/banner.png",
-      "entry_url": "/miniapps/soulbound-certificate/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -1275,35 +1299,7 @@
       "icon": "/miniapps/stream-vault/static/logo.png",
       "banner": "/miniapps/stream-vault/static/banner.png",
       "entry_url": "/miniapps/stream-vault/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
-      "app_id": "miniapp-time-capsule",
-      "name": "Time Capsule",
-      "name_zh": "时间胶囊",
-      "description": "Seal message hashes until a future date with public fishing.",
-      "description_zh": "时间胶囊 - Neo N3 去中心化应用",
-      "icon": "/miniapps/time-capsule/static/logo.png",
-      "banner": "/miniapps/time-capsule/static/banner.png",
-      "entry_url": "/miniapps/time-capsule/index.html",
-      "category": "other",
+      "category": "finance",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -1331,40 +1327,9 @@
       "icon": "/miniapps/timestamp-proof/static/logo.png",
       "banner": "/miniapps/timestamp-proof/static/banner.png",
       "entry_url": "/miniapps/timestamp-proof/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
-      "chainContracts": {},
-      "permissions": {
-        "payments": false,
-        "governance": false,
-        "rng": false,
-        "datafeed": false,
-        "automation": false,
-        "confidential": false
-      },
-      "limits": null,
-      "stats_display": null,
-      "news_integration": null
-    },
-    {
-      "app_id": "__UNI__TRUSTANCHOR",
-      "name": "Trust Anchor",
-      "name_zh": "信任锚点",
-      "description": "Non-profit voting delegation for Neo N3 governance. Delegate your voting power to candidates with proven reputation and active contribution. Zero fees, 100% of GAS rewards to stakers.",
-      "description_zh": "信任锚点 - Neo N3 去中心化应用",
-      "icon": "/miniapps/trustanchor/static/logo.png",
-      "banner": "/miniapps/trustanchor/static/banner.png",
-      "entry_url": "/miniapps/trustanchor/index.html",
-      "category": "other",
-      "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -1415,7 +1380,7 @@
       "icon": "/miniapps/unbreakable-vault/static/logo.png",
       "banner": "/miniapps/unbreakable-vault/static/banner.png",
       "entry_url": "/miniapps/unbreakable-vault/index.html",
-      "category": "other",
+      "category": "games",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -1443,12 +1408,9 @@
       "icon": "/miniapps/wallet-health/static/logo.png",
       "banner": "/miniapps/wallet-health/static/banner.png",
       "entry_url": "/miniapps/wallet-health/index.html",
-      "category": "other",
+      "category": "tools",
       "status": "active",
-      "supportedChains": [
-        "neo-n3-mainnet",
-        "neo-n3-testnet"
-      ],
+      "supportedChains": [],
       "chainContracts": {},
       "permissions": {
         "payments": false,

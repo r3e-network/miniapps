@@ -34,14 +34,14 @@ namespace NeoMiniAppPlatform.Contracts
             BigInteger totalSeasonPoints = GetSeasonTotalPoints(seasonId);
             BigInteger reward = season.RewardPool * userPoints / totalSeasonPoints;
 
+            // SECURITY FIX: Mark as claimed BEFORE transfer to prevent reentrancy
+            Storage.Put(Storage.CurrentContext, claimedKey, 1);
+
             if (reward > 0)
             {
                 bool success = GAS.Transfer(Runtime.ExecutingScriptHash, claimer, reward);
                 ExecutionEngine.Assert(success, "transfer failed");
             }
-
-            // Mark as claimed
-            Storage.Put(Storage.CurrentContext, claimedKey, 1);
 
             OnRewardClaimed(claimer, reward, seasonId);
         }

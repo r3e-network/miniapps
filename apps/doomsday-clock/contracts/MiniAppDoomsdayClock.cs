@@ -22,7 +22,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. DoomsdayClock is a complete FOMO3D style countdown game.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]
     public partial class MiniAppDoomsdayClock : MiniAppBase
     {
         #region App Constants

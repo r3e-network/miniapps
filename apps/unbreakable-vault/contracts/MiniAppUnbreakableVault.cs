@@ -44,7 +44,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. UnbreakableVault is a complete hacker bounty challenge platform with difficulty tiers, hint system, leaderboards, and achievement tracking.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppUnbreakableVault : MiniAppBase
     {
         #region App Constants

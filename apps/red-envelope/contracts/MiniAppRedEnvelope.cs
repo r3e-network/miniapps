@@ -24,7 +24,7 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Version", "3.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. RedEnvelope is a social gifting application for random GAS distribution.")]
-    [ContractPermission("*", "*")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     public partial class MiniAppRedEnvelope : MiniAppComputeBase
     {
         #region App Constants
