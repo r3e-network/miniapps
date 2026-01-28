@@ -8,6 +8,7 @@ using Neo.SmartContract.Framework.Services;
 
 namespace NeoMiniAppPlatform.Contracts
 {
+    // Events
     public delegate void PhotoUploadedHandler(UInt160 owner, ByteString photoId, bool encrypted, BigInteger index);
 
     [DisplayName("MiniAppForeverAlbum")]
@@ -16,12 +17,38 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Version", "1.0.0")]
     [ManifestExtra("Description", "On-chain photo album with optional client-side encryption.")]
     [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
-    public class MiniAppForeverAlbum : MiniAppBase
+    /// <summary>
+    /// ForeverAlbum MiniApp - On-chain photo album with NeoFS support.
+    /// 
+    /// FEATURES:
+    /// - Store photos in NeoFS (unlimited size, 99% cheaper)
+    /// - Hybrid mode: small thumbnails on-chain, large photos in NeoFS
+    /// - Client-side encryption support
+    /// - Content integrity verification via SHA256 hashes
+    /// 
+    /// STORAGE MODES:
+    /// - Legacy: On-chain storage for small thumbnails (< 40KB)
+    /// - NeoFS: Off-chain storage for full photos (unlimited size)
+    /// 
+    /// USE NEOFS FOR:
+    /// - Photos larger than 40KB
+    /// - Videos and media files
+    /// - High-resolution images
+    /// 
+    /// USE LEGACY FOR:
+    /// - Small thumbnails
+    /// - Profile pictures
+    /// - Metadata
+    /// </summary>
+    public class MiniAppForeverAlbum : MiniAppNeoFSBase
     {
         private const string APP_ID = "miniapp-forever-album";
-        private const int MAX_PHOTOS_PER_UPLOAD = 5;
-        private const int MAX_PHOTO_BYTES = 45000;
-        private const int MAX_TOTAL_BYTES = 60000;
+        private const int MAX_PHOTOS_PER_UPLOAD = 10;           // Increased from 5
+        private const int MAX_PHOTO_BYTES = 45000;              // Legacy: 45KB max
+        private const int MAX_TOTAL_BYTES = 60000;              // Legacy: 60KB total
+        
+        // NeoFS limits (much higher)
+        private const long MAX_NEFOS_PHOTO_SIZE = 100 * 1024 * 1024;  // 100MB per photo
 
         private static readonly byte[] PREFIX_PHOTO_DATA = new byte[] { 0x20 };
         private static readonly byte[] PREFIX_PHOTO_ENCRYPTED = new byte[] { 0x21 };
