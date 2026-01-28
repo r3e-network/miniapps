@@ -77,5 +77,7 @@ export const messages = {
   wpTitle: { en: "Wallet Required", zh: "需要钱包" },
   wpDescription: { en: "Please connect your wallet to continue.", zh: "请连接钱包以继续。" },
   wpConnect: { en: "Connect Wallet", zh: "连接钱包" },
-  wpCancel: { en: "Cancel", zh: "取消" }
+  wpCancel: { en: "Cancel", zh: "取消" },
+  loading: { en: "Loading...", zh: "加载中..." },
+  error: { en: "Error", zh: "错误" }
 };

@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Guardian Policy - Neo MiniApp",
   "description_zh": "守护者策略 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "governance",
+  "category_name": "Governance",
+  "category_name_zh": "治理",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -17,7 +17,7 @@
   },
   "contracts": {
     "neo-n3-mainnet": "0x451422cfb5a16e26a12f3222aa04fb669d978229",
-    "neo-n3-testnet": ""
+    "neo-n3-testnet": "0x893a774957244b83a0efed1d42771fe1e424cfec"
   },
   "supported_networks": [
     "neo-n3-mainnet"

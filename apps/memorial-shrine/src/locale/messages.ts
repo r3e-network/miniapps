@@ -68,6 +68,10 @@ export const messages = {
     computeVerificationFailed: { en: "Computation verification failed", zh: "计算验证失败" },
     computeFailed: { en: "Compute failed ({status})", zh: "计算失败（{status}）" },
     unknownError: { en: "Unknown error", zh: "未知错误" },
+    loading: { en: "Loading...", zh: "加载中..." },
+    wrongChain: { en: "Wrong Network", zh: "网络错误" },
+    wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
+    switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
     // Share
     linkCopied: { en: "Link copied! Share to let others pay tribute 🙏", zh: "链接已复制！分享给亲友一同祭拜 🙏" },
     shareMemorial: { en: "Share Memorial", zh: "分享灵位" },

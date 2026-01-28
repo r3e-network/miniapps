@@ -127,12 +127,12 @@ function formatAmount(amount: number): string {
 
 .amount-input-wrapper {
   flex: 1;
-  ::v-deep .uni-easyinput__content {
+  :deep(.uni-easyinput__content) {
     background: transparent !important;
     border: none !important;
     padding: 0 !important;
   }
-  ::v-deep .uni-easyinput__content-input {
+  :deep(.uni-easyinput__content-input) {
     font-size: 28px !important;
     font-family: $font-family !important;
     font-weight: 700 !important;

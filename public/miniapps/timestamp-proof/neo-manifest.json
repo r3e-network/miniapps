@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "timestamp-proof",
+  "name": "Timestamp Proof",
+  "name_zh": "时间戳证明",
+  "version": "1.0.0",
+  "description": "Timestamp Proof miniapp on Neo N3",
+  "description_zh": "时间戳证明 - Neo N3 去中心化应用",
+  "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
+  "tags": [
+    "other"
+  ],
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
+  },
+  "contracts": {
+    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
+    "neo-n3-testnet": ""
+  },
+  "supported_networks": [
+    "neo-n3-mainnet"
+  ],
+  "default_network": "neo-n3-mainnet",
+  "urls": {
+    "entry": "/index.html",
+    "icon": "/logo.png",
+    "banner": "/banner.png"
+  },
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
+  ],
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://timestamp-proof"
+  },
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T12:00:00Z"
+}

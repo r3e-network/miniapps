@@ -61,6 +61,8 @@ export const messages = {
     en: "This miniapp works on Neo N3. Make sure your wallet is connected to the correct network before signing or broadcasting.",
     zh: "本小程序运行在 Neo N3 网络，请在签名或广播前确认钱包已连接正确网络。",
   },
+  loading: { en: "Loading...", zh: "加载中..." },
+  error: { en: "Error", zh: "错误" }
 } as const;
 
 export default messages;

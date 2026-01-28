@@ -22,6 +22,7 @@ export const messages = {
   missingContract: { en: "Contract address not configured.", zh: "合约地址未配置。" },
   loadFailed: { en: "Failed to load album.", zh: "加载相册失败。" },
   loading: { en: "Loading album...", zh: "正在加载相册..." },
+  error: { en: "Error", zh: "错误" },
   emptyTitle: { en: "No photos yet", zh: "暂无照片" },
   emptyDesc: { en: "Upload your first memory on-chain.", zh: "上传你的第一份链上记忆。" },
   selectMore: { en: "Select", zh: "选择" },

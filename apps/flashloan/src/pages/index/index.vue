@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useWallet, useEvents } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { formatNumber, formatAddress, formatGas } from "@shared/utils/format";

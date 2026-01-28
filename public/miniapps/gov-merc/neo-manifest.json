@@ -1,49 +1,59 @@
 {
-  "app_id": "miniapp-gov-merc",
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "miniapp-gov-merc",
   "name": "Gov Merc",
-  "name_zh": "治理雇佣军",
-  "description": "Marketplace for governance voting power delegation",
-  "description_zh": "治理投票权委托市场",
+  "name_zh": "Gov Merc",
   "version": "1.0.0",
-  "entry_url": "/miniapps/gov-merc/index.html",
-  "category": "governance",
-  "status": "active",
+  "description": "Marketplace for governance voting power delegation",
+  "description_zh": "Gov Merc - Neo N3 去中心化应用",
+  "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [
     "governance",
     "delegation",
     "marketplace"
   ],
-  "permissions": {
-    "payments": true
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
   },
-  "assets_allowed": [
-    "GAS"
-  ],
-  "supported_chains": [
-    "neo-n3-testnet",
+  "contracts": {
+    "neo-n3-mainnet": "0xe8f3d8d5784f8570d1f806940bbaa7daff9f52d0",
+    "neo-n3-testnet": "0x05d4ed2e60141043d6d20f5cde274704bd42c0dc"
+  },
+  "supported_networks": [
     "neo-n3-mainnet"
   ],
-  "contracts": {
-    "neo-n3-testnet": {
-      "address": "0x69a013c8fde3e835d642717ef1af71f7e02ade00"
-    },
-    "neo-n3-mainnet": {
-      "address": "0xe8f3d8d5784f8570d1f806940bbaa7daff9f52d0"
-    }
+  "default_network": "neo-n3-mainnet",
+  "urls": {
+    "entry": "/miniapps/gov-merc/index.html",
+    "icon": "/miniapps/gov-merc/logo.png",
+    "banner": "/miniapps/gov-merc/banner.png"
   },
-  "card": {
-    "display": {
-      "type": "static",
-      "banner": "/static/banner.png"
-    },
-    "info": {
-      "logo": "/static/logo.png"
-    }
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
+  ],
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://gov-merc"
   },
-  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/gov-merc/static/logo.png",
-  "banner": "/miniapps/gov-merc/static/banner.png",
-  "governance_assets_allowed": [
-    "NEO"
-  ]
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

@@ -1,13 +1,14 @@
 {
-  "app_id": "miniapp-neo-swap",
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "miniapp-neo-swap",
   "name": "Neo Swap",
   "name_zh": "Neo 兑换",
-  "description": "Swap NEO and GAS with real-time quotes routed through Flamingo",
-  "description_zh": "通过 Flamingo 路由器基于实时报价兑换 NEO 和 GAS",
   "version": "1.0.0",
-  "entry_url": "/miniapps/neo-swap/index.html",
-  "category": "defi",
-  "status": "active",
+  "description": "Swap NEO and GAS with real-time quotes routed through Flamingo",
+  "description_zh": "Neo 兑换 - Neo N3 去中心化应用",
+  "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [
     "swap",
     "dex",
@@ -15,52 +16,46 @@
     "gas",
     "exchange"
   ],
-  "permissions": {
-    "payments": false,
-    "datafeed": true
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
   },
-  "assets_allowed": [
-    "GAS"
-  ],
-  "supported_chains": [
-    "neo-n3-testnet",
+  "contracts": {
+    "neo-n3-mainnet": "0xf970f4ccecd765b63732b821775dc38c25d74f23",
+    "neo-n3-testnet": ""
+  },
+  "supported_networks": [
     "neo-n3-mainnet"
   ],
-  "contracts": {
-    "neo-n3-testnet": {
-      "address": "0x77b4349e5a62b3f77390afa50962096d66b0ab99"
-    },
-    "neo-n3-mainnet": {
-      "address": "0xf970f4ccecd765b63732b821775dc38c25d74f23"
-    }
+  "default_network": "neo-n3-mainnet",
+  "urls": {
+    "entry": "/miniapps/neo-swap/index.html",
+    "icon": "/miniapps/neo-swap/logo.png",
+    "banner": "/miniapps/neo-swap/banner.png"
   },
-  "card": {
-    "display": {
-      "type": "static",
-      "banner": "/static/banner.png",
-      "live_status": {
-        "enabled": true,
-        "refresh_interval": 30,
-        "fields": [
-          "neo_price",
-          "gas_price",
-          "volume_24h"
-        ]
-      }
-    },
-    "info": {
-      "logo": "/static/logo.png",
-      "owner": {
-        "name": "R3E Network",
-        "address": "NhWxcoEc9qtmnjsTLF1fVF6myJ5MZZhSMK",
-        "verified": true
-      }
-    }
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
+  ],
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://neo-swap"
   },
-  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/neo-swap/static/logo.png",
-  "banner": "/miniapps/neo-swap/static/banner.png",
-  "governance_assets_allowed": [
-    "NEO"
-  ]
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

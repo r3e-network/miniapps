@@ -6,7 +6,7 @@ This document describes the recommended workflow for developing individual minia
 
 ## Prerequisites
 
-- Node.js 22+
+- Node.js 20+
 - pnpm 10+
 - Git
 
@@ -98,8 +98,8 @@ The `@neo/uniapp-sdk` and `@neo/types` packages are available as workspace depen
 
 ```typescript
 // TypeScript imports
-import { useWallet, useAccount } from '@neo/uniapp-sdk'
-import type { WalletAccount, Transaction } from '@neo/types'
+import { useWallet, useAccount } from "@neo/uniapp-sdk";
+import type { WalletAccount, Transaction } from "@neo/types";
 ```
 
 ## Common Issues

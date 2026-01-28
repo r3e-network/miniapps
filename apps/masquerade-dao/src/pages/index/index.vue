@@ -133,11 +133,7 @@ import { useI18n } from "@/composables/useI18n";
 import { sha256Hex } from "@shared/utils/hash";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
-import AppLayout from "@shared/components/AppLayout.vue";
-import NeoDoc from "@shared/components/NeoDoc.vue";
-import NeoButton from "@shared/components/NeoButton.vue";
-import NeoCard from "@shared/components/NeoCard.vue";
-import NeoInput from "@shared/components/NeoInput.vue";
+import { AppLayout, NeoDoc, NeoButton, NeoCard, NeoInput, ChainWarning } from "@shared/components";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();

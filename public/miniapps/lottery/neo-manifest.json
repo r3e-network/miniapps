@@ -1,45 +1,59 @@
 {
-  "app_id": "miniapp-lottery",
-  "name": "Neo Lottery",
-  "name_zh": "Neo 彩票",
-  "description": "Neo Lottery - Neo MiniApp",
-  "description_zh": "体验由 VRF 随机数驱动的公平彩票抽奖。使用 GAS 购买彩票，竞争巨额奖池，100% 链上透明验证。",
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "lottery",
+  "name": "Lottery",
+  "name_zh": "彩票游戏",
   "version": "1.0.0",
-  "entry_url": "/miniapps/lottery/index.html",
-  "category": "gaming",
-  "status": "active",
-  "tags": [],
-  "permissions": {
-    "payments": true
-  },
-  "assets_allowed": [
-    "GAS"
+  "description": "Decentralized lottery game with transparent drawing",
+  "description_zh": "彩票游戏 - Neo N3 去中心化应用",
+  "category": "games",
+  "category_name": "Games",
+  "category_name_zh": "游戏",
+  "tags": [
+    "lottery",
+    "gaming",
+    "neo-n3"
   ],
-  "supported_chains": [
-    "neo-n3-testnet",
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
+  },
+  "contracts": {
+    "neo-n3-mainnet": "0xb3c0ca9950885c5bf4d0556e84bc367473c3475e",
+    "neo-n3-testnet": "0x3e330b4c396b40aa08d49912c0179319831b3a6e"
+  },
+  "supported_networks": [
     "neo-n3-mainnet"
   ],
-  "contracts": {
-    "neo-n3-testnet": {
-      "address": "0x3e330b4c396b40aa08d49912c0179319831b3a6e"
-    },
-    "neo-n3-mainnet": {
-      "address": "0xb3c0ca9950885c5bf4d0556e84bc367473c3475e"
-    }
+  "default_network": "neo-n3-mainnet",
+  "urls": {
+    "entry": "/index.html",
+    "icon": "/logo.png",
+    "banner": "/banner.png"
   },
-  "card": {
-    "display": {
-      "type": "static",
-      "banner": "/static/banner.png"
-    },
-    "info": {
-      "logo": "/static/logo.png"
-    }
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
+  ],
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://lottery"
   },
-  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/lottery/static/logo.png",
-  "banner": "/miniapps/lottery/static/banner.png",
-  "governance_assets_allowed": [
-    "NEO"
-  ]
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

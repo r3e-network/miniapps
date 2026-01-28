@@ -27,6 +27,7 @@ export const messages = {
 
   agentRanking: { en: "Candidate Ranking", zh: "候选人排名" },
   topAgents: { en: "Top Reputation Candidates", zh: "声誉最佳的候选人" },
+  amount: { en: "Amount", zh: "数量" },
 
   zeroFee: { en: "0% Fees", zh: "0% 手续费" },
   zeroFeeDesc: { en: "100% of GAS rewards go to stakers", zh: "100% 的 GAS 奖励归质押者所有" },
@@ -45,6 +46,9 @@ export const messages = {
   warningTitle: { en: "Wrong Network", zh: "网络错误" },
   warningMessage: { en: "TrustAnchor requires Neo N3 network.", zh: "TrustAnchor 需要 Neo N3 网络。" },
   switchButton: { en: "Switch to Neo", zh: "切换到 Neo" },
+  wrongChain: { en: "Wrong Network", zh: "网络错误" },
+  wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
+  switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
 
   error: { en: "Operation failed", zh: "操作失败" },
   success: { en: "Success", zh: "成功" },

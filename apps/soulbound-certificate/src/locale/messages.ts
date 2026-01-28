@@ -8,6 +8,8 @@ export const messages = {
   wrongChain: { en: "Wrong Network", zh: "网络错误" },
   wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
   switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+  loading: { en: "Loading...", zh: "加载中..." },
+  error: { en: "Error", zh: "错误" },
   contractMissing: { en: "Contract address not configured", zh: "合约地址未配置" },
 
   templateName: { en: "Certificate name", zh: "证书名称" },

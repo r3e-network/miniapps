@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Run quadratic funding rounds with public matching pools.",
   "description_zh": "二次方资助 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "finance",
+  "category_name": "Finance",
+  "category_name_zh": "金融",
   "tags": [
     "grants",
     "matching",

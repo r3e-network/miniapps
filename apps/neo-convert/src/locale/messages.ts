@@ -212,5 +212,9 @@ export const messages = {
     genEmptySub: {
         en: "Click Generate to create a new offline wallet",
         zh: "点击生成以创建一个新的离线钱包"
-    }
+    },
+    wrongChain: { en: "Wrong Network", zh: "网络错误" },
+    wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
+    switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+    error: { en: "Error", zh: "错误" }
 };

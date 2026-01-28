@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Create multisig transfer requests and collect signatures securely.",
   "description_zh": "Neo 多签钱包 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "tools",
+  "category_name": "Tools",
+  "category_name_zh": "工具",
   "tags": [
     "security",
     "wallet",
@@ -19,10 +19,7 @@
     "email": "dev@r3e.network",
     "website": "https://r3e.network"
   },
-  "contracts": {
-    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
-    "neo-n3-testnet": ""
-  },
+  "contracts": {},
   "supported_networks": [
     "neo-n3-mainnet"
   ],
@@ -42,11 +39,8 @@
     "deeplink": "neomainapp://neo-multisig"
   },
   "stateSource": {
-    "type": "smart-contract",
-    "chain": "neo-n3-mainnet",
-    "endpoints": [
-      "https://neoxrpc1.blackholelabs.io"
-    ]
+    "type": "api",
+    "endpoints": []
   },
   "platform": {
     "analytics": true,
@@ -55,5 +49,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T12:00:00Z"
+  "updatedAt": "2026-01-28T21:07:41Z"
 }

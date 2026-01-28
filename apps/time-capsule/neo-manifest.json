@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Seal message hashes until a future date with public fishing.",
   "description_zh": "时间胶囊 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "social",
+  "category_name": "Social",
+  "category_name_zh": "社交",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -17,7 +17,7 @@
   },
   "contracts": {
     "neo-n3-mainnet": "0xd853a4ac293ff96e7f70f774c2155d846f91a989",
-    "neo-n3-testnet": ""
+    "neo-n3-testnet": "0x119763e1402d7190728191d83c95c5b8e995abcd"
   },
   "supported_networks": [
     "neo-n3-mainnet"

@@ -24,6 +24,7 @@ title: { en: "Breakup Contract", zh: "分手合约" },
   partnerRequired: { en: "Partner address is required", zh: "需要填写伴侣地址" },
   partnerInvalid: { en: "Invalid partner address", zh: "伴侣地址无效" },
 
+  loading: { en: "Loading...", zh: "加载中..." },
   creating: { en: "Creating...", zh: "创建中..." },
   createBtn: { en: "Sign & Create Contract", zh: "签署并创建合约" },
   tabCreate: { en: "Create", zh: "创建" },

@@ -7,6 +7,8 @@ export const messages = {
   wrongChain: { en: "Wrong Network", zh: "网络错误" },
   wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
   switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+  loading: { en: "Loading...", zh: "加载中..." },
+  error: { en: "Error", zh: "错误" },
 
   connectWallet: { en: "Connect Wallet", zh: "连接钱包" },
   walletNotConnected: { en: "Wallet not connected", zh: "钱包未连接" },

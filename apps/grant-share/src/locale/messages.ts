@@ -9,6 +9,7 @@ export const messages = {
   activeGrants: { en: "Latest Proposals", zh: "最新提案" },
   noActiveGrants: { en: "No proposals found", zh: "暂无提案" },
   loading: { en: "Loading proposals...", zh: "提案加载中..." },
+  error: { en: "Error", zh: "错误" },
   loadFailed: { en: "Unable to load proposals", zh: "提案加载失败" },
   by: { en: "by", zh: "创建者" },
   copyDiscussion: { en: "Copy Discussion Link", zh: "复制讨论链接" },

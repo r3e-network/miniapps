@@ -6,19 +6,16 @@
   "version": "1.0.0",
   "description": "Track Neo Foundation and Ecosystem Fund balances",
   "description_zh": "Neo 财库 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "tools",
+  "category_name": "Tools",
+  "category_name_zh": "工具",
   "tags": [],
   "developer": {
     "name": "R3E Network",
     "email": "dev@r3e.network",
     "website": "https://r3e.network"
   },
-  "contracts": {
-    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
-    "neo-n3-testnet": ""
-  },
+  "contracts": {},
   "supported_networks": [
     "neo-n3-mainnet"
   ],
@@ -38,11 +35,8 @@
     "deeplink": "neomainapp://neo-treasury"
   },
   "stateSource": {
-    "type": "smart-contract",
-    "chain": "neo-n3-mainnet",
-    "endpoints": [
-      "https://neoxrpc1.blackholelabs.io"
-    ]
+    "type": "api",
+    "endpoints": []
   },
   "platform": {
     "analytics": true,

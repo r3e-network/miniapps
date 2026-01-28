@@ -78,7 +78,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { AppLayout, NeoCard, NeoButton } from "@shared/components";
+import { AppLayout, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { requireNeoChain } from "@shared/utils/chain";

@@ -1,4 +1,5 @@
 export const messages = {
+    error: { en: "Error", zh: "错误" },
     vote: { en: "Vote", zh: "投票" },
     info: { en: "Info", zh: "信息" },
     title: { en: "Candidate Vote", zh: "候选人投票" },

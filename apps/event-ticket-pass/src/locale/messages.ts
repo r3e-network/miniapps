@@ -1,4 +1,6 @@
 export const messages = {
+  error: { en: "Error", zh: "错误" },
+  loading: { en: "Loading...", zh: "加载中..." },
   title: { en: "Event Ticket Pass", zh: "活动门票通行证" },
   createTab: { en: "Create", zh: "创建" },
   ticketsTab: { en: "My Tickets", zh: "我的门票" },

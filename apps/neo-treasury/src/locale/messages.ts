@@ -20,4 +20,18 @@ export const messages = {
   loading: { en: "Loading...", zh: "加载中..." },
   error: { en: "Error", zh: "错误" },
   success: { en: "Success", zh: "成功" },
+  wrongChain: { en: "Wrong Network", zh: "网络错误" },
+  wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
+  switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+  docs: { en: "Docs", zh: "文档" },
+  loadFailed: { en: "Failed to load", zh: "加载失败" },
+  refreshing: { en: "Refreshing...", zh: "刷新中..." },
+  retry: { en: "Retry", zh: "重试" },
+  step1: { en: "Connect your wallet", zh: "连接您的钱包" },
+  step2: { en: "View treasury balance", zh: "查看国库余额" },
+  step3: { en: "Create or vote on proposals", zh: "创建或投票提案" },
+  step4: { en: "Track fund allocations", zh: "追踪资金分配" },
+  tabTotal: { en: "Total", zh: "总计" },
+  tabDa: { en: "DA", zh: "开发" },
+  tabErik: { en: "Erik", zh: "社区" }
 };

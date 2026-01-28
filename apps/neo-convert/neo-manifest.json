@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Convert Neo addresses, private keys, and script hashes",
   "description_zh": "Neo 转换器 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "tools",
+  "category_name": "Tools",
+  "category_name_zh": "工具",
   "tags": [
     "tools",
     "developer"
@@ -18,10 +18,7 @@
     "email": "dev@r3e.network",
     "website": "https://r3e.network"
   },
-  "contracts": {
-    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
-    "neo-n3-testnet": ""
-  },
+  "contracts": {},
   "supported_networks": [
     "neo-n3-mainnet"
   ],
@@ -41,11 +38,8 @@
     "deeplink": "neomainapp://neo-convert"
   },
   "stateSource": {
-    "type": "smart-contract",
-    "chain": "neo-n3-mainnet",
-    "endpoints": [
-      "https://neoxrpc1.blackholelabs.io"
-    ]
+    "type": "api",
+    "endpoints": []
   },
   "platform": {
     "analytics": true,

@@ -54,6 +54,10 @@ export const messages = {
     sdkUnavailable: { en: "SDK not available", zh: "SDK 不可用" },
     sdkInitTimeout: { en: "SDK initialization timeout", zh: "SDK 初始化超时" },
     error: { en: "Error", zh: "错误" },
+    wrongChain: { en: "Wrong Network", zh: "网络错误" },
+    wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
+    switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+    loading: { en: "Loading...", zh: "加载中..." },
     // Shared component keys
     wpTitle: { en: "Wallet Required", zh: "需要钱包" },
     wpDescription: { en: "Please connect your wallet to continue.", zh: "请连接钱包以继续。" },

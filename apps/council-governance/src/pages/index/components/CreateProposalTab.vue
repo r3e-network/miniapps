@@ -179,7 +179,7 @@ defineExpose({ reset: () => {
 }
 
 .method-btn {
-  ::v-deep button {
+  :deep(button) {
     font-size: 10px !important;
     padding: 8px 4px !important;
     height: auto !important;

@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Issue NEP-11 event tickets with QR check-in.",
   "description_zh": "活动门票 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "social",
+  "category_name": "Social",
+  "category_name_zh": "社交",
   "tags": [
     "tickets",
     "events",

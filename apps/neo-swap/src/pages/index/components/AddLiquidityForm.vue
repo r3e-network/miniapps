@@ -128,12 +128,12 @@ defineEmits(["update:amountA", "update:amountB", "calculateA", "calculateB", "ad
 }
 
 .seamless-input {
-  ::v-deep .uni-easyinput__content {
+  :deep(.uni-easyinput__content) {
     background: transparent !important;
     border: none !important;
     padding: 0 !important;
   }
-  ::v-deep .uni-easyinput__content-input {
+  :deep(.uni-easyinput__content-input) {
     font-size: 20px !important;
     font-weight: 600 !important;
     color: var(--text-primary) !important;

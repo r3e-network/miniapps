@@ -87,4 +87,6 @@ title: { en: "Neo Name Service", zh: "Neo 域名服务" },
     docWhatItIs: { en: "What is it?", zh: "这是什么？" },
     docHowToUse: { en: "How to use", zh: "如何使用" },
     docOnChainFeatures: { en: "On-Chain Features", zh: "链上特性" },
+    loading: { en: "Loading...", zh: "加载中..." },
+    error: { en: "Error", zh: "错误" }
 };

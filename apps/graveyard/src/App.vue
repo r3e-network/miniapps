@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { onMounted } from "vue";
-import { initTheme, listenForThemeChanges } from "@/shared/utils/theme";
+import { initTheme, listenForThemeChanges } from "@shared/utils/theme";
 
 onLaunch(() => {
   console.log("Graveyard launched");

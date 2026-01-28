@@ -1,6 +1,6 @@
 {
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
-  "id": "lottery",
+  "id": "miniapp-lottery",
   "name": "Lottery",
   "name_zh": "彩票游戏",
   "version": "1.0.0",
@@ -20,17 +20,17 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "neo-n3-mainnet": "0x1234567890abcdef1234567890abcdef12345678",
-    "neo-n3-testnet": ""
+    "neo-n3-mainnet": "0xb3c0ca9950885c5bf4d0556e84bc367473c3475e",
+    "neo-n3-testnet": "0x3e330b4c396b40aa08d49912c0179319831b3a6e"
   },
   "supported_networks": [
     "neo-n3-mainnet"
   ],
   "default_network": "neo-n3-mainnet",
   "urls": {
-    "entry": "/index.html",
-    "icon": "/logo.png",
-    "banner": "/banner.png"
+    "entry": "/miniapps/lottery/index.html",
+    "icon": "/miniapps/lottery/logo.png",
+    "banner": "/miniapps/lottery/banner.png"
   },
   "permissions": [
     "invoke:primary",
@@ -39,7 +39,7 @@
   "features": {
     "stateless": true,
     "offlineSupport": false,
-    "deeplink": "neomainapp://lottery"
+    "deeplink": "neomainapp://miniapp-lottery"
   },
   "stateSource": {
     "type": "smart-contract",

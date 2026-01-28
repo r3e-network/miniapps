@@ -6,19 +6,16 @@
   "version": "1.0.0",
   "description": "Neo News Today - Neo MiniApp",
   "description_zh": "Neo 今日资讯 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "social",
+  "category_name": "Social",
+  "category_name_zh": "社交",
   "tags": [],
   "developer": {
     "name": "R3E Network",
     "email": "dev@r3e.network",
     "website": "https://r3e.network"
   },
-  "contracts": {
-    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
-    "neo-n3-testnet": ""
-  },
+  "contracts": {},
   "supported_networks": [
     "neo-n3-mainnet"
   ],
@@ -38,11 +35,8 @@
     "deeplink": "neomainapp://neo-news-today"
   },
   "stateSource": {
-    "type": "smart-contract",
-    "chain": "neo-n3-mainnet",
-    "endpoints": [
-      "https://neoxrpc1.blackholelabs.io"
-    ]
+    "type": "api",
+    "endpoints": []
   },
   "platform": {
     "analytics": true,
@@ -51,5 +45,5 @@
     "transactions": true
   },
   "createdAt": "2026-01-01T00:00:00Z",
-  "updatedAt": "2026-01-26T12:00:00Z"
+  "updatedAt": "2026-01-28T21:07:41Z"
 }

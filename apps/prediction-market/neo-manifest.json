@@ -1,14 +1,14 @@
 {
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
-  "id": "prediction-market",
+  "id": "miniapp-prediction-market",
   "name": "Prediction Market",
   "name_zh": "预测市场",
   "version": "1.0.0",
   "description": "Prediction Market miniapp on Neo N3",
   "description_zh": "预测市场 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "finance",
+  "category_name": "Finance",
+  "category_name_zh": "金融",
   "tags": [
     "other"
   ],
@@ -17,18 +17,15 @@
     "email": "dev@r3e.network",
     "website": "https://r3e.network"
   },
-  "contracts": {
-    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
-    "neo-n3-testnet": ""
-  },
+  "contracts": {},
   "supported_networks": [
     "neo-n3-mainnet"
   ],
   "default_network": "neo-n3-mainnet",
   "urls": {
-    "entry": "/index.html",
-    "icon": "/logo.png",
-    "banner": "/banner.png"
+    "entry": "/miniapps/prediction-market/index.html",
+    "icon": "/miniapps/prediction-market/logo.png",
+    "banner": "/miniapps/prediction-market/banner.png"
   },
   "permissions": [
     "invoke:primary",
@@ -37,14 +34,11 @@
   "features": {
     "stateless": true,
     "offlineSupport": false,
-    "deeplink": "neomainapp://prediction-market"
+    "deeplink": "neomainapp://miniapp-prediction-market"
   },
   "stateSource": {
-    "type": "smart-contract",
-    "chain": "neo-n3-mainnet",
-    "endpoints": [
-      "https://neoxrpc1.blackholelabs.io"
-    ]
+    "type": "api",
+    "endpoints": []
   },
   "platform": {
     "analytics": true,

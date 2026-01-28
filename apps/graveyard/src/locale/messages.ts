@@ -38,6 +38,7 @@ title: { en: "Graveyard", zh: "数字墓地" },
   receiptMissing: { en: "Payment receipt missing", zh: "支付凭证缺失" },
   buryPending: { en: "Burial confirmation pending", zh: "埋葬确认中" },
   error: { en: "Error", zh: "错误" },
+  loading: { en: "Loading...", zh: "加载中..." },
   docs: { en: "Docs", zh: "文档" },
   docSubtitle: { en: "On-chain burial and right-to-forget flow", zh: "链上埋葬与遗忘流程" },
   docDescription: {

@@ -30,7 +30,7 @@
             </view>
             <view class="create-content">
               <text class="create-title">{{ t("createCta") }}</text>
-              <text class="create-desc">Start a new multi-signature transaction</text>
+              <text class="create-desc">{{ t("createDesc") }}</text>
             </view>
             <text class="create-arrow">→</text>
           </view>
@@ -39,7 +39,7 @@
         <!-- Divider -->
         <view class="divider">
           <view class="divider-line"></view>
-          <text class="divider-text">OR</text>
+          <text class="divider-text">{{ t("dividerOr") }}</text>
           <view class="divider-line"></view>
         </view>
 
@@ -99,11 +99,11 @@
         </view>
         <view class="stat-card">
           <text class="stat-value">{{ pendingCount }}</text>
-          <text class="stat-label">Pending</text>
+          <text class="stat-label">{{ t("statPending") }}</text>
         </view>
         <view class="stat-card">
           <text class="stat-value">{{ completedCount }}</text>
-          <text class="stat-label">Completed</text>
+          <text class="stat-label">{{ t("statCompleted") }}</text>
         </view>
       </view>
     </view>

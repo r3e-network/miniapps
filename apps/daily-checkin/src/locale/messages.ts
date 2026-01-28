@@ -1,4 +1,5 @@
 export const messages = {
+    loading: { en: "Loading...", zh: "加载中..." },
     title: { en: "Daily Check-in", zh: "每日签到" },
     checkin: { en: "Check-in", zh: "签到" },
     stats: { en: "Stats", zh: "统计" },
@@ -32,6 +33,7 @@ export const messages = {
     pendingConfirmation: { en: "{action} (pending confirmation)", zh: "{action}（等待确认）" },
     error: { en: "Error occurred", zh: "发生错误" },
     receiptMissing: { en: "Payment receipt missing", zh: "支付凭证缺失" },
+    contractUnavailable: { en: "Contract unavailable", zh: "合约不可用" },
     connectWallet: { en: "Connect wallet first", zh: "请先连接钱包" },
     docSubtitle: { en: "Earn GAS by checking in daily", zh: "每日签到赚取 GAS" },
     docDescription: {

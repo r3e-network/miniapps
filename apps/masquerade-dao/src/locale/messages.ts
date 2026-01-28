@@ -30,6 +30,7 @@ export const messages = {
     receiptMissing: { en: "Payment receipt missing", zh: "支付凭证缺失" },
     contractUnavailable: { en: "Contract unavailable", zh: "合约不可用" },
     error: { en: "Error", zh: "错误" },
+    loading: { en: "Loading...", zh: "加载中..." },
     docSubtitle: {
         en: "Anonymous governance voting with cryptographic identity masks",
         zh: "使用加密身份面具的匿名治理投票",

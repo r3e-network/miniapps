@@ -30,7 +30,7 @@ ENVIRONMENT="${2:-staging}"
 R2_BUCKET_VAR="R2_BUCKET_${ENVIRONMENT^^}"
 R2_BUCKET="${!R2_BUCKET_VAR}"
 R2_ENDPOINT="${R2_ENDPOINT:-https://bf0d7e814f69945157f30505e9fba9fe.r2.cloudflarestorage.com}"
-CDN_URL="${NEXT_PUBLIC_CDN_URL:-https://pub-9520e478cb93416898bc82d2aeb5db3f.r2.dev}"
+CDN_URL="${NEXT_PUBLIC_CDN_URL:-https://meshmini.app}"
 
 # ANSI colors
 RED='\033[0;31m'

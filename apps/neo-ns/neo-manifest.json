@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Register and manage human-readable .neo domain names for your wallet",
   "description_zh": "Neo 域名服务 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "tools",
+  "category_name": "Tools",
+  "category_name_zh": "工具",
   "tags": [
     "domains",
     "naming",

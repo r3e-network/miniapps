@@ -96,4 +96,8 @@ export default {
   docHowToUse: { en: "HOW TO USE", zh: "如何使用" },
   docOnChainFeatures: { en: "ON-CHAIN FEATURES", zh: "链上特性" },
   docFooter: { en: "SECURED BY ZERO KNOWLEDGE PROOFS", zh: "由零知识证明保护" },
+  wrongChain: { en: "Wrong Network", zh: "网络错误" },
+  wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
+  switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+  error: { en: "Error", zh: "错误" }
 };

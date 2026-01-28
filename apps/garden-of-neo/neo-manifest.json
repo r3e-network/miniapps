@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Plant elemental seeds, grow for 100 blocks, and harvest GAS rewards.",
   "description_zh": "Neo 花园 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "games",
+  "category_name": "Games",
+  "category_name_zh": "游戏",
   "tags": [
     "nft",
     "garden",
@@ -21,7 +21,7 @@
   },
   "contracts": {
     "neo-n3-mainnet": "0x72aa16fd44305eabe8b85ca397b9bfcdc718dce8",
-    "neo-n3-testnet": ""
+    "neo-n3-testnet": "0xdb52b284d97973b01fed431dd6d143a4d04d9fa7"
   },
   "supported_networks": [
     "neo-n3-mainnet"

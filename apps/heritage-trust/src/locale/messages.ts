@@ -19,6 +19,7 @@ export const messages = {
   trustCreated: { en: "Trust created!", zh: "信托已创建！" },
   receiptMissing: { en: "Payment receipt missing", zh: "支付凭证缺失" },
   error: { en: "Error", zh: "错误" },
+  loading: { en: "Loading...", zh: "加载中..." },
   main: { en: "Main", zh: "主页" },
   stats: { en: "Stats", zh: "统计" },
   statistics: { en: "Statistics", zh: "统计数据" },

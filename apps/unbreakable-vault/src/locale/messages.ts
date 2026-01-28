@@ -78,6 +78,8 @@ title: { en: "Unbreakable Vault", zh: "坚不可摧保险库" },
   wrongChain: { en: "Wrong Network", zh: "网络错误" },
   wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
   switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+  loading: { en: "Loading...", zh: "加载中..." },
+  error: { en: "Error", zh: "错误" },
     // Shared component keys
     wpTitle: { en: "Wallet Required", zh: "需要钱包" },
     wpDescription: { en: "Please connect your wallet to continue.", zh: "请连接钱包以继续。" },

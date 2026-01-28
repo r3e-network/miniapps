@@ -22,25 +22,32 @@ cp .env.example .env
 Required variables:
 
 ```env
-# Cloudflare R2
-CLOUDFLARE_ACCOUNT_ID=your_account_id
-CLOUDFLARE_R2_ACCESS_KEY_ID=your_access_key_id
-CLOUDFLARE_R2_SECRET_ACCESS_KEY=your_secret_access_key
-CLOUDFLARE_R2_BUCKET=miniapps-prod
-CLOUDFLARE_R2_ENDPOINT=https://your_account_id.r2.cloudflarestorage.com
+# Cloudflare R2 Configuration
+CLOUDFLARE_R2_ENDPOINT=https://bf0d7e814f69945157f30505e9fba9fe.r2.cloudflarestorage.com
+CLOUDFLARE_R2_ACCESS_KEY_ID=your_access_key_id_here
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=your_secret_access_key_here
+CLOUDFLARE_R2_REGION=auto
+
+# CDN Configuration
+NEXT_PUBLIC_CDN_URL=https://meshmini.app
+CDN_URL=https://meshmini.app
+
+# Supabase Configuration
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
 ### 2. Configure GitHub Secrets
 
 For CI/CD deployment, add these secrets in GitHub repository settings:
 
-- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_R2_ENDPOINT`
 - `CLOUDFLARE_R2_ACCESS_KEY_ID`
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
-- `CLOUDFLARE_R2_BUCKET`
-- `CLOUDFLARE_R2_ENDPOINT`
-- `CLOUDFLARE_API_TOKEN` (for cache purging)
-- `CLOUDFLARE_ZONE_ID` (for cache purging)
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `CF_API_TOKEN` (for cache purging)
+- `CF_ACCOUNT_ID` (for cache purging)
 
 ## Local Deployment
 
@@ -111,21 +118,9 @@ miniapps/
 
 ## Environment Configurations
 
-### Development
-
-- Bucket: `miniapps-dev`
-- No caching
-- Local testing
-
-### Staging
-
-- Bucket: `miniapps-staging`
-- Short cache (30 min)
-- Pre-production testing
-
 ### Production
 
-- Bucket: `miniapps-prod`
+- Bucket: `miniapps`
 - Long cache (1 day for assets)
 - Public access
 
@@ -146,8 +141,8 @@ Check credentials in `.env`:
 ```bash
 # Verify R2 access
 aws s3 ls \
-  --endpoint https://your_account_id.r2.cloudflarestorage.com \
-  --bucket miniapps-prod
+  --endpoint https://bf0d7e814f69945157f30505e9fba9fe.r2.cloudflarestorage.com \
+  --bucket miniapps
 ```
 
 ### Cache Issues
@@ -158,32 +153,33 @@ After deployment, purge Cloudflare cache:
 curl -X POST "https://api.cloudflare.com/client/v4/zones/YOUR_ZONE_ID/purge_cache" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
-  --data '{"files":["https://miniapps.yourdomain.com/miniapps/*"]}'
+  --data '{"files":["https://meshmini.app/miniapps/*"]}'
 ```
 
 ## Registry Endpoints
 
 After deployment, the registry is available at:
 
-- Production: `https://miniapps.yourdomain.com/data/miniapps.json`
-- Staging: `https://staging-miniapps.yourdomain.com/data/miniapps.json`
+- Production: `https://meshmini.app/data/miniapps.json`
 
 ## CDN URLs
 
 Each miniapp is accessible at:
 
 ```
-https://miniapps.yourdomain.com/miniapps/[app-name]/index.html
+https://meshmini.app/miniapps/[app-name]/index.html
 ```
 
 Example:
+
 ```
-https://miniapps.yourdomain.com/miniapps/lottery/index.html
+https://meshmini.app/miniapps/lottery/index.html
 ```
 
 ## Monitoring
 
 Check deployment status in:
+
 - GitHub Actions runs
 - Cloudflare R2 browser
 - Cloudflare Analytics

@@ -67,6 +67,7 @@ title: { en: "Million Piece Map", zh: "百万像素地图" },
     zh: "此应用需要 Neo N3 网络，请切换网络。",
   },
   switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+  loading: { en: "Loading...", zh: "加载中..." },
     // Shared component keys
     wpTitle: { en: "Wallet Required", zh: "需要钱包" },
     wpDescription: { en: "Please connect your wallet to continue.", zh: "请连接钱包以继续。" },

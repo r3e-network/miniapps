@@ -1,37 +1,55 @@
 {
-  "app_id": "miniapp-neo-treasury",
+  "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
+  "id": "miniapp-neo-treasury",
   "name": "Neo Treasury",
-  "name_zh": "Neo 国库",
-  "description": "Track Neo Foundation and Ecosystem Fund balances",
-  "description_zh": "实时追踪 Neo 联合创始人达鸿飞和张铮文的钱包持有量。查看 44 个国库地址的 NEO 和 GAS 余额及实时价格。",
+  "name_zh": "Neo 财库",
   "version": "1.0.0",
-  "entry_url": "/miniapps/neo-treasury/index.html",
-  "category": "utility",
-  "status": "active",
+  "description": "Track Neo Foundation and Ecosystem Fund balances",
+  "description_zh": "Neo 财库 - Neo N3 去中心化应用",
+  "category": "other",
+  "category_name": "Other",
+  "category_name_zh": "其他",
   "tags": [],
-  "permissions": {},
-  "assets_allowed": [
-    "GAS"
-  ],
-  "supported_chains": [
-    "neo-n3-testnet",
+  "developer": {
+    "name": "R3E Network",
+    "email": "dev@r3e.network",
+    "website": "https://r3e.network"
+  },
+  "contracts": {
+    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
+    "neo-n3-testnet": ""
+  },
+  "supported_networks": [
     "neo-n3-mainnet"
   ],
-  "contracts": {},
-  "card": {
-    "display": {
-      "type": "static",
-      "banner": "/static/banner.png"
-    },
-    "info": {
-      "logo": "/static/logo.png"
-    }
+  "default_network": "neo-n3-mainnet",
+  "urls": {
+    "entry": "/miniapps/neo-treasury/index.html",
+    "icon": "/miniapps/neo-treasury/logo.png",
+    "banner": "/miniapps/neo-treasury/banner.png"
   },
-  "developer_pubkey": "03f35d7ba09f0a14f0a0f8fdd2cd2db39647c80270f65a52d03d2cceb36b5250c5",
-  "icon": "/miniapps/neo-treasury/static/logo.png",
-  "banner": "/miniapps/neo-treasury/static/banner.png",
-  "governance_assets_allowed": [
-    "NEO"
+  "permissions": [
+    "invoke:primary",
+    "read:blockchain"
   ],
-  "news_integration": false
+  "features": {
+    "stateless": true,
+    "offlineSupport": false,
+    "deeplink": "neomainapp://neo-treasury"
+  },
+  "stateSource": {
+    "type": "smart-contract",
+    "chain": "neo-n3-mainnet",
+    "endpoints": [
+      "https://neoxrpc1.blackholelabs.io"
+    ]
+  },
+  "platform": {
+    "analytics": true,
+    "comments": true,
+    "ratings": true,
+    "transactions": true
+  },
+  "createdAt": "2026-01-01T00:00:00Z",
+  "updatedAt": "2026-01-26T12:00:00Z"
 }

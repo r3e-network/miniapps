@@ -21,6 +21,10 @@ export const messages = {
     zh: "创建共享交易，收集签名，安全广播。",
   },
   createCta: { en: "Create New Multisig", zh: "创建多重签名" },
+  createDesc: { en: "Start a new multi-signature transaction", zh: "开始新的多重签名交易" },
+  dividerOr: { en: "OR", zh: "或" },
+  statPending: { en: "Pending", zh: "待处理" },
+  statCompleted: { en: "Completed", zh: "已完成" },
   loadTitle: { en: "Load Existing Request", zh: "加载已有请求" },
   loadPlaceholder: { en: "Enter multisig ID", zh: "输入多签 ID" },
   loadButton: { en: "Load", zh: "加载" },
@@ -154,4 +158,8 @@ export const messages = {
     en: "Track request status, signatures, and broadcast readiness.",
     zh: "统一追踪请求状态、签名进度与可广播状态。",
   },
+  wrongChain: { en: "Wrong Network", zh: "网络错误" },
+  wrongChainMessage: { en: "This app requires Neo N3 network.", zh: "此应用需 Neo N3 网络。" },
+  switchToNeo: { en: "Switch to Neo N3", zh: "切换到 Neo N3" },
+  error: { en: "Error", zh: "错误" }
 };

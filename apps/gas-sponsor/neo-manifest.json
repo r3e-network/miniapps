@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Free gas sponsorship for new users with low balance",
   "description_zh": "Gas 赞助商 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "tools",
+  "category_name": "Tools",
+  "category_name_zh": "工具",
   "tags": [
     "gas",
     "sponsor",

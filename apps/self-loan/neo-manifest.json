@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Tiered LTV self-loans with auto-repayment",
   "description_zh": "自我借贷 - Neo N3 去中心化应用",
-  "category": "other",
-  "category_name": "Other",
-  "category_name_zh": "其他",
+  "category": "finance",
+  "category_name": "Finance",
+  "category_name_zh": "金融",
   "tags": [],
   "developer": {
     "name": "R3E Network",
@@ -17,7 +17,7 @@
   },
   "contracts": {
     "neo-n3-mainnet": "0x942da575b31f39cbb59e64b5813b128739b44c25",
-    "neo-n3-testnet": ""
+    "neo-n3-testnet": "0x5ed7d8c85f24f4aa16b328aca776e09be5241296"
   },
   "supported_networks": [
     "neo-n3-mainnet"

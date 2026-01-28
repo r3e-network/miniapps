@@ -1,6 +1,6 @@
 {
   "$schema": "https://schemas.r3e.network/miniapp-manifest/v1.json",
-  "id": "charity-vault",
+  "id": "miniapp-charity-vault",
   "name": "Charity Vault",
   "name_zh": "慈善金库",
   "version": "1.0.0",
@@ -17,18 +17,15 @@
     "email": "dev@r3e.network",
     "website": "https://r3e.network"
   },
-  "contracts": {
-    "neo-n3-mainnet": "0x0000000000000000000000000000000000000000",
-    "neo-n3-testnet": ""
-  },
+  "contracts": {},
   "supported_networks": [
     "neo-n3-mainnet"
   ],
   "default_network": "neo-n3-mainnet",
   "urls": {
-    "entry": "/index.html",
-    "icon": "/logo.png",
-    "banner": "/banner.png"
+    "entry": "/miniapps/charity-vault/index.html",
+    "icon": "/miniapps/charity-vault/logo.png",
+    "banner": "/miniapps/charity-vault/banner.png"
   },
   "permissions": [
     "invoke:primary",
@@ -37,14 +34,11 @@
   "features": {
     "stateless": true,
     "offlineSupport": false,
-    "deeplink": "neomainapp://charity-vault"
+    "deeplink": "neomainapp://miniapp-charity-vault"
   },
   "stateSource": {
-    "type": "smart-contract",
-    "chain": "neo-n3-mainnet",
-    "endpoints": [
-      "https://neoxrpc1.blackholelabs.io"
-    ]
+    "type": "api",
+    "endpoints": []
   },
   "platform": {
     "analytics": true,
