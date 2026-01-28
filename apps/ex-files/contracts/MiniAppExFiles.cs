@@ -24,7 +24,28 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "This is Neo R3E Network MiniApp. ExFiles is a complete anonymous relationship database with encrypted records, categories, verification, reporting, user badges, and TEE-protected privacy.")]
     [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]
-    public partial class MiniAppExFiles : MiniAppBase
+    /// <summary>
+    /// ExFiles MiniApp - Anonymous relationship database with NeoFS storage support.
+    /// 
+    /// FEATURES:
+    /// - Create anonymous encrypted records
+    /// - Content hash verification
+    /// - NeoFS storage for large documents
+    /// - Categorization and rating
+    /// - Query tracking
+    /// - Verification and reporting
+    /// 
+    /// NEOFS STORAGE:
+    /// - Large documents stored permanently in NeoFS
+    /// - 99% cheaper than on-chain storage
+    /// - Content-addressed integrity verification
+    /// - Censorship-resistant and permanent
+    /// 
+    /// STORAGE MODES:
+    /// - Hash-Only: Store only SHA256 hash (user manages storage)
+    /// - NeoFS: Store reference + hash (decentralized storage)
+    /// </summary>
+    public partial class MiniAppExFiles : MiniAppNeoFSBase
     {
         #region App Constants
         private const string APP_ID = "miniapp-exfiles";

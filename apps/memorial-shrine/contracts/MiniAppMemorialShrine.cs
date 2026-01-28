@@ -35,7 +35,28 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Version", "1.0.0")]
     [ManifestExtra("Description", "区块链灵位 - 永恒存在，永恒记忆。将逝者的记忆永久铭刻于区块链之上。")]
     [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
-    public partial class MiniAppMemorialShrine : MiniAppServiceBase
+    /// <summary>
+    /// Memorial Shrine MiniApp - 区块链灵位 - 永恒存在，永恒记忆
+    /// 
+    /// 将逝者的记忆永久铭刻于区块链之上，让思念跨越时空，让记忆永不消逝。
+    /// Eternally inscribe memories of the departed on the blockchain.
+    ///
+    /// FEATURES:
+    /// - 创建灵位：记录逝者姓名、照片、生卒年份、生平、讣告
+    /// - 虔诚祭拜：以香火、鲜花、祭品表达哀思
+    /// - 永恒记录：所有祭拜记录永久保存于区块链
+    /// - 讣告公示：新灵位发布讣告通知
+    /// - NeoFS存储：照片、视频、音频永久保存在去中心化存储
+    ///
+    /// NEOFS STORAGE:
+    /// - 灵位照片：永久保存在NeoFS，不依赖中心化服务器
+    /// - 生平传记：长文本支持，可存放大容量内容
+    /// - 音频/视频：支持语音留言、纪念视频
+    /// - 99% cheaper than on-chain storage
+    /// 
+    /// 祭拜服务为公益性质，仅收取区块链运行成本。
+    /// </summary>
+    public partial class MiniAppMemorialShrine : MiniAppNeoFSBase
     {
         #region App Constants
         private const string APP_ID = "miniapp-memorial-shrine";

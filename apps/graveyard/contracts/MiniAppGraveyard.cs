@@ -27,7 +27,27 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Version", "2.0.0")]
     [ManifestExtra("Description", "Neo R3E Network MiniApp. Graveyard is an encrypted data burial platform.")]
     [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
-    public partial class MiniAppGraveyard : MiniAppBase
+    /// <summary>
+    /// Graveyard MiniApp - Digital memory burial with NeoFS storage support.
+    /// 
+    /// FEATURES:
+    /// - Bury encrypted memories with content hash verification
+    /// - NeoFS storage for large memories (photos, videos, documents)
+    /// - Create public memorials with media assets
+    /// - Epitaphs (on-chain or NeoFS for long content)
+    /// - Forget memories (permanent deletion)
+    /// 
+    /// STORAGE MODES:
+    /// - Hash-Only: Store only content hash (user manages storage)
+    /// - NeoFS: Store in decentralized NeoFS network (cheaper, permanent)
+    /// 
+    /// NEOFS BENEFITS:
+    /// - 99% cheaper than on-chain storage
+    /// - Unlimited content size
+    /// - Content-addressed integrity
+    /// - Permanent and censorship-resistant
+    /// </summary>
+    public partial class MiniAppGraveyard : MiniAppNeoFSBase
     {
         #region App Constants
         private const string APP_ID = "miniapp-graveyard";
