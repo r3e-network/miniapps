@@ -9,18 +9,117 @@ using Neo.SmartContract.Framework.Services;
 
 namespace NeoMiniAppPlatform.Contracts
 {
+    /// <summary>
+    /// Event emitted when a player purchases lottery tickets.
+    /// </summary>
+    /// <param name="player">The player's address</param>
+    /// <param name="ticketCount">Number of tickets purchased</param>
+    /// <param name="roundId">The round ID tickets were purchased for</param>
     public delegate void TicketPurchasedHandler(UInt160 player, BigInteger ticketCount, BigInteger roundId);
+    
+    /// <summary>
+    /// Event emitted when a draw is initiated via oracle RNG request.
+    /// </summary>
+    /// <param name="roundId">The round being drawn</param>
+    /// <param name="requestId">Oracle RNG request ID</param>
     public delegate void DrawInitiatedHandler(BigInteger roundId, BigInteger requestId);
+    
+    /// <summary>
+    /// Event emitted when a winner is drawn.
+    /// </summary>
+    /// <param name="winner">The winning player's address</param>
+    /// <param name="prize">Prize amount in GAS</param>
+    /// <param name="roundId">The round ID</param>
     public delegate void WinnerDrawnHandler(UInt160 winner, BigInteger prize, BigInteger roundId);
+    
+    /// <summary>
+    /// Event emitted when a round completes.
+    /// </summary>
+    /// <param name="roundId">The completed round ID</param>
+    /// <param name="winner">The winning player's address</param>
+    /// <param name="prize">Total prize amount in GAS</param>
+    /// <param name="totalTickets">Total tickets sold in the round</param>
     public delegate void RoundCompletedHandler(BigInteger roundId, UInt160 winner, BigInteger prize, BigInteger totalTickets);
+    
+    /// <summary>
+    /// Event emitted when a player unlocks an achievement.
+    /// </summary>
+    /// <param name="player">The player's address</param>
+    /// <param name="achievementId">Achievement identifier</param>
+    /// <param name="achievementName">Achievement name</param>
     public delegate void AchievementUnlockedHandler(UInt160 player, BigInteger achievementId, string achievementName);
+    
+    /// <summary>
+    /// Event emitted when jackpot rolls over to next round.
+    /// </summary>
+    /// <param name="roundId">The round where rollover occurred</param>
+    /// <param name="rolloverAmount">Amount rolled over in GAS</param>
     public delegate void JackpotRolloverHandler(BigInteger roundId, BigInteger rolloverAmount);
 
     // Multi-type lottery event delegates
+    
+    /// <summary>
+    /// Event emitted when a scratch ticket is purchased.
+    /// </summary>
+    /// <param name="player">The player's address</param>
+    /// <param name="ticketId">Unique ticket identifier</param>
+    /// <param name="lotteryType">Type of lottery (0-5)</param>
+    /// <param name="price">Ticket price in GAS</param>
     public delegate void ScratchTicketPurchasedHandler(UInt160 player, BigInteger ticketId, byte lotteryType, BigInteger price);
+    
+    /// <summary>
+    /// Event emitted when a scratch ticket is revealed.
+    /// </summary>
+    /// <param name="player">The player's address</param>
+    /// <param name="ticketId">The ticket identifier</param>
+    /// <param name="prize">Prize amount in GAS (0 if no win)</param>
+    /// <param name="isWinner">Whether the ticket is a winner</param>
     public delegate void ScratchTicketRevealedHandler(UInt160 player, BigInteger ticketId, BigInteger prize, bool isWinner);
+    
+    /// <summary>
+    /// Event emitted when type-specific tickets are purchased.
+    /// </summary>
+    /// <param name="player">The player's address</param>
+    /// <param name="lotteryType">Type of lottery</param>
+    /// <param name="ticketCount">Number of tickets</param>
+    /// <param name="roundId">The round ID</param>
     public delegate void TypeTicketPurchasedHandler(UInt160 player, byte lotteryType, BigInteger ticketCount, BigInteger roundId);
 
+    /// <summary>
+    /// Lottery MiniApp - Multi-type lottery gaming system with provably fair draws.
+    /// 
+    /// FEATURES:
+    /// - Multiple lottery types (Classic, Scratch, Double Color, Happy 8, etc.)
+    /// - Provably fair random draws via oracle RNG
+    /// - Progressive jackpot system with rollover
+    /// - Achievement system for milestones
+    /// - Player statistics and streak tracking
+    /// 
+    /// LOTTERY TYPES:
+    /// - Classic: Traditional ticket-based lottery with scheduled draws
+    /// - Scratch: Instant win scratch tickets with immediate results
+    /// - Double Color Ball (双色球): Chinese lottery style with scheduled draws
+    /// - Happy 8 (快乐8): Instant number matching game
+    /// - Lucky 7 (七乐彩): 7-number selection lottery
+    /// - Super Lotto (大乐透): Multi-tier prize structure
+    /// - Supreme (至尊彩): High-stakes scheduled lottery
+    /// 
+    /// GAME MECHANICS:
+    /// - Players buy tickets with GAS
+    /// - 90% of ticket price goes to prize pool, 10% platform fee
+    /// - Winner selected randomly when draw is triggered
+    /// - Minimum 3 participants required for draw
+    /// - Unclaimed jackpots roll over to next round
+    /// 
+    /// SECURITY:
+    /// - Oracle-verified randomness for draws
+    /// - Min/max limits on tickets per transaction
+    /// - Access control on administrative functions
+    /// - Reentrancy protection via state updates
+    /// 
+    /// PERMISSIONS:
+    /// - GAS token transfers only (0xd2a4cff31913016155e38e474a2c06d08be276cf)
+    /// </summary>
     [DisplayName("MiniAppLottery")]
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Email", "dev@r3e.network")]
@@ -30,11 +129,22 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppLottery : MiniAppGameComputeBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the Lottery miniapp.</summary>
         private const string APP_ID = "miniapp-lottery";
+        
+        /// <summary>Price per ticket in GAS (0.1 GAS = 10,000,000).</summary>
         private const long TICKET_PRICE = 10000000;
+        
+        /// <summary>Platform fee percentage taken from each ticket (10%). Remaining 90% goes to prize pool.</summary>
         private const int PLATFORM_FEE_PERCENT = 10;
+        
+        /// <summary>Maximum tickets per transaction to prevent gas limit issues (100 tickets).</summary>
         private const int MAX_TICKETS_PER_TX = 100;
+        
+        /// <summary>Minimum participants required before a draw can occur (3 participants).</summary>
         private const int MIN_PARTICIPANTS = 3;
+        
+        /// <summary>Threshold for "big win" classification in GAS (10 GAS). Used for achievements.</summary>
         private const long BIG_WIN_THRESHOLD = 1000000000;
         #endregion
 
@@ -98,31 +208,64 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region Data Structures
 
+        /// <summary>
+        /// Player statistics tracked across all lottery plays.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_PLAYER_STATS + player address
+        /// Updated: After each ticket purchase and win
+        /// </summary>
         public struct PlayerStats
         {
+            /// <summary>Total number of tickets purchased across all rounds.</summary>
             public BigInteger TotalTickets;
+            /// <summary>Total amount spent on tickets in GAS.</summary>
             public BigInteger TotalSpent;
+            /// <summary>Total number of winning rounds.</summary>
             public BigInteger TotalWins;
+            /// <summary>Total amount won in GAS.</summary>
             public BigInteger TotalWon;
+            /// <summary>Number of rounds participated in.</summary>
             public BigInteger RoundsPlayed;
+            /// <summary>Current consecutive winning streak.</summary>
             public BigInteger ConsecutiveWins;
+            /// <summary>Best winning streak ever achieved.</summary>
             public BigInteger BestWinStreak;
+            /// <summary>Largest single win amount in GAS.</summary>
             public BigInteger HighestWin;
+            /// <summary>Number of achievements unlocked.</summary>
             public BigInteger AchievementCount;
+            /// <summary>Unix timestamp of first play (player join time).</summary>
             public BigInteger JoinTime;
+            /// <summary>Unix timestamp of most recent play.</summary>
             public BigInteger LastPlayTime;
         }
 
+        /// <summary>
+        /// Data for a single lottery round.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_ROUND_DATA + roundId
+        /// Created: When round is initialized
+        /// Updated: When tickets purchased, winner drawn, round completed
+        /// </summary>
         public struct RoundData
         {
+            /// <summary>Unique round identifier.</summary>
             public BigInteger Id;
+            /// <summary>Total number of tickets sold in this round.</summary>
             public BigInteger TotalTickets;
+            /// <summary>Total prize pool accumulated in GAS.</summary>
             public BigInteger PrizePool;
+            /// <summary>Number of unique participants in this round.</summary>
             public BigInteger ParticipantCount;
+            /// <summary>Address of the winner (zero address if not drawn).</summary>
             public UInt160 Winner;
+            /// <summary>Prize amount won in GAS (0 if not drawn).</summary>
             public BigInteger WinnerPrize;
+            /// <summary>Unix timestamp when round started.</summary>
             public BigInteger StartTime;
+            /// <summary>Unix timestamp when round ended (winner drawn).</summary>
             public BigInteger EndTime;
+            /// <summary>Whether the round has been completed.</summary>
             public bool Completed;
         }
 
@@ -131,64 +274,109 @@ namespace NeoMiniAppPlatform.Contracts
         #region Multi-Type Lottery System
 
         /// <summary>
-        /// Lottery types - 中国福彩风格
+        /// Lottery types inspired by Chinese Welfare Lottery (中国福彩) system.
+        /// Each type has different mechanics: instant vs scheduled, single vs multi-tier prizes.
         /// </summary>
         public enum LotteryType : byte
         {
-            ScratchWin = 0,      // 福彩刮刮乐 - Instant
-            DoubleColor = 1,     // 双色球 - Scheduled
-            Happy8 = 2,          // 快乐8 - Instant
-            Lucky7 = 3,          // 七乐彩 - Scheduled
-            SuperLotto = 4,      // 大乐透 - Scheduled
-            Supreme = 5          // 至尊彩 - Scheduled
+            /// <summary>Instant scratch ticket with immediate results (刮刮乐).</summary>
+            ScratchWin = 0,
+            /// <summary>Scheduled draw with 6+1 number format (双色球).</summary>
+            DoubleColor = 1,
+            /// <summary>Instant number matching game with 20/80 format (快乐8).</summary>
+            Happy8 = 2,
+            /// <summary>Scheduled 7-number selection lottery (七乐彩).</summary>
+            Lucky7 = 3,
+            /// <summary>Scheduled multi-tier prize lottery (大乐透).</summary>
+            SuperLotto = 4,
+            /// <summary>High-stakes scheduled lottery with largest prizes (至尊彩).</summary>
+            Supreme = 5
         }
 
         /// <summary>
-        /// Configuration for each lottery type
+        /// Configuration parameters for each lottery type.
+        /// Defines pricing, prize structure, and payout rates.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_LOTTERY_CONFIG + type
         /// </summary>
         public struct LotteryConfig
         {
+            /// <summary>Lottery type identifier (0-5).</summary>
             public byte Type;
+            /// <summary>Ticket price for this lottery type in GAS.</summary>
             public BigInteger TicketPrice;
+            /// <summary>Whether results are instant (true) or scheduled (false).</summary>
             public bool IsInstant;
+            /// <summary>Maximum jackpot size before forced draw in GAS.</summary>
             public BigInteger MaxJackpot;
+            /// <summary>Whether this lottery type is currently enabled.</summary>
             public bool Enabled;
+            /// <summary>Current prize pool for this type in GAS.</summary>
             public BigInteger PrizePool;
+            /// <summary>Percentage of prize pool allocated to jackpot winner (basis points).</summary>
             public BigInteger JackpotRate;
+            /// <summary>Percentage of prize pool allocated to tier 1 winners (basis points).</summary>
             public BigInteger Tier1Rate;
+            /// <summary>Percentage of prize pool allocated to tier 2 winners (basis points).</summary>
             public BigInteger Tier2Rate;
+            /// <summary>Percentage of prize pool allocated to tier 3 winners (basis points).</summary>
             public BigInteger Tier3Rate;
+            /// <summary>Fixed jackpot prize amount in GAS (if applicable).</summary>
             public BigInteger JackpotPrize;
+            /// <summary>Fixed tier 1 prize amount in GAS (if applicable).</summary>
             public BigInteger Tier1Prize;
+            /// <summary>Fixed tier 2 prize amount in GAS (if applicable).</summary>
             public BigInteger Tier2Prize;
+            /// <summary>Fixed tier 3 prize amount in GAS (if applicable).</summary>
             public BigInteger Tier3Prize;
         }
 
         /// <summary>
-        /// Scratch ticket data
+        /// Scratch ticket data for instant-win lottery type.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_SCRATCH_TICKET + ticketId
+        /// Created: When ticket is purchased
+        /// Updated: When ticket is scratched/revealed
         /// </summary>
         public struct ScratchTicket
         {
+            /// <summary>Unique ticket identifier.</summary>
             public BigInteger Id;
+            /// <summary>Player who purchased the ticket.</summary>
             public UInt160 Player;
+            /// <summary>Lottery type (should be 0 for ScratchWin).</summary>
             public byte Type;
+            /// <summary>Unix timestamp when ticket was purchased.</summary>
             public BigInteger PurchaseTime;
+            /// <summary>Whether the ticket has been scratched/revealed.</summary>
             public bool Scratched;
+            /// <summary>Prize amount in GAS (0 if not a winner, set after scratching).</summary>
             public BigInteger Prize;
+            /// <summary>Random seed for prize determination.</summary>
             public BigInteger Seed;
         }
 
         /// <summary>
-        /// Type-specific round data
+        /// Round data specific to a lottery type.
+        /// Used for tracking multi-type lottery rounds separately.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_TYPE_ROUND + type + roundId
         /// </summary>
         public struct TypeRoundData
         {
+            /// <summary>Lottery type identifier.</summary>
             public byte Type;
+            /// <summary>Round identifier within this type.</summary>
             public BigInteger RoundId;
+            /// <summary>Total tickets sold for this type in this round.</summary>
             public BigInteger TotalTickets;
+            /// <summary>Prize pool accumulated for this type in GAS.</summary>
             public BigInteger PrizePool;
+            /// <summary>Number of unique participants.</summary>
             public BigInteger ParticipantCount;
+            /// <summary>Unix timestamp when round started.</summary>
             public BigInteger StartTime;
+            /// <summary>Whether a draw is pending oracle resolution.</summary>
             public bool DrawPending;
         }
 
