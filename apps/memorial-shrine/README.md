@@ -1,8 +1,9 @@
-# Memorial Shrine (纪念堂)
+# Memorial Shrine / 纪念堂
 
-**Blockchain Memorial** - Eternal blockchain memorials for loved ones.
+**Blockchain Memorial / 区块链灵位**
 
-**区块链灵位** - 永恒存在，永恒记忆
+Eternal blockchain memorials for loved ones.
+将逝者的记忆永久铭刻于区块链之上，让思念跨越时空，让记忆永不消逝。
 
 ## Overview
 

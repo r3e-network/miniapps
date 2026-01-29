@@ -44,12 +44,18 @@ namespace NeoMiniAppPlatform.Contracts
     public delegate void MemorialUpdatedHandler(BigInteger memorialId, string fieldUpdated);
 
     /// <summary>
-    /// Memorial Shrine MiniApp - Blockchain Memorial (区块链灵位)
+    /// Memorial Shrine MiniApp / 纪念堂 DApp
+    /// Blockchain Memorial / 区块链灵位
     /// 
+    /// English:
     /// Eternally inscribe memories of the departed on the blockchain.
+    /// Create digital memorials for loved ones with permanent on-chain records.
+    /// 
+    /// 中文：
     /// 将逝者的记忆永久铭刻于区块链之上，让思念跨越时空，让记忆永不消逝。
+    /// 为逝去的亲友创建永久数字纪念。
     ///
-    /// FEATURES:
+    /// FEATURES / 功能：
     /// - Create Memorials: Record name, photo, birth/death years, biography, obituary
     ///   创建灵位：记录逝者姓名、照片、生卒年份、生平、讣告
     /// - Pay Tribute: Express grief with incense, candles, flowers, and offerings
@@ -66,15 +72,21 @@ namespace NeoMiniAppPlatform.Contracts
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "1.0.0")]
-    [ManifestExtra("Description", "Memorial Shrine - Blockchain Memorial. Eternally inscribe memories of the departed on the blockchain.")]
+    [ManifestExtra("Description", "Memorial Shrine / 纪念堂 - Blockchain Memorial / 区块链灵位")]
     [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     /// <summary>
-    /// Memorial Shrine MiniApp - Blockchain Memorial (区块链灵位)
+    /// Memorial Shrine MiniApp / 纪念堂 DApp  
+    /// Blockchain Memorial / 区块链灵位
     /// 
+    /// English:
     /// Eternally inscribe memories of the departed on the blockchain.
+    /// Create digital memorials for loved ones with permanent on-chain records.
+    /// 
+    /// 中文：
     /// 将逝者的记忆永久铭刻于区块链之上，让思念跨越时空，让记忆永不消逝。
+    /// 为逝去的亲友创建永久数字纪念。
     ///
-    /// FEATURES:
+    /// FEATURES / 功能：
     /// - Create Memorials: Record name, photo, birth/death years, biography, obituary
     ///   创建灵位：记录逝者姓名、照片、生卒年份、生平、讣告
     /// - Pay Tribute: Express grief with incense, candles, flowers, and offerings  
@@ -86,7 +98,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// - NeoFS Storage: Photos, videos, audio permanently stored in decentralized storage
     ///   NeoFS存储：照片、视频、音频永久保存在去中心化存储
     ///
-    /// NEOFS STORAGE:
+    /// NEOFS STORAGE / NeoFS存储：
     /// - Memorial Photos: Permanently stored in NeoFS, no centralized server dependency
     ///   灵位照片：永久保存在NeoFS，不依赖中心化服务器
     /// - Biographies: Long text support for large content
