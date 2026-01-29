@@ -57,10 +57,12 @@
 - ✅ Documented coin-flip as reference example
 
 #### 3.2 Contract Documentation Progress
-- ✅ coin-flip: Complete NatSpec documentation
-- ⏳ lottery: Pending
-- ⏳ graveyard: Pending  
+- ✅ coin-flip: Complete NatSpec documentation (169 lines)
+- ✅ lottery: Complete NatSpec documentation (198 lines)
+- ✅ graveyard: Core contract documented (111 lines)
+- ⏳ graveyard.NeoFS: Pending
 - ⏳ forever-album: Pending
+- ⏳ forever-album.NeoFS: Pending
 - ⏳ breakup-contract: Pending
 - ⏳ heritage-trust: Pending
 - ⏳ All other contracts: Pending
