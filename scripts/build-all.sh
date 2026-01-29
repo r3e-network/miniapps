@@ -44,6 +44,7 @@ for app_dir in "$APPS_DIR"/*/; do
     mkdir -p "$OUTPUT_DIR/$app_name/static"
     
     # Copy static assets that Vite may not have included (unreferenced files)
+    # Check src/static first, then public directory
     if [ -d "src/static" ]; then
       # Copy logo.png if exists and not already in output
       if [ -f "src/static/logo.png" ] && [ ! -f "$OUTPUT_DIR/$app_name/static/logo.png" ]; then
@@ -54,6 +55,20 @@ for app_dir in "$APPS_DIR"/*/; do
       if [ -f "src/static/banner.png" ] && [ ! -f "$OUTPUT_DIR/$app_name/static/banner.png" ]; then
         cp "src/static/banner.png" "$OUTPUT_DIR/$app_name/static/"
         echo "    [ASSET] Copied banner.png"
+      fi
+    fi
+    
+    # Also check public directory for assets
+    if [ -d "public" ]; then
+      # Copy logo.png if exists in public and not already in output
+      if [ -f "public/logo.png" ] && [ ! -f "$OUTPUT_DIR/$app_name/static/logo.png" ]; then
+        cp "public/logo.png" "$OUTPUT_DIR/$app_name/static/"
+        echo "    [ASSET] Copied logo.png from public/"
+      fi
+      # Copy banner.png if exists in public and not already in output
+      if [ -f "public/banner.png" ] && [ ! -f "$OUTPUT_DIR/$app_name/static/banner.png" ]; then
+        cp "public/banner.png" "$OUTPUT_DIR/$app_name/static/"
+        echo "    [ASSET] Copied banner.png from public/"
       fi
     fi
     
