@@ -1,5 +1,12 @@
 <template>
-  <AppLayout class="theme-forever-album" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
+  <ResponsiveLayout 
+    class="theme-forever-album" 
+    :tabs="navTabs" 
+    :active-tab="activeTab"
+    :desktop-breakpoint="1024"
+    show-top-nav
+    @tab-change="onTabChange"
+  >
     <view class="album-container">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -117,14 +124,14 @@
     </NeoModal>
 
     <WalletPrompt :visible="showWalletPrompt" @close="closeWalletPrompt" @connect="handleConnect" />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
-import { AppLayout, NeoCard, NeoButton, NeoModal, NeoInput, WalletPrompt, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, NeoModal, NeoInput, WalletPrompt, ChainWarning } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
@@ -539,15 +546,29 @@ watch(address, () => {
 <style scoped lang="scss">
 @use "@shared/styles/tokens.scss" as *;
 @use "@shared/styles/variables.scss";
+@use "@shared/styles/responsive.scss" as responsive;
 @import "./forever-album-theme.scss";
 
 .album-container {
-  padding: 20px;
+  padding: 16px;
   min-height: 100%;
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
   gap: 16px;
+  
+  // Responsive padding
+  @include responsive.tablet-up {
+    padding: 24px;
+    gap: 20px;
+  }
+  
+  @include responsive.desktop {
+    padding: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
 }
 
 .chain-warning__content {
@@ -574,15 +595,27 @@ watch(address, () => {
 }
 
 .title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   display: block;
   letter-spacing: 0.02em;
+  
+  @include responsive.tablet-up {
+    font-size: 26px;
+  }
+  
+  @include responsive.desktop {
+    font-size: 32px;
+  }
 }
 
 .subtitle {
   font-size: 12px;
   color: var(--text-secondary);
+  
+  @include responsive.desktop {
+    font-size: 14px;
+  }
 }
 
 .connect-card__content {
@@ -608,8 +641,23 @@ watch(address, () => {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
+  
+  @include responsive.tablet-up {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  
+  @include responsive.desktop {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
+  
+  @include responsive.desktop-lg {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 24px;
+  }
 }
 
 .photo-item {
