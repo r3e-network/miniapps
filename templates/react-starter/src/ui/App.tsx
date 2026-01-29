@@ -50,7 +50,7 @@ export function App() {
         </label>
 
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <button onClick={() => run(() => sdk?.wallet.getAddress())} disabled={!sdk}>
+          <button onClick={() => run(async () => sdk?.wallet.getAddress() ?? "")} disabled={!sdk}>
             wallet.getAddress
           </button>
           <button
