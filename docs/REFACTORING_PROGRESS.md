@@ -60,12 +60,12 @@
 - ✅ coin-flip: Complete NatSpec documentation (169 lines)
 - ✅ lottery: Complete NatSpec documentation (198 lines)
 - ✅ graveyard: Core contract documented (111 lines)
+- ✅ breakup-contract: Complete NatSpec documentation (128 lines)
+- ✅ heritage-trust: Complete NatSpec documentation (156 lines)
 - ⏳ graveyard.NeoFS: Pending
 - ⏳ forever-album: Pending
 - ⏳ forever-album.NeoFS: Pending
-- ⏳ breakup-contract: Pending
-- ⏳ heritage-trust: Pending
-- ⏳ All other contracts: Pending
+- ⏳ All other contracts: Pending (47 remaining)
 
 ### Phase 4: UI/UX Refinement ⏳
 
