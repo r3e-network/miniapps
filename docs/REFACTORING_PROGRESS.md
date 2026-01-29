@@ -62,10 +62,12 @@
 - ✅ graveyard: Core contract documented (111 lines)
 - ✅ breakup-contract: Complete NatSpec documentation (128 lines)
 - ✅ heritage-trust: Complete NatSpec documentation (156 lines)
+- ✅ forever-album: Core contract documented (31 lines)
+- ✅ memorial-shrine: Core contract documented (99 lines)
 - ⏳ graveyard.NeoFS: Pending
-- ⏳ forever-album: Pending
 - ⏳ forever-album.NeoFS: Pending
-- ⏳ All other contracts: Pending (47 remaining)
+- ⏳ memorial-shrine.NeoFS: Pending
+- ⏳ All other contracts: Pending (45 remaining)
 
 ### Phase 4: UI/UX Refinement ⏳
 
