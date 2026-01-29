@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="theme-time-capsule">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -59,7 +59,7 @@
         />
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -71,7 +71,7 @@ import { sha256Hex } from "@shared/utils/hash";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
-import { AppLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 
 import CapsuleList, { type Capsule } from "./components/CapsuleList.vue";

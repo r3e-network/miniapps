@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-breakup-contract" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-breakup-contract" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view v-if="activeTab === 'create' || activeTab === 'contracts'" class="app-container">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -45,7 +45,7 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -56,7 +56,7 @@ import { parseGas, toFixed8 } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc, NeoCard, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoCard, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import CreateContractForm from "./components/CreateContractForm.vue";
 import ContractList from "./components/ContractList.vue";

@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="theme-ex-files">
       <view v-if="activeTab === 'files' || activeTab === 'upload' || activeTab === 'stats'" class="app-container">
         <!-- Chain Warning - Framework Component -->
@@ -53,7 +53,7 @@
         />
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -65,7 +65,7 @@ import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { sha256Hex } from "@shared/utils/hash";
 import { formatHash } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc, NeoCard, NeoStats, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoCard, NeoStats, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import type { StatItem } from "@shared/components/NeoStats.vue";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";

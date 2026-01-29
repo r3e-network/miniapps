@@ -1,6 +1,5 @@
 <template>
-  <AppLayout
-    class="theme-neo-sign-anything"
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neo-sign-anything"
     :title="t('appTitle')"
     :show-top-nav="false"
     :active-tab="currentTab"
@@ -73,12 +72,12 @@
         <text class="connect-text">{{ t("connectWallet") }}</text>
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { AppLayout, NeoCard, NeoButton, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { requireNeoChain } from "@shared/utils/chain";

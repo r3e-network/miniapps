@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-soulbound-certificate" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-soulbound-certificate" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
     <view v-if="activeTab === 'templates'" class="tab-content">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -219,7 +219,7 @@
         ]"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 
   <NeoModal :visible="issueModalOpen" :title="t('issueTitle')" :closeable="true" @close="closeIssueModal">
     <view class="form-group">
@@ -254,7 +254,7 @@ import QRCode from "qrcode";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton, NeoInput, NeoModal, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, NeoInput, NeoModal, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, parseInvokeResult } from "@shared/utils/neo";

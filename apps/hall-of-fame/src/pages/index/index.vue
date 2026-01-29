@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-hall-of-fame" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-hall-of-fame" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
@@ -112,7 +112,7 @@
       </view>
     </view>
     <Fireworks :active="!!statusMessage && statusType === 'success'" :duration="3000" />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -122,7 +122,7 @@ import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { initTheme, listenForThemeChanges } from "@shared/utils/theme";
 import { formatNumber } from "@shared/utils/format";
-import { AppLayout, NeoButton, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoButton, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";

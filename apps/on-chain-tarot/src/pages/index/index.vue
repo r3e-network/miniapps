@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-on-chain-tarot" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-on-chain-tarot" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
@@ -43,7 +43,7 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +53,7 @@ import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { parseStackItem } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 

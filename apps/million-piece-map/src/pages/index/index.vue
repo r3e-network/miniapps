@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="theme-million-piece">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -135,7 +135,7 @@
       </view>
       <Fireworks :active="status?.type === 'success'" :duration="3000" />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -146,16 +146,14 @@ import { formatNumber } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { useI18n } from "@/composables/useI18n";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult } from "@shared/utils/neo";
-import {
-  AppLayout,
+import { ResponsiveLayout,
   NeoButton,
   NeoCard,
   NeoStats,
   NeoDoc,
   Fireworks,
   type StatItem,
-  ChainWarning,
-} from "@shared/components";
+  ChainWarning, } from "@shared/components";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 
 const { t } = useI18n();

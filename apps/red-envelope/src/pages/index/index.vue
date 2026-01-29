@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-red-envelope" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-red-envelope" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
@@ -53,7 +53,7 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -66,7 +66,7 @@ import { requireNeoChain } from "@shared/utils/chain";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 import { pollForEvent } from "@shared/utils/errorHandling";
-import { AppLayout, NeoDoc, NeoCard, NeoButton, Fireworks, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoCard, NeoButton, Fireworks, ChainWarning } from "@shared/components";
 import EnvelopeHeader from "./components/EnvelopeHeader.vue";
 import LuckyOverlay from "./components/LuckyOverlay.vue";
 import OpeningModal from "./components/OpeningModal.vue";

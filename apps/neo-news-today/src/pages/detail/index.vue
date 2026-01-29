@@ -1,15 +1,15 @@
 <template>
   <view class="detail-container">
-    <AppLayout title="Article Detail" :show-back="true">
+    <ResponsiveLayout :desktop-breakpoint="1024" title="Article Detail" :show-back="true">
       <web-view :src="url" class="webview" />
-    </AppLayout>
+    </ResponsiveLayout>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
-import { AppLayout } from "@shared/components";
+import { ResponsiveLayout } from "@shared/components";
 
 const url = ref("");
 

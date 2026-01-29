@@ -20,7 +20,7 @@
       />
     </view>
 
-    <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+    <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" /><view
         v-if="activeTab === 'game'"
@@ -79,7 +79,7 @@
           :features="docFeatures"
         />
       </view>
-    </AppLayout>
+    </ResponsiveLayout>
   </view>
 </template>
 
@@ -93,7 +93,7 @@ import { requireNeoChain } from "@shared/utils/chain";
 import { sha256Hex, sha256HexFromHex } from "@shared/utils/hash";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoStats, NeoDoc, NeoButton, type StatItem, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoStats, NeoDoc, NeoButton, type StatItem, ChainWarning } from "@shared/components";
 import { audioManager } from "../../utils/audio";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";

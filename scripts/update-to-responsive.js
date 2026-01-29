@@ -31,10 +31,13 @@ function usesAppLayout(content) {
 
 // Update AppLayout to ResponsiveLayout
 function updateLayout(content) {
-  // Replace imports
+  // Replace imports - handle both single and multi-line imports
   content = content.replace(
-    /import\s+{\s*AppLayout\s*}\s+from\s+["']@shared\/components["'];?/g,
-    `import { ResponsiveLayout } from "@shared/components";`
+    /import\s*\{\s*([^}]*?)AppLayout([^}]*?)\}\s*from\s+["']@shared\/components["'];?/g,
+    (match, before, after) => {
+      const newImport = `import { ${before.trim()}ResponsiveLayout${after.trim()} } from "@shared/components";`;
+      return newImport;
+    }
   );
   
   // Replace component usage (simple cases)
@@ -49,10 +52,10 @@ function updateLayout(content) {
   );
   
   // Add desktop-breakpoint prop if not present
-  if (!content.includes('desktop-breakpoint')) {
+  if (!content.includes('desktop-breakpoint') && content.includes('<ResponsiveLayout')) {
     content = content.replace(
-      /<ResponsiveLayout\s+class="theme-/g,
-      '<ResponsiveLayout :desktop-breakpoint="1024" class="theme-'
+      /<ResponsiveLayout\s+/g,
+      '<ResponsiveLayout :desktop-breakpoint="1024" '
     );
   }
   

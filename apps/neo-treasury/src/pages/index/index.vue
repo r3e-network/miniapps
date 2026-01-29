@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-neo-treasury" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neo-treasury" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
     <view v-if="activeTab !== 'docs'" class="app-container">
@@ -72,12 +72,12 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { AppLayout, NeoCard, NeoButton, NeoDoc, AppIcon, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, NeoDoc, AppIcon, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { useI18n } from "@/composables/useI18n";
 import { fetchTreasuryData, type TreasuryData, type CategoryBalance } from "@/utils/treasury";

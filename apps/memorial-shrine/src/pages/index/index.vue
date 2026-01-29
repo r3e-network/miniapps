@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-memorial-shrine" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-memorial-shrine" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
     <!-- Memorials Tab -->
@@ -79,7 +79,7 @@
     <view v-if="shareStatus" class="share-toast">
       <text>{{ shareStatus }}</text>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -88,7 +88,7 @@ import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { readQueryParam } from "@shared/utils/url";
-import { AppLayout, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, ChainWarning } from "@shared/components";
 import TombstoneCard from "./components/TombstoneCard.vue";
 import CreateMemorialForm from "./components/CreateMemorialForm.vue";
 import MemorialDetailModal from "./components/MemorialDetailModal.vue";

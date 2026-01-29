@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-neo-ns" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neo-ns" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view v-if="activeTab !== 'docs'" class="app-container">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -130,7 +130,7 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -140,7 +140,7 @@ import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoDoc, AppIcon, NeoButton, NeoCard, NeoInput, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, AppIcon, NeoButton, NeoCard, NeoInput, ChainWarning } from "@shared/components";
 
 const { t } = useI18n();
 

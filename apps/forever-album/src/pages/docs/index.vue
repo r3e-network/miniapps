@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :title="t('docsTab')" :show-top-nav="true" show-back @back="goBack">
+  <ResponsiveLayout :desktop-breakpoint="1024" :title="t('docsTab')" :show-top-nav="true" show-back @back="goBack">
     <NeoDoc
       :title="t('docTitle')"
       :subtitle="t('docSubtitle')"
@@ -29,13 +29,13 @@
         </view>
       </view>
     </NeoCard>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
-import { AppLayout, NeoButton, NeoCard, NeoDoc } from "@shared/components";
+import { ResponsiveLayout, NeoButton, NeoCard, NeoDoc } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
 
 const { t } = useI18n();

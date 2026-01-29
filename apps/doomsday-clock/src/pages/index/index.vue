@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="theme-doomsday">
       <view v-if="activeTab === 'game'" class="tab-content">
         <!-- Chain Warning - Framework Component -->
@@ -67,7 +67,7 @@
         />
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -78,7 +78,7 @@ import { formatNumber, formatAddress, parseGas } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { useI18n } from "@/composables/useI18n";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
-import { AppLayout, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 

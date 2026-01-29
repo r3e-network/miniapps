@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-dev-tipping" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-dev-tipping" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view
       v-if="activeTab === 'developers' || activeTab === 'send' || activeTab === 'stats'"
       class="app-container theme-dev-tipping"
@@ -144,7 +144,7 @@
       />
     </view>
     <Fireworks :active="status?.type === 'success'" :duration="3000" />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -155,7 +155,7 @@ import { formatNumber, parseGas, toFixed8 } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoButton, NeoInput, NeoCard, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";

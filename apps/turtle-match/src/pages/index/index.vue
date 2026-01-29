@@ -3,7 +3,7 @@
     <view class="pond-background" />
     <view class="pond-caustics" />
     <view class="neural-rain" />
-    <AppLayout class="pond-theme" :title="t('title')" :show-back="true">
+    <ResponsiveLayout :desktop-breakpoint="1024" class="pond-theme" :title="t('title')" :show-back="true">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
       <view class="game-container">
@@ -138,13 +138,13 @@
         @close="onResultClose"
       />
       <GameSplash :visible="showSplash" @complete="showSplash = false" />
-    </AppLayout>
+    </ResponsiveLayout>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { AppLayout, GradientCard, NeoButton, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, GradientCard, NeoButton, ChainWarning } from "@shared/components";
 import { formatGas } from "@shared/utils/format";
 import { useTurtleMatch, TurtleColor } from "@/shared/composables/useTurtleMatch";
 import { useI18n } from "@/composables/useI18n";

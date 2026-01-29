@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-neo-multisig" :tabs="tabs" :active-tab="activeTab" @tab-change="handleTabChange">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neo-multisig" :tabs="tabs" :active-tab="activeTab" @tab-change="handleTabChange">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
     <view class="multisig-container">
@@ -107,12 +107,12 @@
         </view>
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { AppLayout, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, ChainWarning } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
 
 const { t } = useI18n();

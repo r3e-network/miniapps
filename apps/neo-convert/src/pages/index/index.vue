@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-neo-convert" :tabs="tabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neo-convert" :tabs="tabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
     <view class="content-area">
@@ -19,12 +19,12 @@
         <ConverterTool />
       </ScrollReveal>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { AppLayout, ScrollReveal, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, ScrollReveal, ChainWarning } from "@shared/components";
 import AccountGenerator from "./components/AccountGenerator.vue";
 import ConverterTool from "./components/ConverterTool.vue";
 import { useI18n } from "@/composables/useI18n";

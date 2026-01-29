@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content theme-flashloan">
       <!-- Chain Warning - Framework Component -->
@@ -42,7 +42,7 @@
     <view v-if="activeTab === 'docs'" class="tab-content scrollable theme-flashloan">
       <FlashloanDocs :t="t as any" :contract-address="contractAddress" />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +53,7 @@ import { formatNumber, formatAddress, formatGas } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 
 import FlowVisualization from "./components/FlowVisualization.vue";

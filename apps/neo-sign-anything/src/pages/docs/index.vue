@@ -1,6 +1,5 @@
 <template>
-  <AppLayout
-    :title="t('docs')"
+  <ResponsiveLayout :desktop-breakpoint="1024" :title="t('docs')"
     :show-top-nav="true"
     show-back
     @back="goBack"
@@ -61,11 +60,11 @@
         </text>
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
-import { AppLayout } from '@shared/components';
+import { ResponsiveLayout } from "@shared/components";
 import { useI18n } from '@/composables/useI18n';
 
 const { t } = useI18n();

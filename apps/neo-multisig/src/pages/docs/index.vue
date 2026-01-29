@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :tabs="tabs" :active-tab="activeTab" @tab-change="handleTabChange">
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="tabs" :active-tab="activeTab" @tab-change="handleTabChange">
     <view class="page-container">
       <NeoDoc
         :title="t('docTitle')"
@@ -9,13 +9,13 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout } from "@shared/components";
+import { ResponsiveLayout } from "@shared/components";
 import NeoDoc from "@shared/components/NeoDoc.vue";
 
 const { t } = useI18n();

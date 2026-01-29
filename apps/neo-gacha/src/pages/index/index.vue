@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-neo-gacha" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neo-gacha" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="app-container">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -344,14 +344,14 @@
       @close="showWalletPrompt = false"
       @connect="handleWalletConnect"
     />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { useWallet, useEvents } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
-import { AppLayout, NeoCard, NeoDoc, NeoButton, NeoInput, WalletPrompt, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoDoc, NeoButton, NeoInput, WalletPrompt, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import { useI18n } from "@/composables/useI18n";
 import { formatNumber, formatGas, toFixed8, toFixedDecimals, sleep } from "@shared/utils/format";

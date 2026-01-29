@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :title="t('scratchPlayTitle')" class="theme-chinese-lucky">
+  <ResponsiveLayout :desktop-breakpoint="1024" :title="t('scratchPlayTitle')" class="theme-chinese-lucky">
     <view class="scratch-play">
       <!-- Lottery Info -->
       <view class="lottery-info" v-if="currentLottery">
@@ -61,7 +61,7 @@
       :tier="prizeTier"
       @close="showWinOverlay = false"
     />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">

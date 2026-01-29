@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-lottery" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-lottery" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
@@ -166,14 +166,14 @@
     />
 
     <Fireworks :active="showFireworks" :duration="3000" />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
-import { AppLayout, NeoDoc, NeoButton, NeoCard, NeoStats, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoButton, NeoCard, NeoStats, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import ScratchModal from "./components/ScratchModal.vue";
 import { useLotteryTypes, type LotteryTypeInfo } from "../../shared/composables/useLotteryTypes";

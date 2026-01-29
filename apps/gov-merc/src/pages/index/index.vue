@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-gov-merc" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-gov-merc" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Rent Tab -->
     <view v-if="activeTab === 'rent'" class="tab-content">
       <!-- Chain Warning - Framework Component -->
@@ -69,7 +69,7 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -80,7 +80,7 @@ import { useI18n } from "@/composables/useI18n";
 import { formatNumber, parseGas, toFixed8, toFixedDecimals } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
-import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard, NeoStats, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoButton, NeoInput, NeoCard, NeoStats, ChainWarning } from "@shared/components";
 import type { StatItem } from "@shared/components/NeoStats.vue";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 

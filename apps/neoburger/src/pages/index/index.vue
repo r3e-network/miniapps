@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-neoburger" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neoburger" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <NeoCard v-if="statusMessage" :variant="statusType === 'error' ? 'danger' : 'success'" class="status-card">
       <text class="status-text">{{ statusMessage }}</text>
     </NeoCard>
@@ -502,7 +502,7 @@
     </view>
 
     <Fireworks :active="!!statusMessage && statusType === 'success'" :duration="3000" />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -510,7 +510,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoDoc, Fireworks, NeoButton, NeoInput, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoDoc, Fireworks, NeoButton, NeoInput, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { getPrices, type PriceData } from "@shared/utils/price";
 import { toFixedDecimals, toFixed8 } from "@shared/utils/format";

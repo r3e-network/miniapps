@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-explorer" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-explorer" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="app-container">
       <!-- Network Tab -->
       <view v-if="activeTab === 'network'" class="tab-content">
@@ -47,7 +47,7 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -56,7 +56,7 @@ import { formatNumber } from "@shared/utils/format";
 import { useI18n } from "@/composables/useI18n";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
-import { AppLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import type { StatItem } from "@shared/components/NeoStats.vue";
 

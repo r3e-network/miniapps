@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-wallet-health" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-wallet-health" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
     <view v-if="activeTab === 'health'" class="tab-content">
       <view v-if="isEvm" class="mb-4">
         <NeoCard variant="danger">
@@ -116,7 +116,7 @@
         ]"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -124,7 +124,7 @@ import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoButton, NeoStats, NeoDoc, AppIcon } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, NeoStats, NeoDoc, AppIcon } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain, isEvmChain } from "@shared/utils/chain";
 import { formatFixed8 } from "@shared/utils/format";

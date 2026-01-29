@@ -1,5 +1,5 @@
 <template>
-  <AppLayout :title="t('scratchTitle')" class="theme-chinese-lucky">
+  <ResponsiveLayout :desktop-breakpoint="1024" :title="t('scratchTitle')" class="theme-chinese-lucky">
     <view class="scratch-gallery">
       <!-- Header -->
       <view class="gallery-header">
@@ -43,7 +43,7 @@
         </scroll-view>
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">

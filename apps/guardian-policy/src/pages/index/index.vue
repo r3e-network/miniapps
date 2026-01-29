@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-guardian-policy" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-guardian-policy" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content">
       <!-- Chain Warning - Framework Component -->
@@ -45,7 +45,7 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +53,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useWallet, useEvents, useDatafeed } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoCard, NeoDoc, NeoButton, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoDoc, NeoButton, ChainWarning } from "@shared/components";
 import { requireNeoChain } from "@shared/utils/chain";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";

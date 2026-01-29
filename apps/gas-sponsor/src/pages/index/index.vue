@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-gas-sponsor" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-gas-sponsor" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <view class="app-container">
       <NeoCard
         v-if="status"
@@ -136,7 +136,7 @@
         <HowItWorksCard :t="t" />
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
@@ -145,7 +145,7 @@ import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
 import { toFixed8 } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoCard, NeoDoc, NeoButton, NeoInput, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoDoc, NeoButton, NeoInput, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import GasTank from "./components/GasTank.vue";
 import UserBalanceInfo from "./components/UserBalanceInfo.vue";

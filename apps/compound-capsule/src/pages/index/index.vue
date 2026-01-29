@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-compound-capsule" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-compound-capsule" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content">
       <!-- Chain Warning - Framework Component -->
@@ -164,7 +164,7 @@
       />
     </view>
     <Fireworks :active="status?.type === 'success'" :duration="3000" />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -175,7 +175,7 @@ import { formatNumber } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoDoc, NeoButton, NeoInput, NeoCard, Fireworks, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, NeoButton, NeoInput, NeoCard, Fireworks, ChainWarning } from "@shared/components";
 
 const isLoading = ref(false);
 

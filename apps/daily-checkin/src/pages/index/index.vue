@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-daily-checkin" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-daily-checkin" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
@@ -58,7 +58,7 @@
       />
     </view>
     <Fireworks :active="status?.type === 'success'" :duration="3000" />
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -69,7 +69,7 @@ import { useI18n } from "@/composables/useI18n";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { formatGas } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
-import { AppLayout, NeoButton, NeoCard, NeoDoc, type StatItem, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoButton, NeoCard, NeoDoc, type StatItem, ChainWarning } from "@shared/components";
 import Fireworks from "@shared/components/Fireworks.vue";
 import CountdownHero from "./components/CountdownHero.vue";
 import StreakDisplay from "./components/StreakDisplay.vue";

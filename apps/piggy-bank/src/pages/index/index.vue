@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-piggy-bank" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-piggy-bank" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content">
       <!-- Header with wallet status -->
@@ -136,7 +136,7 @@
         :features="docFeatures"
       />
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -145,7 +145,7 @@ import { usePiggyStore, type PiggyBank } from "@/stores/piggy";
 import { storeToRefs } from "pinia";
 import { useI18n } from "@/composables/useI18n";
 import { formatAddress } from "@shared/utils/format";
-import { AppLayout, NeoDoc } from "@shared/components";
+import { ResponsiveLayout, NeoDoc } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 
 const { t } = useI18n();

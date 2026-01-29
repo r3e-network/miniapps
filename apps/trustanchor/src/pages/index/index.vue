@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-trustanchor" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-trustanchor" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
     <ChainWarning :title="t('warningTitle')" :message="t('warningMessage')" :button-text="t('switchButton')" />
 
     <view v-if="activeTab === 'overview'" class="tab-content scrollable">
@@ -173,7 +173,7 @@
         </view>
       </NeoCard>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
@@ -181,7 +181,7 @@ import { ref, computed, onMounted } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { formatNumber, formatAddress } from "@shared/utils/format";
-import { AppLayout, NeoButton, NeoCard, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoButton, NeoCard, ChainWarning } from "@shared/components";
 import StatsGrid from "./components/StatsGrid.vue";
 import { useI18n } from "@/composables/useI18n";
 import { useTrustAnchor, type Agent } from "./composables/useTrustAnchor";

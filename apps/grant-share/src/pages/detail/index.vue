@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="theme-grant-share">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-grant-share">
     <view class="app-container">
       <view class="nav-header mb-4">
         <NeoButton size="sm" variant="secondary" @click="goBack">
@@ -60,14 +60,14 @@
 
       </view>
     </view>
-  </AppLayout>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { useI18n } from "@/composables/useI18n";
-import { AppLayout, NeoButton, NeoCard } from "@shared/components";
+import { ResponsiveLayout, NeoButton, NeoCard } from "@shared/components";
 
 const { t, locale } = useI18n();
 const id = ref("");
