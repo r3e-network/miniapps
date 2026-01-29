@@ -10,9 +10,37 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates
+    
+    /// <summary>
+    /// Event emitted when a new memorial is created.
+    /// </summary>
+    /// <param name="memorialId">Unique memorial identifier</param>
+    /// <param name="creator">Creator's address</param>
+    /// <param name="deceasedName">Name of the deceased</param>
+    /// <param name="deathYear">Year of passing</param>
     public delegate void MemorialCreatedHandler(BigInteger memorialId, UInt160 creator, string deceasedName, BigInteger deathYear);
+    
+    /// <summary>
+    /// Event emitted when an obituary is published.
+    /// </summary>
+    /// <param name="memorialId">The memorial identifier</param>
+    /// <param name="deceasedName">Name of the deceased</param>
+    /// <param name="obituary">Obituary text content</param>
     public delegate void ObituaryPublishedHandler(BigInteger memorialId, string deceasedName, string obituary);
+    
+    /// <summary>
+    /// Event emitted when a visitor pays tribute at a memorial.
+    /// </summary>
+    /// <param name="memorialId">The memorial identifier</param>
+    /// <param name="visitor">Visitor's address</param>
+    /// <param name="offeringType">Type of offering (1-6: incense, candle, flower, fruit, wine, feast)</param>
     public delegate void TributePaidHandler(BigInteger memorialId, UInt160 visitor, BigInteger offeringType);
+    
+    /// <summary>
+    /// Event emitted when memorial information is updated.
+    /// </summary>
+    /// <param name="memorialId">The memorial identifier</param>
+    /// <param name="fieldUpdated">Name of field that was updated</param>
     public delegate void MemorialUpdatedHandler(BigInteger memorialId, string fieldUpdated);
 
     /// <summary>
@@ -59,22 +87,47 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppMemorialShrine : MiniAppNeoFSBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the Memorial Shrine miniapp.</summary>
         private const string APP_ID = "miniapp-memorial-shrine";
         
-        // 祭品费用（公益性质，仅覆盖链上成本）
-        private const long OFFERING_INCENSE = 1000000;      // 0.01 GAS - 香
-        private const long OFFERING_CANDLE = 2000000;       // 0.02 GAS - 蜡烛
-        private const long OFFERING_FLOWER = 3000000;       // 0.03 GAS - 鲜花
-        private const long OFFERING_FRUIT = 5000000;        // 0.05 GAS - 水果
-        private const long OFFERING_WINE = 10000000;        // 0.1 GAS - 酒
-        private const long OFFERING_FEAST = 50000000;       // 0.5 GAS - 祭宴
+        // Offering costs (公益性质 - charitable, only covers blockchain costs)
         
-        // 祭品类型
+        /// <summary>Cost of incense offering in GAS (0.01 GAS = 1,000,000). 香 - Incense.</summary>
+        private const long OFFERING_INCENSE = 1000000;
+        
+        /// <summary>Cost of candle offering in GAS (0.02 GAS = 2,000,000). 蜡烛 - Candle.</summary>
+        private const long OFFERING_CANDLE = 2000000;
+        
+        /// <summary>Cost of flower offering in GAS (0.03 GAS = 3,000,000). 鲜花 - Flowers.</summary>
+        private const long OFFERING_FLOWER = 3000000;
+        
+        /// <summary>Cost of fruit offering in GAS (0.05 GAS = 5,000,000). 水果 - Fruit.</summary>
+        private const long OFFERING_FRUIT = 5000000;
+        
+        /// <summary>Cost of wine offering in GAS (0.1 GAS = 10,000,000). 酒 - Wine.</summary>
+        private const long OFFERING_WINE = 10000000;
+        
+        /// <summary>Cost of feast offering in GAS (0.5 GAS = 50,000,000). 祭宴 - Feast.</summary>
+        private const long OFFERING_FEAST = 50000000;
+        
+        // Offering type identifiers
+        
+        /// <summary>Offering type: Incense (香).</summary>
         private const int TYPE_INCENSE = 1;
+        
+        /// <summary>Offering type: Candle (蜡烛).</summary>
         private const int TYPE_CANDLE = 2;
+        
+        /// <summary>Offering type: Flower (鲜花).</summary>
         private const int TYPE_FLOWER = 3;
+        
+        /// <summary>Offering type: Fruit (水果).</summary>
         private const int TYPE_FRUIT = 4;
+        
+        /// <summary>Offering type: Wine (酒).</summary>
         private const int TYPE_WINE = 5;
+        
+        /// <summary>Offering type: Feast (祭宴).</summary>
         private const int TYPE_FEAST = 6;
         #endregion
 
@@ -96,36 +149,72 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region Data Structures
         
+        /// <summary>
+        /// Memorial for the deceased (灵位 - spirit tablet).
+        /// 
+        /// Storage: Serialized and stored with PREFIX_MEMORIALS + memorialId
+        /// Created: When user creates a memorial
+        /// Updated: When tributes are paid, fields modified
+        /// </summary>
         public struct Memorial
         {
+            /// <summary>Unique memorial identifier.</summary>
             public BigInteger Id;
+            /// <summary>Creator's address (typically family member).</summary>
             public UInt160 Creator;
+            /// <summary>Name of the deceased.</summary>
             public string DeceasedName;
-            public string PhotoHash;           // IPFS/存储哈希
+            /// <summary>Photo hash reference (IPFS or NeoFS).</summary>
+            public string PhotoHash;
+            /// <summary>Relationship to creator (e.g., "Father", "Friend").</summary>
             public string Relationship;
+            /// <summary>Birth year of the deceased.</summary>
             public BigInteger BirthYear;
+            /// <summary>Year of passing.</summary>
             public BigInteger DeathYear;
+            /// <summary>Biography or life story.</summary>
             public string Biography;
+            /// <summary>Obituary text.</summary>
             public string Obituary;
+            /// <summary>Unix timestamp when memorial was created.</summary>
             public BigInteger CreateTime;
+            /// <summary>Unix timestamp of most recent tribute.</summary>
             public BigInteger LastTributeTime;
+            /// <summary>Whether the memorial is active (can be deactivated).</summary>
             public bool Active;
-            // 祭品统计
+            // Offering statistics (祭品统计)
+            /// <summary>Number of incense offerings received.</summary>
             public BigInteger IncenseCount;
+            /// <summary>Number of candle offerings received.</summary>
             public BigInteger CandleCount;
+            /// <summary>Number of flower offerings received.</summary>
             public BigInteger FlowerCount;
+            /// <summary>Number of fruit offerings received.</summary>
             public BigInteger FruitCount;
+            /// <summary>Number of wine offerings received.</summary>
             public BigInteger WineCount;
+            /// <summary>Number of feast offerings received.</summary>
             public BigInteger FeastCount;
         }
 
+        /// <summary>
+        /// Tribute/Offering at a memorial (祭拜记录).
+        /// 
+        /// Storage: Serialized and stored with PREFIX_TRIBUTES + tributeId
+        /// </summary>
         public struct Tribute
         {
+            /// <summary>Unique tribute identifier.</summary>
             public BigInteger Id;
+            /// <summary>Memorial being visited.</summary>
             public BigInteger MemorialId;
+            /// <summary>Visitor's address.</summary>
             public UInt160 Visitor;
+            /// <summary>Type of offering (1-6: incense, candle, flower, fruit, wine, feast).</summary>
             public BigInteger OfferingType;
+            /// <summary>Optional message from visitor.</summary>
             public string Message;
+            /// <summary>Unix timestamp of tribute.</summary>
             public BigInteger Timestamp;
         }
         
