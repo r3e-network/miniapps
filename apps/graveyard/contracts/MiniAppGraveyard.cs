@@ -10,12 +10,60 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for memory lifecycle
+    
+    /// <summary>
+    /// Event emitted when a memory is buried.
+    /// </summary>
+    /// <param name="memoryId">Unique memory identifier</param>
+    /// <param name="owner">Memory owner's address</param>
+    /// <param name="contentHash">SHA256 hash of encrypted content</param>
+    /// <param name="memoryType">Type of memory (1-5: Secret, Regret, Wish, etc.)</param>
     public delegate void MemoryBuriedHandler(BigInteger memoryId, UInt160 owner, string contentHash, BigInteger memoryType);
+    
+    /// <summary>
+    /// Event emitted when a memory is permanently forgotten/deleted.
+    /// </summary>
+    /// <param name="memoryId">The memory identifier</param>
+    /// <param name="owner">Memory owner's address</param>
+    /// <param name="forgetTime">Unix timestamp when forgotten</param>
     public delegate void MemoryForgottenHandler(BigInteger memoryId, UInt160 owner, BigInteger forgetTime);
+    
+    /// <summary>
+    /// Event emitted when a memory's content hash is updated.
+    /// </summary>
+    /// <param name="memoryId">The memory identifier</param>
+    /// <param name="newHash">New SHA256 content hash</param>
     public delegate void MemoryUpdatedHandler(BigInteger memoryId, string newHash);
+    
+    /// <summary>
+    /// Event emitted when an epitaph is added to a memory.
+    /// </summary>
+    /// <param name="memoryId">The memory identifier</param>
+    /// <param name="epitaph">The epitaph text</param>
     public delegate void EpitaphAddedHandler(BigInteger memoryId, string epitaph);
+    
+    /// <summary>
+    /// Event emitted when a public memorial is created.
+    /// </summary>
+    /// <param name="memorialId">Unique memorial identifier</param>
+    /// <param name="creator">Memorial creator's address</param>
+    /// <param name="title">Memorial title</param>
     public delegate void MemorialCreatedHandler(BigInteger memorialId, UInt160 creator, string title);
+    
+    /// <summary>
+    /// Event emitted when a tribute is added to a memorial.
+    /// </summary>
+    /// <param name="memorialId">The memorial identifier</param>
+    /// <param name="sender">Tribute sender's address</param>
+    /// <param name="amount">Tribute amount in GAS</param>
     public delegate void TributeAddedHandler(BigInteger memorialId, UInt160 sender, BigInteger amount);
+    
+    /// <summary>
+    /// Event emitted when a user earns a badge.
+    /// </summary>
+    /// <param name="user">User's address</param>
+    /// <param name="badgeType">Badge type identifier</param>
+    /// <param name="badgeName">Badge name</param>
     public delegate void UserBadgeEarnedHandler(UInt160 user, BigInteger badgeType, string badgeName);
 
     /// <summary>
@@ -50,12 +98,25 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppGraveyard : MiniAppNeoFSBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the Graveyard miniapp.</summary>
         private const string APP_ID = "miniapp-graveyard";
-        private const long BURY_FEE = 10000000;        // 0.1 GAS
-        private const long FORGET_FEE = 100000000;     // 1 GAS
-        private const long MEMORIAL_FEE = 500000000;   // 5 GAS
-        private const long MIN_TRIBUTE = 10000000;     // 0.1 GAS
+        
+        /// <summary>Fee to bury a memory (0.1 GAS = 10,000,000).</summary>
+        private const long BURY_FEE = 10000000;
+        
+        /// <summary>Fee to permanently forget a memory (1 GAS = 100,000,000). Higher fee to prevent abuse.</summary>
+        private const long FORGET_FEE = 100000000;
+        
+        /// <summary>Fee to create a public memorial (5 GAS = 500,000,000).</summary>
+        private const long MEMORIAL_FEE = 500000000;
+        
+        /// <summary>Minimum tribute amount for memorials (0.1 GAS = 10,000,000).</summary>
+        private const long MIN_TRIBUTE = 10000000;
+        
+        /// <summary>Maximum length for on-chain epitaphs (500 characters). Longer content uses NeoFS.</summary>
         private const int MAX_EPITAPH_LENGTH = 500;
+        
+        /// <summary>Maximum length for memorial titles (100 characters).</summary>
         private const int MAX_TITLE_LENGTH = 100;
         #endregion
 
@@ -75,41 +136,87 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region Data Structures
+        /// <summary>
+        /// Represents a buried memory with encrypted content reference.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_MEMORIES + memoryId
+        /// Created: When memory is buried
+        /// Updated: When epitaph added, content updated, or forgotten
+        /// </summary>
         public struct Memory
         {
+            /// <summary>Owner's address who buried the memory.</summary>
             public UInt160 Owner;
+            /// <summary>SHA256 hash of encrypted content for integrity verification.</summary>
             public string ContentHash;
+            /// <summary>Memory type: 1=Secret, 2=Regret, 3=Wish, 4=Message, 5=Other.</summary>
             public BigInteger MemoryType;
+            /// <summary>Unix timestamp when memory was buried.</summary>
             public BigInteger BuriedTime;
+            /// <summary>Unix timestamp when memory was forgotten (0 if not forgotten).</summary>
             public BigInteger ForgottenTime;
+            /// <summary>Optional epitaph text (max 500 chars, or NeoFS reference).</summary>
             public string Epitaph;
+            /// <summary>Whether the memory has been permanently forgotten.</summary>
             public bool Forgotten;
         }
 
+        /// <summary>
+        /// Public memorial for sharing memories and receiving tributes.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_MEMORIALS + memorialId
+        /// Created: When memorial is created
+        /// Updated: When tributes are added
+        /// </summary>
         public struct Memorial
         {
+            /// <summary>Creator's address.</summary>
             public UInt160 Creator;
+            /// <summary>Memorial title (max 100 characters).</summary>
             public string Title;
+            /// <summary>Memorial description text.</summary>
             public string Description;
+            /// <summary>Unix timestamp when memorial was created.</summary>
             public BigInteger CreatedTime;
+            /// <summary>Total amount of tributes received in GAS.</summary>
             public BigInteger TotalTributes;
+            /// <summary>Number of tribute transactions received.</summary>
             public BigInteger TributeCount;
+            /// <summary>Whether the memorial is active (can be closed by admin).</summary>
             public bool Active;
         }
 
+        /// <summary>
+        /// User statistics and achievements tracking.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_USER_STATS + user address
+        /// Updated: After each user action (bury, forget, create memorial, etc.)
+        /// </summary>
         public struct UserStats
         {
+            /// <summary>Total memories buried by user.</summary>
             public BigInteger MemoriesBuried;
+            /// <summary>Total memories permanently forgotten.</summary>
             public BigInteger MemoriesForgotten;
+            /// <summary>Number of public memorials created.</summary>
             public BigInteger MemorialsCreated;
+            /// <summary>Total tributes sent to memorials in GAS.</summary>
             public BigInteger TributesSent;
+            /// <summary>Total tributes received on own memorials in GAS.</summary>
             public BigInteger TributesReceived;
+            /// <summary>Total GAS spent on fees and tributes.</summary>
             public BigInteger TotalSpent;
+            /// <summary>Number of badges/achievements earned.</summary>
             public BigInteger BadgeCount;
+            /// <summary>Unix timestamp of first activity (user join time).</summary>
             public BigInteger JoinTime;
+            /// <summary>Unix timestamp of most recent activity.</summary>
             public BigInteger LastActivityTime;
+            /// <summary>Count of secrets buried (memory type 1).</summary>
             public BigInteger SecretsBuried;
+            /// <summary>Count of regrets buried (memory type 2).</summary>
             public BigInteger RegretsBuried;
+            /// <summary>Count of wishes buried (memory type 3).</summary>
             public BigInteger WishesBuried;
         }
         #endregion
