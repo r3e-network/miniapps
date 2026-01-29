@@ -9,6 +9,14 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Events
+    
+    /// <summary>
+    /// Event emitted when a photo is uploaded.
+    /// </summary>
+    /// <param name="owner">Photo owner's address</param>
+    /// <param name="photoId">Unique photo identifier (SHA256 hash)</param>
+    /// <param name="encrypted">Whether the photo is client-side encrypted</param>
+    /// <param name="index">User's photo index (0-based)</param>
     public delegate void PhotoUploadedHandler(UInt160 owner, ByteString photoId, bool encrypted, BigInteger index);
 
     [DisplayName("MiniAppForeverAlbum")]
@@ -42,13 +50,20 @@ namespace NeoMiniAppPlatform.Contracts
     /// </summary>
     public class MiniAppForeverAlbum : MiniAppNeoFSBase
     {
+        /// <summary>Unique application identifier for the ForeverAlbum miniapp.</summary>
         private const string APP_ID = "miniapp-forever-album";
-        private const int MAX_PHOTOS_PER_UPLOAD = 10;           // Increased from 5
-        private const int MAX_PHOTO_BYTES = 45000;              // Legacy: 45KB max
-        private const int MAX_TOTAL_BYTES = 60000;              // Legacy: 60KB total
         
-        // NeoFS limits (much higher)
-        private const long MAX_NEFOS_PHOTO_SIZE = 100 * 1024 * 1024;  // 100MB per photo
+        /// <summary>Maximum photos per upload batch (10). Prevents transaction size issues.</summary>
+        private const int MAX_PHOTOS_PER_UPLOAD = 10;
+        
+        /// <summary>Maximum size for legacy on-chain photos (45KB = 45,000 bytes). Larger photos use NeoFS.</summary>
+        private const int MAX_PHOTO_BYTES = 45000;
+        
+        /// <summary>Maximum total payload size per upload (60KB). Safety limit for transaction.</summary>
+        private const int MAX_TOTAL_BYTES = 60000;
+        
+        /// <summary>Maximum photo size for NeoFS storage (100MB). Supports high-resolution images and videos.</summary>
+        private const long MAX_NEFOS_PHOTO_SIZE = 100 * 1024 * 1024;
 
         private static readonly byte[] PREFIX_PHOTO_DATA = new byte[] { 0x20 };
         private static readonly byte[] PREFIX_PHOTO_ENCRYPTED = new byte[] { 0x21 };
@@ -58,12 +73,23 @@ namespace NeoMiniAppPlatform.Contracts
         private static readonly byte[] PREFIX_USER_PHOTO_INDEX = new byte[] { 0x25 };
         private static readonly byte[] PREFIX_TOTAL_PHOTOS = new byte[] { 0x26 };
 
+        /// <summary>
+        /// Photo metadata and data reference.
+        /// 
+        /// Storage: Individual fields stored with PREFIX_PHOTO_* + photoId
+        /// Note: For NeoFS mode, Data field is null and NeoFS reference is stored separately
+        /// </summary>
         public struct PhotoInfo
         {
+            /// <summary>Unique photo identifier (SHA256 hash of content).</summary>
             public ByteString PhotoId;
+            /// <summary>Photo owner's address.</summary>
             public UInt160 Owner;
+            /// <summary>Whether photo is client-side encrypted.</summary>
             public bool Encrypted;
+            /// <summary>Photo data for legacy mode, null for NeoFS mode.</summary>
             public ByteString Data;
+            /// <summary>Unix timestamp when photo was uploaded.</summary>
             public BigInteger CreatedAt;
         }
 
