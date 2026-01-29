@@ -44,71 +44,34 @@ namespace NeoMiniAppPlatform.Contracts
     public delegate void MemorialUpdatedHandler(BigInteger memorialId, string fieldUpdated);
 
     /// <summary>
-    /// Memorial Shrine MiniApp / 纪念堂 DApp
-    /// Blockchain Memorial / 区块链灵位
+    /// Memorial Shrine MiniApp - Create eternal digital memorials on the blockchain.
     /// 
-    /// English:
-    /// Eternally inscribe memories of the departed on the blockchain.
-    /// Create digital memorials for loved ones with permanent on-chain records.
-    /// 
-    /// 中文：
-    /// 将逝者的记忆永久铭刻于区块链之上，让思念跨越时空，让记忆永不消逝。
-    /// 为逝去的亲友创建永久数字纪念。
-    ///
-    /// FEATURES / 功能：
+    /// FEATURES:
     /// - Create Memorials: Record name, photo, birth/death years, biography, obituary
-    ///   创建灵位：记录逝者姓名、照片、生卒年份、生平、讣告
-    /// - Pay Tribute: Express grief with incense, candles, flowers, and offerings
-    ///   虔诚祭拜：以香火、鲜花、祭品表达哀思
+    /// - Pay Tribute: Express grief with virtual offerings (incense, candles, flowers, etc.)
     /// - Eternal Records: All tributes permanently stored on blockchain
-    ///   永恒记录：所有祭拜记录永久保存于区块链
     /// - Obituary Board: Public announcements for new memorials
-    ///   讣告公示：新灵位发布讣告通知
+    /// - NeoFS Storage: Photos, videos, audio stored in decentralized storage (99% cheaper)
     ///
     /// Offering services are charitable, only charging blockchain operating costs.
-    /// 祭拜服务为公益性质，仅收取区块链运行成本。
     /// </summary>
     [DisplayName("MiniAppMemorialShrine")]
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "1.0.0")]
-    [ManifestExtra("Description", "Memorial Shrine / 纪念堂 - Blockchain Memorial / 区块链灵位")]
+    [ManifestExtra("Description", "Memorial Shrine - Create eternal digital memorials for loved ones on the blockchain.")]
     [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
     /// <summary>
-    /// Memorial Shrine MiniApp / 纪念堂 DApp  
-    /// Blockchain Memorial / 区块链灵位
+    /// Memorial Shrine MiniApp - Create eternal digital memorials on the blockchain.
     /// 
-    /// English:
-    /// Eternally inscribe memories of the departed on the blockchain.
-    /// Create digital memorials for loved ones with permanent on-chain records.
-    /// 
-    /// 中文：
-    /// 将逝者的记忆永久铭刻于区块链之上，让思念跨越时空，让记忆永不消逝。
-    /// 为逝去的亲友创建永久数字纪念。
-    ///
-    /// FEATURES / 功能：
+    /// FEATURES:
     /// - Create Memorials: Record name, photo, birth/death years, biography, obituary
-    ///   创建灵位：记录逝者姓名、照片、生卒年份、生平、讣告
-    /// - Pay Tribute: Express grief with incense, candles, flowers, and offerings  
-    ///   虔诚祭拜：以香火、鲜花、祭品表达哀思
+    /// - Pay Tribute: Express grief with virtual offerings (incense, candles, flowers, etc.)
     /// - Eternal Records: All tributes permanently stored on blockchain
-    ///   永恒记录：所有祭拜记录永久保存于区块链
     /// - Obituary Board: Public announcements for new memorials
-    ///   讣告公示：新灵位发布讣告通知
-    /// - NeoFS Storage: Photos, videos, audio permanently stored in decentralized storage
-    ///   NeoFS存储：照片、视频、音频永久保存在去中心化存储
+    /// - NeoFS Storage: Photos, videos, audio stored in decentralized storage (99% cheaper)
     ///
-    /// NEOFS STORAGE / NeoFS存储：
-    /// - Memorial Photos: Permanently stored in NeoFS, no centralized server dependency
-    ///   灵位照片：永久保存在NeoFS，不依赖中心化服务器
-    /// - Biographies: Long text support for large content
-    ///   生平传记：长文本支持，可存放大容量内容
-    /// - Audio/Video: Support for voice messages and memorial videos
-    ///   音频/视频：支持语音留言、纪念视频
-    /// - 99% cheaper than on-chain storage
-    /// 
     /// Offering services are charitable, only charging blockchain operating costs.
-    /// 祭拜服务为公益性质，仅收取区块链运行成本。
     /// </summary>
     public partial class MiniAppMemorialShrine : MiniAppNeoFSBase
     {
@@ -116,44 +79,44 @@ namespace NeoMiniAppPlatform.Contracts
         /// <summary>Unique application identifier for the Memorial Shrine miniapp.</summary>
         private const string APP_ID = "miniapp-memorial-shrine";
         
-        // Offering costs (公益性质 - charitable, only covers blockchain costs)
+        // Offering costs (charitable, only covers blockchain costs)
         
-        /// <summary>Cost of incense offering in GAS (0.01 GAS = 1,000,000). 香 - Incense.</summary>
+        /// <summary>Cost of incense offering in GAS (0.01 GAS = 1,000,000).</summary>
         private const long OFFERING_INCENSE = 1000000;
         
-        /// <summary>Cost of candle offering in GAS (0.02 GAS = 2,000,000). 蜡烛 - Candle.</summary>
+        /// <summary>Cost of candle offering in GAS (0.02 GAS = 2,000,000).</summary>
         private const long OFFERING_CANDLE = 2000000;
         
-        /// <summary>Cost of flower offering in GAS (0.03 GAS = 3,000,000). 鲜花 - Flowers.</summary>
+        /// <summary>Cost of flower offering in GAS (0.03 GAS = 3,000,000).</summary>
         private const long OFFERING_FLOWER = 3000000;
         
-        /// <summary>Cost of fruit offering in GAS (0.05 GAS = 5,000,000). 水果 - Fruit.</summary>
+        /// <summary>Cost of fruit offering in GAS (0.05 GAS = 5,000,000).</summary>
         private const long OFFERING_FRUIT = 5000000;
         
-        /// <summary>Cost of wine offering in GAS (0.1 GAS = 10,000,000). 酒 - Wine.</summary>
+        /// <summary>Cost of wine offering in GAS (0.1 GAS = 10,000,000).</summary>
         private const long OFFERING_WINE = 10000000;
         
-        /// <summary>Cost of feast offering in GAS (0.5 GAS = 50,000,000). 祭宴 - Feast.</summary>
+        /// <summary>Cost of feast offering in GAS (0.5 GAS = 50,000,000).</summary>
         private const long OFFERING_FEAST = 50000000;
         
         // Offering type identifiers
         
-        /// <summary>Offering type: Incense (香).</summary>
+        /// <summary>Offering type: Incense.</summary>
         private const int TYPE_INCENSE = 1;
         
-        /// <summary>Offering type: Candle (蜡烛).</summary>
+        /// <summary>Offering type: Candle.</summary>
         private const int TYPE_CANDLE = 2;
         
-        /// <summary>Offering type: Flower (鲜花).</summary>
+        /// <summary>Offering type: Flower.</summary>
         private const int TYPE_FLOWER = 3;
         
-        /// <summary>Offering type: Fruit (水果).</summary>
+        /// <summary>Offering type: Fruit.</summary>
         private const int TYPE_FRUIT = 4;
         
-        /// <summary>Offering type: Wine (酒).</summary>
+        /// <summary>Offering type: Wine.</summary>
         private const int TYPE_WINE = 5;
         
-        /// <summary>Offering type: Feast (祭宴).</summary>
+        /// <summary>Offering type: Feast.</summary>
         private const int TYPE_FEAST = 6;
         #endregion
 
@@ -176,7 +139,7 @@ namespace NeoMiniAppPlatform.Contracts
         #region Data Structures
         
         /// <summary>
-        /// Memorial for the deceased (灵位 - spirit tablet).
+        /// Memorial for the deceased.
         /// 
         /// Storage: Serialized and stored with PREFIX_MEMORIALS + memorialId
         /// Created: When user creates a memorial
@@ -208,7 +171,7 @@ namespace NeoMiniAppPlatform.Contracts
             public BigInteger LastTributeTime;
             /// <summary>Whether the memorial is active (can be deactivated).</summary>
             public bool Active;
-            // Offering statistics (祭品统计)
+            // Offering statistics
             /// <summary>Number of incense offerings received.</summary>
             public BigInteger IncenseCount;
             /// <summary>Number of candle offerings received.</summary>
@@ -224,7 +187,7 @@ namespace NeoMiniAppPlatform.Contracts
         }
 
         /// <summary>
-        /// Tribute/Offering at a memorial (祭拜记录).
+        /// Tribute/Offering at a memorial.
         /// 
         /// Storage: Serialized and stored with PREFIX_TRIBUTES + tributeId
         /// </summary>

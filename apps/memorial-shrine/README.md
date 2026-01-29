@@ -1,13 +1,6 @@
-# Memorial Shrine / 纪念堂
+# Memorial Shrine
 
-**Blockchain Memorial / 区块链灵位**
-
-Eternal blockchain memorials for loved ones.
-将逝者的记忆永久铭刻于区块链之上，让思念跨越时空，让记忆永不消逝。
-
-## Overview
-
-Memorial Shrine creates permanent, immutable tributes on the Neo blockchain. Honor and remember loved ones with digital memorials that will exist forever on-chain.
+Create eternal digital memorials for loved ones on the blockchain.
 
 ## Features
 
