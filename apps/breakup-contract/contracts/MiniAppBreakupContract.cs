@@ -10,16 +10,87 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for contract lifecycle
+    
+    /// <summary>
+    /// Event emitted when a new relationship contract is created.
+    /// </summary>
+    /// <param name="contractId">Unique contract identifier</param>
+    /// <param name="party1">First party's address</param>
+    /// <param name="party2">Second party's address</param>
+    /// <param name="stake">GAS amount staked by each party</param>
     public delegate void ContractCreatedHandler(BigInteger contractId, UInt160 party1, UInt160 party2, BigInteger stake);
+    
+    /// <summary>
+    /// Event emitted when a party signs the contract.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="signer">Address of the signing party</param>
     public delegate void ContractSignedHandler(BigInteger contractId, UInt160 signer);
+    
+    /// <summary>
+    /// Event emitted when a contract is renewed with extended duration.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="newDuration">New duration in days</param>
+    /// <param name="additionalStake">Additional GAS staked</param>
     public delegate void ContractRenewedHandler(BigInteger contractId, BigInteger newDuration, BigInteger additionalStake);
+    
+    /// <summary>
+    /// Event emitted when contract terms are amended.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="amendmentType">Type of amendment made</param>
     public delegate void ContractAmendedHandler(BigInteger contractId, string amendmentType);
+    
+    /// <summary>
+    /// Event emitted when a mutual breakup is requested.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="requester">Address of the requesting party</param>
     public delegate void MutualBreakupRequestedHandler(BigInteger contractId, UInt160 requester);
+    
+    /// <summary>
+    /// Event emitted when a mutual breakup is confirmed by both parties.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
     public delegate void MutualBreakupConfirmedHandler(BigInteger contractId);
+    
+    /// <summary>
+    /// Event emitted when a unilateral breakup is triggered.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="initiator">Address of the party triggering breakup</param>
+    /// <param name="penalty">Penalty amount in GAS paid to loyal party</param>
     public delegate void BreakupTriggeredHandler(BigInteger contractId, UInt160 initiator, BigInteger penalty);
+    
+    /// <summary>
+    /// Event emitted when a contract is completed (duration expired or mutual breakup).
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="mutual">True if completed via mutual agreement</param>
     public delegate void ContractCompletedHandler(BigInteger contractId, bool mutual);
+    
+    /// <summary>
+    /// Event emitted when funds are distributed to a party.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="recipient">Address receiving funds</param>
+    /// <param name="amount">Amount distributed in GAS</param>
     public delegate void FundsDistributedHandler(BigInteger contractId, UInt160 recipient, BigInteger amount);
+    
+    /// <summary>
+    /// Event emitted when a contract is cancelled before activation.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="canceller">Address of the cancelling party</param>
     public delegate void ContractCancelledHandler(BigInteger contractId, UInt160 canceller);
+    
+    /// <summary>
+    /// Event emitted when a commitment milestone is reached.
+    /// </summary>
+    /// <param name="contractId">The contract identifier</param>
+    /// <param name="milestoneIndex">Milestone index (1-4 for 25%, 50%, 75%, 100%)</param>
+    /// <param name="reward">Reward amount in GAS</param>
     public delegate void MilestoneReachedHandler(BigInteger contractId, BigInteger milestoneIndex, BigInteger reward);
 
     /// <summary>
@@ -50,15 +121,32 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppBreakupContract : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the BreakupContract miniapp.</summary>
         private const string APP_ID = "miniapp-breakupcontract";
-        private const long MIN_STAKE = 100000000;      // 1 GAS minimum
-        private const long MAX_STAKE = 100000000000;   // 1000 GAS maximum
-        private const int MIN_DURATION_DAYS = 30;      // 30 days minimum
-        private const int MAX_DURATION_DAYS = 3650;    // 10 years maximum
-        private const int PLATFORM_FEE_BPS = 100;      // 1% platform fee
-        private const int COMPLETION_BONUS_BPS = 500;  // 5% completion bonus
-        private const int SIGN_DEADLINE_SECONDS = 604800; // 7 days to sign
-        private const int MUTUAL_BREAKUP_COOLDOWN_SECONDS = 86400; // 24h cooldown
+        
+        /// <summary>Minimum stake per party in GAS (1 GAS = 100,000,000). Ensures meaningful commitment.</summary>
+        private const long MIN_STAKE = 100000000;
+        
+        /// <summary>Maximum stake per party in GAS (1000 GAS = 100,000,000,000). Limits risk exposure.</summary>
+        private const long MAX_STAKE = 100000000000;
+        
+        /// <summary>Minimum contract duration in days (30 days). Prevents trivial short-term contracts.</summary>
+        private const int MIN_DURATION_DAYS = 30;
+        
+        /// <summary>Maximum contract duration in days (10 years = 3650 days). Prevents indefinite locks.</summary>
+        private const int MAX_DURATION_DAYS = 3650;
+        
+        /// <summary>Platform fee in basis points (1% = 100 bps). Taken from completion rewards.</summary>
+        private const int PLATFORM_FEE_BPS = 100;
+        
+        /// <summary>Completion bonus in basis points (5% = 500 bps). Reward for successful completion.</summary>
+        private const int COMPLETION_BONUS_BPS = 500;
+        
+        /// <summary>Time limit in seconds for second party to sign (7 days = 604800 seconds).</summary>
+        private const int SIGN_DEADLINE_SECONDS = 604800;
+        
+        /// <summary>Cooldown period in seconds for mutual breakup confirmation (24 hours = 86400 seconds).</summary>
+        private const int MUTUAL_BREAKUP_COOLDOWN_SECONDS = 86400;
         #endregion
 
         #region App Prefixes (0x20+ to avoid collision with MiniAppBase)
@@ -76,31 +164,63 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region Data Structures
+        /// <summary>
+        /// Represents a relationship commitment contract between two parties.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_CONTRACTS + contractId
+        /// Lifecycle: Created → Signed (both parties) → Active → Completed/Broken
+        /// </summary>
         public struct RelationshipContract
         {
+            /// <summary>First party's address (creator).</summary>
             public UInt160 Party1;
+            /// <summary>Second party's address (must sign to activate).</summary>
             public UInt160 Party2;
+            /// <summary>GAS amount staked by each party (total locked = 2 * stake).</summary>
             public BigInteger Stake;
+            /// <summary>Whether party1 has signed the contract.</summary>
             public bool Party1Signed;
+            /// <summary>Whether party2 has signed the contract.</summary>
             public bool Party2Signed;
+            /// <summary>Unix timestamp when contract was created.</summary>
             public BigInteger CreatedTime;
+            /// <summary>Unix timestamp when contract became active (both parties signed).</summary>
             public BigInteger StartTime;
+            /// <summary>Contract duration in seconds.</summary>
             public BigInteger Duration;
+            /// <summary>Deadline for party2 to sign (Unix timestamp).</summary>
             public BigInteger SignDeadline;
+            /// <summary>Whether contract is currently active (both signed, not expired).</summary>
             public bool Active;
+            /// <summary>Whether contract has been completed successfully.</summary>
             public bool Completed;
+            /// <summary>Whether contract was cancelled before activation.</summary>
             public bool Cancelled;
+            /// <summary>Contract title/description.</summary>
             public string Title;
+            /// <summary>Detailed terms of the agreement.</summary>
             public string Terms;
+            /// <summary>Number of milestones reached (0-4).</summary>
             public BigInteger MilestonesReached;
+            /// <summary>Total penalties paid due to breakups in GAS.</summary>
             public BigInteger TotalPenaltyPaid;
+            /// <summary>Address of party who triggered breakup (zero if no breakup).</summary>
             public UInt160 BreakupInitiator;
         }
 
+        /// <summary>
+        /// Represents a mutual breakup request.
+        /// Requires confirmation from both parties after cooldown period.
+        /// 
+        /// Storage: Serialized and stored with PREFIX_MUTUAL_BREAKUP + contractId
+        /// </summary>
         public struct MutualBreakupRequest
         {
+            /// <summary>Address of party who requested mutual breakup.</summary>
             public UInt160 Requester;
+            /// <summary>Unix timestamp when request was made.</summary>
             public BigInteger RequestTime;
+            /// <summary>Whether the other party has confirmed the request.</summary>
             public bool Confirmed;
         }
         #endregion
