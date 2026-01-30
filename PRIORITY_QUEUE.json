@@ -1,0 +1,353 @@
+[
+  {
+    "name": "social-karma",
+    "category": "needsContract",
+    "adjustedScore": 30,
+    "originalScore": 30,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": true
+  },
+  {
+    "name": "coin-flip",
+    "category": "needsContract",
+    "adjustedScore": 45,
+    "originalScore": 37,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "neo-swap",
+    "category": "thirdParty",
+    "adjustedScore": 52,
+    "originalScore": 46,
+    "needsContract": false,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "prediction-market",
+    "category": "frontendOnly",
+    "adjustedScore": 57,
+    "originalScore": 34,
+    "needsContract": false,
+    "needsResponsiveUI": true,
+    "needsDocs": true
+  },
+  {
+    "name": "dev-tipping",
+    "category": "needsContract",
+    "adjustedScore": 58,
+    "originalScore": 52,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "hall-of-fame",
+    "category": "needsContract",
+    "adjustedScore": 58,
+    "originalScore": 52,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "piggy-bank",
+    "category": "thirdParty",
+    "adjustedScore": 58,
+    "originalScore": 52,
+    "needsContract": false,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "quadratic-funding",
+    "category": "needsContract",
+    "adjustedScore": 58,
+    "originalScore": 52,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "trustanchor",
+    "category": "needsContract",
+    "adjustedScore": 58,
+    "originalScore": 52,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "turtle-match",
+    "category": "needsContract",
+    "adjustedScore": 58,
+    "originalScore": 52,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "charity-vault",
+    "category": "frontendOnly",
+    "adjustedScore": 60,
+    "originalScore": 36,
+    "needsContract": false,
+    "needsResponsiveUI": true,
+    "needsDocs": true
+  },
+  {
+    "name": "doomsday-clock",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "event-ticket-pass",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "lottery",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 54,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "masquerade-dao",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "milestone-escrow",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "neo-gacha",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "red-envelope",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "soulbound-certificate",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "stream-vault",
+    "category": "needsContract",
+    "adjustedScore": 62,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "daily-checkin",
+    "category": "needsContract",
+    "adjustedScore": 63,
+    "originalScore": 55,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "candidate-vote",
+    "category": "needsContract",
+    "adjustedScore": 64,
+    "originalScore": 56,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "compound-capsule",
+    "category": "needsContract",
+    "adjustedScore": 64,
+    "originalScore": 56,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "memorial-shrine",
+    "category": "needsContract",
+    "adjustedScore": 64,
+    "originalScore": 53,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": true
+  },
+  {
+    "name": "million-piece-map",
+    "category": "needsContract",
+    "adjustedScore": 64,
+    "originalScore": 56,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "neoburger",
+    "category": "thirdParty",
+    "adjustedScore": 64,
+    "originalScore": 56,
+    "needsContract": false,
+    "needsResponsiveUI": false,
+    "needsDocs": false
+  },
+  {
+    "name": "council-governance",
+    "category": "needsContract",
+    "adjustedScore": 65,
+    "originalScore": 57,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "garden-of-neo",
+    "category": "needsContract",
+    "adjustedScore": 65,
+    "originalScore": 57,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "time-capsule",
+    "category": "needsContract",
+    "adjustedScore": 65,
+    "originalScore": 57,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "timestamp-proof",
+    "category": "frontendOnly",
+    "adjustedScore": 65,
+    "originalScore": 39,
+    "needsContract": false,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "unbreakable-vault",
+    "category": "needsContract",
+    "adjustedScore": 65,
+    "originalScore": 57,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "burn-league",
+    "category": "needsContract",
+    "adjustedScore": 66,
+    "originalScore": 57,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "flashloan",
+    "category": "thirdParty",
+    "adjustedScore": 66,
+    "originalScore": 57,
+    "needsContract": false,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "guardian-policy",
+    "category": "needsContract",
+    "adjustedScore": 66,
+    "originalScore": 58,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "heritage-trust",
+    "category": "needsContract",
+    "adjustedScore": 66,
+    "originalScore": 57,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "on-chain-tarot",
+    "category": "needsContract",
+    "adjustedScore": 66,
+    "originalScore": 58,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "self-loan",
+    "category": "needsContract",
+    "adjustedScore": 66,
+    "originalScore": 58,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "gov-merc",
+    "category": "needsContract",
+    "adjustedScore": 67,
+    "originalScore": 58,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  },
+  {
+    "name": "ex-files",
+    "category": "needsContract",
+    "adjustedScore": 69,
+    "originalScore": 59,
+    "needsContract": true,
+    "needsResponsiveUI": true,
+    "needsDocs": false
+  }
+]

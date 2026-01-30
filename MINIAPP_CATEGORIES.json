@@ -1,0 +1,73 @@
+{
+  "lastUpdated": "2026-01-30T02:34:48.543Z",
+  "categories": {
+    "needsContract": [
+      "breakup-contract",
+      "burn-league",
+      "candidate-vote",
+      "coin-flip",
+      "compound-capsule",
+      "council-governance",
+      "daily-checkin",
+      "dev-tipping",
+      "doomsday-clock",
+      "event-ticket-pass",
+      "ex-files",
+      "forever-album",
+      "garden-of-neo",
+      "gov-merc",
+      "graveyard",
+      "guardian-policy",
+      "hall-of-fame",
+      "heritage-trust",
+      "lottery",
+      "masquerade-dao",
+      "memorial-shrine",
+      "milestone-escrow",
+      "million-piece-map",
+      "neo-gacha",
+      "on-chain-tarot",
+      "quadratic-funding",
+      "red-envelope",
+      "self-loan",
+      "social-karma",
+      "soulbound-certificate",
+      "stream-vault",
+      "time-capsule",
+      "trustanchor",
+      "turtle-match",
+      "unbreakable-vault"
+    ],
+    "toolkit": [
+      "explorer",
+      "gas-sponsor",
+      "neo-convert",
+      "neo-multisig",
+      "neo-news-today",
+      "neo-ns",
+      "neo-sign-anything",
+      "neo-treasury",
+      "wallet-health"
+    ],
+    "thirdParty": [
+      "flashloan",
+      "neo-swap",
+      "neoburger",
+      "piggy-bank"
+    ],
+    "frontendOnly": [
+      "charity-vault",
+      "grant-share",
+      "prediction-market",
+      "timestamp-proof"
+    ],
+    "unknown": []
+  },
+  "summary": {
+    "total": 52,
+    "toolkit": 9,
+    "thirdParty": 4,
+    "needsContract": 35,
+    "frontendOnly": 4
+  }
+}
