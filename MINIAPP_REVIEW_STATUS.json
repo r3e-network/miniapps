@@ -1,0 +1,860 @@
+{
+  "lastUpdated": "2026-01-30T02:09:58.372Z",
+  "totalApps": 52,
+  "categories": {
+    "contracts": {
+      "completed": 34,
+      "total": 52
+    },
+    "responsiveUI": {
+      "completed": 0,
+      "total": 52
+    },
+    "tests": {
+      "completed": 0,
+      "total": 52
+    },
+    "documentation": {
+      "completed": 52,
+      "total": 52
+    },
+    "performance": {
+      "completed": 0,
+      "total": 52
+    }
+  },
+  "apps": {
+    "breakup-contract": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 3,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2338,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "burn-league": {
+      "contracts": {
+        "exists": true,
+        "count": 11,
+        "documented": 6,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2337,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "candidate-vote": {
+      "contracts": {
+        "exists": true,
+        "count": 6,
+        "documented": 4,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3013,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "charity-vault": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1015,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "coin-flip": {
+      "contracts": {
+        "exists": true,
+        "count": 13,
+        "documented": 3,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 4131,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "compound-capsule": {
+      "contracts": {
+        "exists": true,
+        "count": 8,
+        "documented": 4,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3006,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "council-governance": {
+      "contracts": {
+        "exists": true,
+        "count": 5,
+        "documented": 3,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3117,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "daily-checkin": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 1,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2884,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "dev-tipping": {
+      "contracts": {
+        "exists": true,
+        "count": 12,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2377,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "doomsday-clock": {
+      "contracts": {
+        "exists": true,
+        "count": 17,
+        "documented": 4,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3017,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "event-ticket-pass": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 2,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1666,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "ex-files": {
+      "contracts": {
+        "exists": true,
+        "count": 13,
+        "documented": 9,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2335,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "explorer": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2419,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "flashloan": {
+      "contracts": {
+        "exists": true,
+        "count": 7,
+        "documented": 5,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2375,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "forever-album": {
+      "contracts": {
+        "exists": true,
+        "count": 2,
+        "documented": 2,
+        "fullyDocumented": true
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2468,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "garden-of-neo": {
+      "contracts": {
+        "exists": true,
+        "count": 11,
+        "documented": 6,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2971,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "gas-sponsor": {
+      "contracts": {
+        "exists": true,
+        "count": 6,
+        "documented": 4,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2961,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "gov-merc": {
+      "contracts": {
+        "exists": true,
+        "count": 11,
+        "documented": 7,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2350,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "grant-share": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2468,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "graveyard": {
+      "contracts": {
+        "exists": true,
+        "count": 8,
+        "documented": 5,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2686,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "guardian-policy": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 2,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2335,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "hall-of-fame": {
+      "contracts": {
+        "exists": true,
+        "count": 16,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2921,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "heritage-trust": {
+      "contracts": {
+        "exists": true,
+        "count": 5,
+        "documented": 4,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 4511,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "lottery": {
+      "contracts": {
+        "exists": true,
+        "count": 22,
+        "documented": 7,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 5844,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "masquerade-dao": {
+      "contracts": {
+        "exists": true,
+        "count": 5,
+        "documented": 4,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2327,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "memorial-shrine": {
+      "contracts": {
+        "exists": true,
+        "count": 5,
+        "documented": 4,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 799,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "milestone-escrow": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 2,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1613,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "million-piece-map": {
+      "contracts": {
+        "exists": true,
+        "count": 11,
+        "documented": 5,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2330,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neo-convert": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2822,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neo-gacha": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 3,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2920,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neo-multisig": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2370,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neo-news-today": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2358,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neo-ns": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3009,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neo-sign-anything": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1917,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neo-swap": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3091,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neo-treasury": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2544,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "neoburger": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3197,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "on-chain-tarot": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 3,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2343,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "piggy-bank": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2931,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "prediction-market": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 844,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "quadratic-funding": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 1,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1498,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "red-envelope": {
+      "contracts": {
+        "exists": true,
+        "count": 9,
+        "documented": 2,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2376,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "self-loan": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 2,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 2421,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "social-karma": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 829,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "soulbound-certificate": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 2,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1843,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "stream-vault": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 2,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1695,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "time-capsule": {
+      "contracts": {
+        "exists": true,
+        "count": 9,
+        "documented": 5,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3268,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "timestamp-proof": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1102,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "trustanchor": {
+      "contracts": {
+        "exists": true,
+        "count": 1,
+        "documented": 1,
+        "fullyDocumented": true
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 1811,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "turtle-match": {
+      "contracts": {
+        "exists": true,
+        "count": 4,
+        "documented": 1,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3143,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "unbreakable-vault": {
+      "contracts": {
+        "exists": true,
+        "count": 7,
+        "documented": 4,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 3044,
+        "hasContractDocs": true
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    },
+    "wallet-health": {
+      "contracts": {
+        "exists": false,
+        "count": 0,
+        "documented": 0,
+        "fullyDocumented": false
+      },
+      "documentation": {
+        "hasReadme": true,
+        "readmeLength": 762,
+        "hasContractDocs": false
+      },
+      "responsiveUI": false,
+      "tests": false,
+      "status": "pending"
+    }
+  }
+}

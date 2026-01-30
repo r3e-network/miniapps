@@ -1,0 +1,450 @@
+/**
+ * Responsive Layout System for MiniApps
+ * 
+ * Provides different layouts for mobile vs desktop
+ * Mobile-first approach with breakpoint overrides
+ */
+
+// Breakpoints
+$bp-mobile: 768px;
+$bp-tablet: 1024px;
+$bp-desktop: 1440px;
+
+// Mixins
+@mixin mobile {
+  @media (max-width: #{$bp-mobile - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$bp-mobile}) and (max-width: #{$bp-tablet - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$bp-tablet}) {
+    @content;
+  }
+}
+
+@mixin desktop-lg {
+  @media (min-width: #{$bp-desktop}) {
+    @content;
+  }
+}
+
+// Layout Container
+.responsive-container {
+  width: 100%;
+  min-height: 100vh;
+  
+  // Mobile: Full width, no max-width
+  padding: 16px;
+  
+  @include tablet {
+    padding: 20px;
+  }
+  
+  @include desktop {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  @include desktop-lg {
+    max-width: 1400px;
+  }
+}
+
+// Page Layout
+.responsive-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  
+  @include desktop {
+    gap: 24px;
+  }
+}
+
+// Content Grid
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  @include desktop {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+}
+
+// Two Column Layout
+.responsive-two-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  
+  @include desktop {
+    flex-direction: row;
+    gap: 24px;
+    
+    > * {
+      flex: 1;
+    }
+    
+    > .col-main {
+      flex: 2;
+    }
+    
+    > .col-side {
+      flex: 1;
+      max-width: 400px;
+    }
+  }
+}
+
+// Card Layout
+.responsive-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  
+  // Mobile
+  padding: 16px;
+  
+  @include desktop {
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// Navigation
+.responsive-nav {
+  // Mobile: Bottom nav
+  @include mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    background: #ffffff;
+    border-top: 1px solid #e5e5e5;
+    z-index: 100;
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4px 12px;
+      font-size: 12px;
+      
+      .icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+    }
+  }
+  
+  // Desktop: Top or side nav
+  @include desktop {
+    display: flex;
+    gap: 8px;
+    padding: 12px 0;
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      
+      &:hover {
+        background: #f5f5f5;
+      }
+      
+      &.active {
+        background: #00a651;
+        color: white;
+      }
+    }
+  }
+}
+
+// Form Elements
+.responsive-form {
+  .form-group {
+    margin-bottom: 16px;
+    
+    @include desktop {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      
+      @include desktop {
+        font-size: 15px;
+        margin-bottom: 8px;
+      }
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      font-size: 16px; // Prevents zoom on iOS
+      
+      @include desktop {
+        padding: 10px 14px;
+        font-size: 14px;
+      }
+      
+      &:focus {
+        outline: none;
+        border-color: #00a651;
+      }
+    }
+  }
+  
+  // Desktop: Inline forms
+  &.inline-desktop {
+    @include desktop {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      
+      .form-group {
+        flex: 1;
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Buttons
+.responsive-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  // Mobile: Full width, larger touch target
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+  min-height: 48px;
+  
+  @include desktop {
+    width: auto;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+    min-height: 40px;
+  }
+  
+  &-primary {
+    background: #00a651;
+    color: white;
+    
+    &:hover {
+      background: #008f45;
+    }
+  }
+  
+  &-secondary {
+    background: #f5f5f5;
+    color: #333;
+    
+    &:hover {
+      background: #e8e8e8;
+    }
+  }
+}
+
+// Tables
+.responsive-table {
+  width: 100%;
+  
+  @include mobile {
+    // Card-based layout on mobile
+    display: block;
+    
+    thead {
+      display: none;
+    }
+    
+    tbody, tr {
+      display: block;
+    }
+    
+    tr {
+      background: #ffffff;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      
+      &::before {
+        content: attr(data-label);
+        font-weight: 500;
+        color: #666;
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+  
+  @include desktop {
+    border-collapse: collapse;
+    
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    
+    th {
+      font-weight: 600;
+      color: #666;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// Typography
+.responsive-title {
+  font-weight: 700;
+  line-height: 1.2;
+  
+  // Mobile
+  font-size: 24px;
+  margin-bottom: 16px;
+  
+  @include tablet {
+    font-size: 28px;
+  }
+  
+  @include desktop {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+}
+
+.responsive-subtitle {
+  font-weight: 600;
+  
+  // Mobile
+  font-size: 18px;
+  margin-bottom: 12px;
+  
+  @include desktop {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+}
+
+// Stats / KPI Cards
+.responsive-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  
+  @include tablet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @include desktop {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  .stat-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    
+    @include desktop {
+      padding: 20px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #00a651;
+      
+      @include desktop {
+        font-size: 28px;
+      }
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+      
+      @include desktop {
+        margin-top: 0;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Safe area for mobile (account for notches, home indicator)
+.safe-area {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-top: env(safe-area-inset-top, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+// Hide on mobile/desktop utilities
+.hide-mobile {
+  @include mobile {
+    display: none !important;
+  }
+}
+
+.hide-desktop {
+  @include desktop {
+    display: none !important;
+  }
+}
