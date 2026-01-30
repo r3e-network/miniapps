@@ -125,16 +125,26 @@ namespace NeoMiniAppPlatform.Contracts
         private const int MAX_STREAK_BONUS = 500;
         #endregion
 
-        #region App Prefixes (0x40+ to avoid collision with MiniAppGameComputeBase)
+        #region Storage Prefixes
+        /// <summary>Prefix for bet ID counter (0x40).</summary>
         private static readonly byte[] PREFIX_BET_ID = new byte[] { 0x40 };
+        /// <summary>Prefix for bet data storage (0x41).</summary>
         private static readonly byte[] PREFIX_BETS = new byte[] { 0x41 };
+        /// <summary>Prefix for player statistics (0x42).</summary>
         private static readonly byte[] PREFIX_PLAYER_STATS = new byte[] { 0x42 };
+        /// <summary>Prefix for total wagered amount tracking (0x43).</summary>
         private static readonly byte[] PREFIX_TOTAL_WAGERED = new byte[] { 0x43 };
+        /// <summary>Prefix for total paid out tracking (0x44).</summary>
         private static readonly byte[] PREFIX_TOTAL_PAID = new byte[] { 0x44 };
+        /// <summary>Prefix for jackpot pool balance (0x45).</summary>
         private static readonly byte[] PREFIX_JACKPOT_POOL = new byte[] { 0x45 };
+        /// <summary>Prefix for player achievements (0x46).</summary>
         private static readonly byte[] PREFIX_ACHIEVEMENTS = new byte[] { 0x46 };
+        /// <summary>Prefix for user's bet history (0x47).</summary>
         private static readonly byte[] PREFIX_USER_BETS = new byte[] { 0x47 };
+        /// <summary>Prefix for user's bet count (0x48).</summary>
         private static readonly byte[] PREFIX_USER_BET_COUNT = new byte[] { 0x48 };
+        /// <summary>Prefix for total unique players (0x49).</summary>
         private static readonly byte[] PREFIX_TOTAL_PLAYERS = new byte[] { 0x49 };
         #endregion
 

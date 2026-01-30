@@ -10,6 +10,18 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Tip Methods
 
+        /// <summary>
+        /// Sends a tip to a registered developer.
+        /// </summary>
+        /// <param name="tipper">Address of the tipper.</param>
+        /// <param name="devId">ID of the recipient developer.</param>
+        /// <param name="amount">Tip amount in GAS.</param>
+        /// <param name="message">Optional message (max 500 chars).</param>
+        /// <param name="tipperName">Optional display name for tipper.</param>
+        /// <param name="anonymous">Whether to hide tipper identity.</param>
+        /// <param name="receiptId">Payment receipt ID for validation.</param>
+        /// <returns>The unique tip ID.</returns>
+        /// <exception cref="System.Exception">Thrown if developer not found, not active, amount too small, or unauthorized.</exception>
         public static BigInteger Tip(
             UInt160 tipper, BigInteger devId, BigInteger amount,
             string message, string tipperName, bool anonymous, BigInteger receiptId)

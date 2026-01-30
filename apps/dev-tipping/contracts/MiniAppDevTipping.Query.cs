@@ -10,6 +10,11 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Query Methods
 
+        /// <summary>
+        /// Gets detailed information about a developer.
+        /// </summary>
+        /// <param name="devId">Developer ID.</param>
+        /// <returns>Map containing developer details (id, wallet, name, role, bio, link, balance, totalReceived, tipCount, active).</returns>
         [Safe]
         public static Map<string, object> GetDeveloperDetails(BigInteger devId)
         {
@@ -31,6 +36,11 @@ namespace NeoMiniAppPlatform.Contracts
             return details;
         }
 
+        /// <summary>
+        /// Gets detailed information about a tip.
+        /// </summary>
+        /// <param name="tipId">Tip ID.</param>
+        /// <returns>Map containing tip details (id, devId, amount, message, tipperName, timestamp, tipTier, anonymous, tipper).</returns>
         [Safe]
         public static Map<string, object> GetTipDetails(BigInteger tipId)
         {
