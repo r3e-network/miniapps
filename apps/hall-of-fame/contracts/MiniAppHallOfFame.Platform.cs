@@ -10,6 +10,27 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Platform Stats
 
+        /// <summary>
+        /// Get comprehensive platform statistics.
+        /// 
+        /// RETURNS:
+        /// - currentSeason: Active season ID
+        /// - totalPool: Total GAS pool
+        /// - totalVoters: Number of unique voters
+        /// - totalNominees: Number of nominees
+        /// - totalInducted: Number of inducted members
+        /// - minVote: Minimum vote amount
+        /// - seasonDurationSeconds: Season duration
+        /// - platformFeeBps: Platform fee (basis points)
+        /// - voterRewardBps: Voter reward (basis points)
+        /// - maxCategoryLength: Max category name length
+        /// - maxNomineeLength: Max nominee name length
+        /// - currentSeasonVotes: Votes in current season
+        /// - currentSeasonVoters: Voters in current season
+        /// - currentSeasonActive: Whether season is active
+        /// - currentSeasonRemainingTime: Seconds remaining in season
+        /// </summary>
+        /// <returns>Map of platform statistics</returns>
         [Safe]
         public static Map<string, object> GetPlatformStats()
         {

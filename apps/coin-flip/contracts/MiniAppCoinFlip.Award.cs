@@ -9,6 +9,20 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Award Achievement
 
+        /// <summary>
+        /// Award an achievement to a player.
+        /// 
+        /// IDEMPOTENT:
+        /// - Does nothing if player already has achievement
+        /// 
+        /// EFFECTS:
+        /// - Records achievement ownership
+        /// - Increments player's achievement count
+        /// - Emits AchievementUnlocked event
+        /// </summary>
+        /// <param name="player">Player address</param>
+        /// <param name="achievementId">Achievement identifier</param>
+        /// <param name="name">Achievement name</param>
         private static void AwardAchievement(UInt160 player, BigInteger achievementId, string name)
         {
             if (HasAchievement(player, achievementId)) return;

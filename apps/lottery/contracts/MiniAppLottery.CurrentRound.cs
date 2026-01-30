@@ -9,6 +9,20 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Current Round Info
 
+        /// <summary>
+        /// Get information about the current active round.
+        /// 
+        /// RETURNS:
+        /// - roundId: Current round ID
+        /// - prizePool: Total prize pool (including rollover)
+        /// - totalTickets: Total tickets sold
+        /// - participantCount: Number of participants
+        /// - startTime: Round start timestamp
+        /// - isDrawPending: Whether draw is in progress
+        /// - ticketPrice: Price per ticket
+        /// - minParticipants: Minimum for draw
+        /// </summary>
+        /// <returns>Map of current round info</returns>
         [Safe]
         public static Map<string, object> GetCurrentRoundInfo()
         {

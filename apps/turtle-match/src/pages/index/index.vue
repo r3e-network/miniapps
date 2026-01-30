@@ -3,7 +3,15 @@
     <view class="pond-background" />
     <view class="pond-caustics" />
     <view class="neural-rain" />
-    <ResponsiveLayout :desktop-breakpoint="1024" class="pond-theme" :title="t('title')" :show-back="true">
+    <ResponsiveLayout :desktop-breakpoint="1024" class="pond-theme" :title="t('title')" :show-back="true"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
       <view class="game-container">
@@ -143,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { ResponsiveLayout, GradientCard, NeoButton, ChainWarning } from "@shared/components";
 import { formatGas } from "@shared/utils/format";
 import { useTurtleMatch, TurtleColor } from "@/shared/composables/useTurtleMatch";
@@ -283,6 +291,15 @@ function onBlindboxComplete() {
 function onCelebrationComplete() {
   showCelebration.value = false;
 }
+
+// Responsive layout
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 </script>
 
 <style lang="scss" scoped>
@@ -583,5 +600,71 @@ function onCelebrationComplete() {
   color: var(--turtle-danger-text);
   font-size: 12px;
   font-weight: 600;
+}
+
+// Responsive styles
+@media (max-width: 767px) {
+  .game-container { padding-top: 12px; }
+  .header-glass {
+    margin: 0 12px 20px;
+    padding: 12px;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .divider { display: none; }
+  .game-header__value {
+    font-size: 16px;
+  }
+  .purchase-grid {
+    padding: 0 12px;
+  }
+  .purchase-section__counter {
+    gap: 20px;
+  }
+  .counter-value {
+    font-size: 32px;
+    min-width: 60px;
+  }
+  .counter-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .game-stats-row {
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .stat-bubble {
+    padding: 8px;
+  }
+  .bubble-value {
+    font-size: 14px;
+  }
+  .hero-turtle {
+    width: 120px;
+    height: 120px;
+  }
+}
+@media (min-width: 1024px) {
+  .game-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .purchase-section__content {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content theme-flashloan">
       <!-- Chain Warning - Framework Component -->
@@ -392,5 +400,21 @@ watch(chainType, () => fetchData());
 .scrollable {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

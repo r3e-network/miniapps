@@ -11,6 +11,14 @@ Blockchain garden with 100-block growth and GAS harvest rewards
 | **Version** | 1.0.0 |
 | **Framework** | Vue 3 (uni-app) |
 
+
+## How It Works
+
+1. **Plant Seeds**: Users acquire and plant digital seeds
+2. **Growth Cycle**: Plants grow over time with user interaction
+3. **Harvest**: Mature plants produce harvestable rewards
+4. **Cross-Pollination**: Some plants can cross-breed for unique variants
+5. **Marketplace**: Trade plants and seeds with other users
 ## Features
 
 - Plant elemental seeds (Fire, Ice, Earth, Wind, Light)

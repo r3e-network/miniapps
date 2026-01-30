@@ -10,6 +10,30 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Service Callback
 
+        /// <summary>
+        /// Handle RNG service callback for bet resolution.
+        /// 
+        /// TRIGGERED BY: Oracle RNG service
+        /// 
+        /// PROCESS:
+        /// - Validates callback is from authorized gateway
+        /// - Retrieves bet data from request ID
+        /// - Determines win/loss based on random result
+        /// - Calculates payout with streak bonuses
+        /// - Handles jackpot wins for eligible bets
+        /// - Updates player statistics
+        /// 
+        /// SECURITY:
+        /// - Marks bet as resolved BEFORE transfer (reentrancy protection)
+        /// - Validates request data exists
+        /// - Validates bet not already resolved
+        /// </summary>
+        /// <param name="requestId">RNG request ID</param>
+        /// <param name="appId">Application ID (must match APP_ID)</param>
+        /// <param name="serviceType">Service type (must be RNG)</param>
+        /// <param name="success">Whether RNG request succeeded</param>
+        /// <param name="result">Random result bytes</param>
+        /// <param name="error">Error message if failed</param>
         public static void OnServiceCallback(
             BigInteger requestId,
             string appId,

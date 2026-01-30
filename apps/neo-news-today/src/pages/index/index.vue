@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
@@ -59,7 +67,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
+
+// Responsive state
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 import { ResponsiveLayout, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
 import type { NavTab } from "@shared/components/NavBar.vue";
@@ -337,5 +354,51 @@ function openArticle(article: Article) {
 .scrollable {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+  .nnt-container {
+    padding: 12px;
+    padding-bottom: 60px;
+  }
+  .nnt-article-image {
+    height: 140px;
+  }
+  .nnt-article-title-glass {
+    font-size: 16px;
+  }
+  .tab-content {
+    padding: 12px;
+    padding-bottom: 60px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .nnt-container {
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .nnt-article-image {
+    height: 220px;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

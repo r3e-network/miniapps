@@ -9,6 +9,22 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Automation
 
+        /// <summary>
+        /// Automated season end triggered by periodic execution.
+        /// 
+        /// PERMISSIONS:
+        /// - Only callable by authorized automation anchor
+        /// 
+        /// EFFECTS:
+        /// - Automatically ends season when end time reached
+        /// - Marks season as inactive and settled
+        /// 
+        /// AUTOMATION:
+        /// - Called periodically by automation service
+        /// - Ensures seasons end even without manual intervention
+        /// </summary>
+        /// <param name="taskId">Automation task ID</param>
+        /// <param name="payload">Task payload data</param>
         public static new void OnPeriodicExecution(BigInteger taskId, ByteString payload)
         {
             UInt160 anchor = AutomationAnchor();

@@ -9,6 +9,16 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Badge Logic
 
+        /// <summary>
+        /// Check and award tipper badges based on achievements.
+        /// 
+        /// BADGE CRITERIA:
+        /// - Type 1 "First Tip": First tip sent
+        /// - Type 2 "Supporter": 10 tips sent
+        /// - Type 3 "Patron": 100 tips sent
+        /// - Type 4 "Benefactor": 1000 GAS total tipped
+        /// </summary>
+        /// <param name="tipper">Tipper address</param>
         private static void CheckTipperBadges(UInt160 tipper)
         {
             TipperStats stats = GetTipperStats(tipper);
@@ -26,6 +36,15 @@ namespace NeoMiniAppPlatform.Contracts
                 AwardTipperBadge(tipper, 4, "Benefactor");
         }
 
+        /// <summary>
+        /// Check and award developer badges based on total received.
+        /// 
+        /// BADGE CRITERIA:
+        /// - Type 1 "Rising Star": 1 GAS received (Milestone 1)
+        /// - Type 2 "Popular": 10 GAS received (Milestone 2)
+        /// - Type 3 "Legend": 100 GAS received (Milestone 3)
+        /// </summary>
+        /// <param name="devId">Developer ID</param>
         private static void CheckDevBadges(BigInteger devId)
         {
             DeveloperData dev = GetDeveloper(devId);

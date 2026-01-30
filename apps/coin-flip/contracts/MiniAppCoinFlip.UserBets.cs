@@ -10,6 +10,9 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region User Bets Query
 
+        /// <summary>Get total number of bets placed by a player.</summary>
+        /// <param name="player">Player address</param>
+        /// <returns>Number of bets</returns>
         [Safe]
         public static BigInteger GetUserBetCount(UInt160 player)
         {
@@ -17,6 +20,17 @@ namespace NeoMiniAppPlatform.Contracts
             return (BigInteger)Storage.Get(Storage.CurrentContext, key);
         }
 
+        /// <summary>
+        /// Get paginated list of bet IDs for a player.
+        /// 
+        /// PAGINATION:
+        /// - offset: Starting index (0-based)
+        /// - limit: Maximum items to return
+        /// </summary>
+        /// <param name="player">Player address</param>
+        /// <param name="offset">Starting index</param>
+        /// <param name="limit">Maximum items</param>
+        /// <returns>Array of bet IDs</returns>
         [Safe]
         public static BigInteger[] GetUserBets(UInt160 player, BigInteger offset, BigInteger limit)
         {

@@ -10,6 +10,9 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Internal Helpers
 
+        /// <summary>Serialize and store loan data.</summary>
+        /// <param name="loanId">Loan identifier</param>
+        /// <param name="loan">Loan data struct</param>
         private static void StoreLoan(BigInteger loanId, LoanData loan)
         {
             Storage.Put(Storage.CurrentContext,
@@ -83,6 +86,9 @@ namespace NeoMiniAppPlatform.Contracts
             return (BigInteger)stored[1];
         }
 
+        /// <summary>Serialize and store borrower statistics.</summary>
+        /// <param name="borrower">Borrower address</param>
+        /// <param name="stats">Borrower stats struct</param>
         private static void StoreBorrowerStats(UInt160 borrower, BorrowerStats stats)
         {
             Storage.Put(Storage.CurrentContext,
@@ -90,6 +96,9 @@ namespace NeoMiniAppPlatform.Contracts
                 StdLib.Serialize(stats));
         }
 
+        /// <summary>Serialize and store provider statistics.</summary>
+        /// <param name="provider">Provider address</param>
+        /// <param name="stats">Provider stats struct</param>
         private static void StoreProviderStats(UInt160 provider, ProviderStats stats)
         {
             Storage.Put(Storage.CurrentContext,

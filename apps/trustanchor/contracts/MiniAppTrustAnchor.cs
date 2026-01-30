@@ -11,10 +11,15 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates
+    /// <summary>Event emitted when agent registered.</summary>
     public delegate void AgentRegisteredHandler(UInt160 agent, string displayName);
+    /// <summary>Event emitted when agent unregistered.</summary>
     public delegate void AgentUnregisteredHandler(UInt160 agent);
+    /// <summary>Event emitted when delegation created.</summary>
     public delegate void DelegationCreatedHandler(UInt160 delegator, UInt160 delegatee, BigInteger votingPower);
+    /// <summary>Event emitted when delegation changed.</summary>
     public delegate void DelegationChangedHandler(UInt160 delegator, UInt160 oldDelegatee, UInt160 newDelegatee);
+    /// <summary>Event emitted when delegation revoked.</summary>
     public delegate void DelegationRevokedHandler(UInt160 delegator, UInt160 delegatee);
 
     [DisplayName("MiniAppTrustAnchor")]
@@ -26,13 +31,21 @@ namespace NeoMiniAppPlatform.Contracts
     public class MiniAppTrustAnchor : SmartContract
     {
         private const int MAX_AGENTS = 21;
+        /// <summary>Storage prefix for admin.</summary>
         private static readonly byte[] PREFIX_ADMIN = new byte[] { 0x01 };
+        /// <summary>Storage prefix for agent.</summary>
         private static readonly byte[] PREFIX_AGENT = new byte[] { 0x02 };
+        /// <summary>Storage prefix for delegation.</summary>
         private static readonly byte[] PREFIX_DELEGATION = new byte[] { 0x03 };
+        /// <summary>Storage prefix for total delegations.</summary>
         private static readonly byte[] PREFIX_TOTAL_DELEGATIONS = new byte[] { 0x04 };
+        /// <summary>Storage prefix for total agents.</summary>
         private static readonly byte[] PREFIX_TOTAL_AGENTS = new byte[] { 0x05 };
+        /// <summary>Storage prefix for active agents.</summary>
         private static readonly byte[] PREFIX_ACTIVE_AGENTS = new byte[] { 0x06 };
+        /// <summary>Storage prefix for voting power.</summary>
         private static readonly byte[] PREFIX_VOTING_POWER = new byte[] { 0x07 };
+        /// <summary>Storage prefix for agent index.</summary>
         private static readonly byte[] PREFIX_AGENT_INDEX = new byte[] { 0x08 };
 
         // Events

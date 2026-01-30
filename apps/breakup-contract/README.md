@@ -9,13 +9,69 @@ Relationship commitment with GAS stakes
 | **App ID** | `miniapp-breakupcontract` |
 | **Category** | Social |
 | **Version** | 1.0.0 |
-| **Framework** | Vue 3 (uni-app) |
+| **Framework** | Vue 3 (uni-app)
 
+
+## How It Works
+
+1. **Create Agreement**: The proposer initiates a breakup agreement by specifying terms and the other party's address
+2. **Counterparty Sign**: The other party reviews and signs the agreement on-chain
+3. **Time-Lock Period**: A configurable cooldown period allows both parties to reconsider
+4. **Execute**: After the time-lock expires, either party can execute the final settlement
+5. **On-Chain Record**: The agreement and its final state are permanently recorded on the Neo blockchain
 ## Features
 
-- Relationship
-- Commitment
-- Stake
+- **Commitment Contracts**: Create binding agreements between parties
+- **Stake-Based**: Both parties stake GAS as commitment
+- **Milestone Rewards**: Earn rewards at relationship milestones
+- **Fair Resolution**: Multiple ways to end contracts
+- **Penalty System**: Penalties for unilateral breakup
+
+## Usage
+
+### Creating a Contract
+
+1. **Connect Wallet**: Link your Neo N3 wallet
+2. **Set Terms**: Define stake amount and duration
+3. **Invite Partner**: Share contract with other party
+4. **Both Sign**: Both parties must sign to activate
+5. **Activate**: Contract becomes active after both signatures
+
+### During the Contract
+
+- **Track Milestones**: Earn rewards at 25%, 50%, 75%, 100% duration
+- **View Stats**: Monitor stake, time remaining, rewards earned
+- **Amend Terms**: Mutually agree to modify contract terms
+
+### Ending a Contract
+
+**Mutual Breakup (Recommended)**
+1. Either party requests mutual breakup
+2. Other party confirms within timeout period
+3. Funds distributed evenly
+
+**Unilateral Breakup**
+1. Either party can trigger at any time
+2. Initiator pays penalty to loyal party
+3. Remaining stake split according to rules
+
+## Milestone Rewards
+
+| Milestone | Reward |
+|-----------|--------|
+| 25% duration | 10% of stake back |
+| 50% duration | 20% of stake back |
+| 75% duration | 30% of stake back |
+| 100% duration | Full stake + yield returned |
+
+## Contract Terms
+
+| Parameter | Value |
+|-----------|-------|
+| Min Stake | 1 GAS per party |
+| Max Duration | 365 days |
+| Early Withdrawal Penalty | 20% of initiator's stake |
+| Mutual Breakup Timeout | 7 days |
 
 ## Permissions
 

@@ -9,6 +9,18 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Badge Logic
 
+        /// <summary>
+        /// Check and award badges based on user statistics.
+        /// 
+        /// BADGE CRITERIA:
+        /// - Type 1 "First Vote": Cast at least 1 vote
+        /// - Type 2 "Active Voter": Cast at least 10 votes
+        /// - Type 3 "Whale Voter": Single vote of 10+ GAS
+        /// - Type 4 "Season Veteran": Participated in 5+ seasons
+        /// - Type 5 "Nominator": Added 3+ nominees
+        /// - Type 6 "Loyal Supporter": Total 50+ GAS voted
+        /// </summary>
+        /// <param name="voter">Voter address to check</param>
         private static void CheckVoterBadges(UInt160 voter)
         {
             UserStats stats = GetUserStats(voter);

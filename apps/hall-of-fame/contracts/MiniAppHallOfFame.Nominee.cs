@@ -9,6 +9,30 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Add Nominee
 
+        /// <summary>
+        /// Add a new nominee to a category.
+        /// 
+        /// REQUIREMENTS:
+        /// - Platform not globally paused
+        /// - Caller must be authenticated
+        /// - Category must be active
+        /// - Nominee name: 1-100 characters
+        /// - Nominee must not already exist
+        /// 
+        /// EFFECTS:
+        /// - Creates nominee record
+        /// - Increments total nominee count
+        /// - Updates user stats for nominator
+        /// - Emits NomineeAdded event
+        /// 
+        /// LIMITS:
+        /// - Description max 500 characters
+        /// </summary>
+        /// <param name="caller">Address adding the nominee</param>
+        /// <param name="category">Category for the nominee</param>
+        /// <param name="nominee">Nominee name</param>
+        /// <param name="description">Nominee description</param>
+        /// <exception cref="Exception">If validation fails or unauthorized</exception>
         public static void AddNominee(UInt160 caller, string category, string nominee, string description)
         {
             ValidateNotGloballyPaused(APP_ID);

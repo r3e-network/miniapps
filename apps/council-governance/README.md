@@ -93,3 +93,35 @@ pnpm dev
 ## Files Modified for Multi-Chain Support
 
 - `src/pages/index/index.vue`: Updated to use `chain_id` parameter for API calls
+
+## Usage
+
+### For Council Members
+
+1. **Connect Wallet**: Link your Neo wallet that is registered as a council member
+2. **View Proposals**: Browse active proposals requiring council votes
+3. **Create Proposal**: Submit new text or policy change proposals for council review
+4. **Cast Vote**: Vote For or Against proposals within the voting period
+5. **View Results**: Monitor proposal status and vote tallies in real-time
+
+### Proposal Lifecycle
+
+1. A council member creates a proposal with title, description, and type
+2. Other council members review and cast their votes during the active period
+3. Once voting ends, the proposal status is finalized based on vote results
+4. Approved policy changes can be implemented according to Neo governance rules
+
+## How It Works
+
+Council Governance provides decentralized decision-making for Neo Council members:
+
+1. **Identity Verification**: The app verifies if a connected wallet is a Neo Council member via API
+2. **Proposal Management**: Council members create and manage governance proposals on-chain
+3. **Voting Mechanism**: Each council member can cast one vote per proposal
+4. **On-Chain Recording**: All votes and proposals are permanently recorded on Neo N3 blockchain
+5. **Transparency**: Voting history and proposal details are publicly accessible
+6. **Security**: Only verified council members can create proposals and vote
+
+## License
+
+MIT License - R3E Network

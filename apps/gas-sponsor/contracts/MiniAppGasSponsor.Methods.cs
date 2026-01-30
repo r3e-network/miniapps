@@ -11,8 +11,30 @@ namespace NeoMiniAppPlatform.Contracts
         #region Sponsorship Methods
 
         /// <summary>
-        /// Create a new sponsorship pool with pool type and expiry.
+        /// Create a new sponsorship pool.
+        /// 
+        /// REQUIREMENTS:
+        /// - Platform not paused
+        /// - Sponsor must be authenticated
+        /// - Amount >= MIN_SPONSORSHIP (1 GAS)
+        /// - Max claim per user > 0 and <= MAX_CLAIM_PER_TX
+        /// - Pool type: 1=Public, 2=Whitelist, 3=AppSpecific
+        /// - Description max 200 characters
+        /// 
+        /// EFFECTS:
+        /// - Creates pool record
+        /// - Transfers GAS from sponsor to contract
+        /// - Updates sponsor stats
+        /// - Emits SponsorshipCreated event
+        /// 
+        /// EXPIRY: 30 days from creation
         /// </summary>
+        /// <param name="sponsor">Sponsor address</param>
+        /// <param name="amount">Pool amount in GAS</param>
+        /// <param name="maxClaimPerUser">Max claim per beneficiary</param>
+        /// <param name="poolType">Pool type (1-3)</param>
+        /// <param name="description">Pool description</param>
+        /// <returns>Pool ID</returns>
         public static BigInteger CreatePool(UInt160 sponsor, BigInteger amount, BigInteger maxClaimPerUser, BigInteger poolType, string description)
         {
             ValidateNotGloballyPaused(APP_ID);
@@ -60,7 +82,25 @@ namespace NeoMiniAppPlatform.Contracts
 
         /// <summary>
         /// Claim GAS from a sponsorship pool.
+        /// 
+        /// REQUIREMENTS:
+        /// - Platform not paused
+        /// - Beneficiary must be authenticated
+        /// - Pool exists, is active, and not expired
+        /// - Sufficient pool balance
+        /// - Whitelisted (for whitelist pools)
+        /// - Claim amount <= max per user
+        /// 
+        /// EFFECTS:
+        /// - Transfers GAS to beneficiary
+        /// - Updates pool remaining amount
+        /// - Updates beneficiary stats
+        /// - Deactivates pool if depleted
+        /// - Emits SponsorshipClaimed or PoolDepleted event
         /// </summary>
+        /// <param name="beneficiary">Beneficiary address</param>
+        /// <param name="poolId">Pool identifier</param>
+        /// <param name="amount">Amount to claim</param>
         public static void ClaimSponsorship(UInt160 beneficiary, BigInteger poolId, BigInteger amount)
         {
             ValidateNotGloballyPaused(APP_ID);

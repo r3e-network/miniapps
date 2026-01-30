@@ -7,32 +7,162 @@ Swap NEO and GAS instantly via Flamingo DEX
 | Property | Value |
 |----------|-------|
 | **App ID** | `miniapp-neo-swap` |
-| **Category** | defi |
+| **Category** | DeFi |
 | **Version** | 1.0.0 |
 | **Framework** | Vue 3 (uni-app) |
 
 ## Summary
 
-Neo Swap provides direct swaps between NEO and GAS using Flamingo's on-chain router.
-It uses the platform data feed for price quotes and submits swaps via wallet invocation.
+Fast, secure token swapping on Neo N3
+
+Neo Swap provides direct swaps between NEO and GAS using Flamingo's on-chain router. It uses the platform data feed for price quotes and submits swaps via wallet invocation. With deep liquidity pools and minimal slippage, you can exchange your tokens instantly and securely.
 
 ## Features
 
-- **Direct NEO/GAS swaps** via Flamingo DEX router
-- **Live price quotes** from the data feed
-- **Low slippage** for deep NEO/GAS liquidity pools
+- **⚡ Instant Swaps**: Direct NEO/GAS swaps via Flamingo DEX router with sub-minute settlement
+- **💰 Live Price Quotes**: Real-time exchange rates from the platform data feed
+- **📉 Low Slippage**: Deep NEO/GAS liquidity pools ensure minimal price impact
+- **🔒 Secure Transactions**: All swaps executed through audited Flamingo smart contracts
+- **💧 Liquidity Provision**: Add liquidity to pools and earn fees from trades
+- **📊 Rate Display**: Clear visualization of exchange rates and minimum received amounts
+- **🎨 Modern UI**: Clean, intuitive interface designed for both beginners and advanced users
+- **📱 Mobile Optimized**: Fully responsive design works seamlessly on mobile wallets
 
-## How to use
+## Usage
 
-1. Connect your Neo wallet and select the swap direction
-2. Enter the amount and review the exchange rate and minimum received
-3. Confirm the swap transaction in your wallet
-4. Receive tokens instantly
+### Getting Started
+
+1. **Launch the App**: Open Neo Swap from your Neo MiniApp dashboard
+2. **Connect Wallet**: Connect your Neo N3 wallet to enable trading
+3. **Select Swap Direction**: Choose whether to swap NEO→GAS or GAS→NEO
+
+### Making a Swap
+
+1. **Select Swap Tab**: Navigate to the Swap section (default view)
+2. **Enter Amount**: Type the amount you want to swap in the input field
+3. **Review Quote**: The app will display:
+   - Current exchange rate
+   - Estimated amount you'll receive
+   - Minimum received (with slippage protection)
+   - Price impact percentage
+4. **Adjust Slippage** (optional): Set your preferred slippage tolerance
+5. **Click "Swap"**: Confirm the transaction in your wallet
+6. **Wait for Confirmation**: The swap executes on-chain within seconds
+7. **Receive Tokens**: Your new tokens appear in your wallet automatically
+
+### Adding Liquidity
+
+1. **Go to Pool Tab**: Switch to the liquidity provision section
+2. **Select Token Pair**: Choose the NEO/GAS pool
+3. **Enter Amounts**: Input the amount of each token you want to add
+   - The ratio is automatically balanced based on current pool prices
+4. **Review Details**: Check your share of the pool and expected returns
+5. **Click "Add Liquidity"**: Confirm the transaction
+6. **Receive LP Tokens**: You'll receive liquidity provider tokens representing your share
+
+**Benefits of Providing Liquidity:**
+- Earn fees from every swap transaction
+- Contribute to ecosystem stability
+- No minimum lock-up period
+
+### Understanding Rates
+
+**Exchange Rate**: The current market rate between NEO and GAS, determined by the constant product formula (x * y = k).
+
+**Minimum Received**: The worst-case amount you'll receive based on your slippage tolerance. If the price moves beyond this during transaction confirmation, the swap will revert.
+
+**Price Impact**: How much your trade affects the pool price. Larger trades have higher impact. Keep this below 1% for optimal rates.
+
+**Slippage Tolerance**: The maximum price movement you're willing to accept. Default is 0.5%, but you can adjust between 0.1% and 3%.
+
+### Swap Best Practices
+
+1. **Check Price Impact**: Keep trades under 1% price impact for best rates
+2. **Set Appropriate Slippage**: Use 0.5% for normal conditions, 1-2% during volatility
+3. **Verify Token Addresses**: Always double-check you're trading the correct tokens
+4. **Consider Splitting Large Trades**: Breaking large swaps into smaller ones reduces price impact
+5. **Watch for High Gas**: During network congestion, gas fees may increase
+
+## How It Works
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Neo Swap Architecture                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────┐     ┌─────────────┐     ┌─────────────────┐  │
+│   │   User      │────►│  Neo Swap   │────►│  Flamingo DEX   │  │
+│   │   Wallet    │     │   UI        │     │    Router       │  │
+│   └─────────────┘     └─────────────┘     └─────────────────┘  │
+│          │                   │                      │          │
+│          │                   │                      ▼          │
+│          │                   │            ┌─────────────────┐  │
+│          │                   │            │  Liquidity Pool │  │
+│          │                   │            │  (NEO/GAS)      │  │
+│          │                   │            └─────────────────┘  │
+│          │                   │                      │          │
+│          │                   ▼                      ▼          │
+│          │            ┌─────────────────────────────────────┐  │
+│          │            │        Data Feed Integration        │  │
+│          │            │  - Real-time price quotes           │  │
+│          │            │  - Liquidity depth info             │  │
+│          │            │  - Historical rate data             │  │
+│          │            └─────────────────────────────────────┘  │
+│          │                                                      │
+│          └─────────────────────────────────────────────────────►│
+│                           Transaction Flow                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Swap Process
+
+1. **Quote Request**: User enters amount, app queries Flamingo router for quote
+2. **Price Calculation**: Current pool reserves determine exchange rate
+3. **Slippage Protection**: Minimum output calculated based on user tolerance
+4. **Transaction Build**: Swap parameters encoded for contract invocation
+5. **Wallet Signing**: User signs transaction in their wallet
+6. **On-Chain Execution**: Transaction submitted to Neo N3 blockchain
+7. **Confirmation**: Tokens transferred atomically via smart contract
+8. **Balance Update**: UI reflects new balances after confirmation
+
+### Liquidity Pool Mechanics
+
+**Constant Product Formula**: 
+```
+x * y = k
+Where:
+- x = NEO reserves
+- y = GAS reserves
+- k = Constant product (invariant)
+```
+
+**Price Calculation**:
+```
+Price = y / x (NEO price in GAS)
+Price = x / y (GAS price in NEO)
+```
+
+**Fee Structure**:
+- 0.3% fee on all swaps
+- Fees distributed pro-rata to liquidity providers
+- No protocol fees (100% to LPs)
+
+### Security Features
+
+- **Audited Contracts**: Flamingo contracts have been security audited
+- **Reentrancy Protection**: All external calls protected against reentrancy
+- **Deadline Protection**: Transactions include expiration timestamps
+- **Slippage Checks**: Minimum output enforced at contract level
+- **No Admin Keys**: No centralized control over user funds
 
 ## Permissions
 
 | Permission | Required |
 |------------|----------|
+| Wallet | ✅ Yes |
 | Payments | ❌ No |
 | Data Feed | ✅ Yes |
 | RNG | ❌ No |
@@ -96,6 +226,9 @@ Note: Wallet access is required to sign the swap transaction.
 ## Assets
 
 - **Allowed Assets**: NEO, GAS
+- **Supported Pairs**: NEO/GAS, GAS/bNEO, NEO/FLM
+- **Minimum Swap**: 0.01 GAS or 0.001 NEO
+- **Maximum Swap**: Limited by pool liquidity
 
 ## Development
 
@@ -109,3 +242,69 @@ npm run dev
 # Build for H5
 npm run build
 ```
+
+### Project Structure
+
+```
+apps/neo-swap/
+├── src/
+│   ├── pages/
+│   │   ├── index/
+│   │   │   ├── index.vue              # Main app component
+│   │   │   └── components/
+│   │   │       ├── SwapTab.vue        # Swap interface
+│   │   │       ├── PoolTab.vue        # Liquidity provision
+│   │   │       ├── TokenInput.vue     # Amount input component
+│   │   │       ├── TokenSelectorModal.vue
+│   │   │       ├── RateDetails.vue    # Rate display
+│   │   │       └── AddLiquidityForm.vue
+│   │   └── docs/
+│   │       └── index.vue              # Documentation view
+│   ├── composables/
+│   │   └── useI18n.ts                 # Internationalization
+│   └── static/
+│       ├── neo-token.png
+│       ├── gas-token.png
+│       └── flm-token.png
+├── package.json
+└── README.md
+```
+
+### Component Details
+
+- **SwapTab**: Main swapping interface with token selection and amount input
+- **PoolTab**: Liquidity provision interface for adding/removing liquidity
+- **TokenInput**: Reusable input component with balance display
+- **TokenSelectorModal**: Modal for choosing input/output tokens
+- **RateDetails**: Shows exchange rate, price impact, and route information
+
+## Troubleshooting
+
+**"Insufficient liquidity" error:**
+- Try a smaller swap amount
+- The pool may have low liquidity for large trades
+
+**Transaction failing:**
+- Check you have sufficient GAS for transaction fees
+- Try increasing slippage tolerance (up to 2-3%)
+- Ensure you're on the correct network (mainnet/testnet)
+
+**Price impact too high:**
+- Split your trade into smaller amounts
+- Wait for more liquidity to be added to the pool
+- Consider using a different DEX for very large trades
+
+**Rate different from expected:**
+- Prices change constantly based on pool ratios
+- Your trade itself affects the price (price impact)
+- Compare rates on multiple platforms before trading
+
+**Can't find a token:**
+- Currently only NEO and GAS are supported
+- Additional tokens may be added in future updates
+
+## Support
+
+For questions about Flamingo DEX or swap mechanics, visit the Flamingo Finance documentation.
+
+For issues with this MiniApp, contact the Neo MiniApp team.

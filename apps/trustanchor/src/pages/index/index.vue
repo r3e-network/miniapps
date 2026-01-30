@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-trustanchor" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-trustanchor" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <ChainWarning :title="t('warningTitle')" :message="t('warningMessage')" :button-text="t('switchButton')" />
 
     <view v-if="activeTab === 'overview'" class="tab-content scrollable">
@@ -177,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { formatNumber, formatAddress } from "@shared/utils/format";
@@ -275,6 +283,15 @@ const handleClaim = async () => {
 onMounted(() => {
   loadAll();
 });
+
+// Responsive layout
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+window.addEventListener('resize', handleResize);
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 </script>
 
 <style lang="scss" scoped>
@@ -487,5 +504,55 @@ onMounted(() => {
 .step-text {
   font-size: 14px;
   opacity: 0.9;
+}
+
+// Responsive styles
+@media (max-width: 767px) {
+  .tab-content { padding: 12px; }
+  .input-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .amount-input {
+    width: 100%;
+  }
+  .agent-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .agent-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .claim-section {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}
+@media (min-width: 1024px) {
+  .tab-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .agents-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

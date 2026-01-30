@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-soulbound-certificate" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-soulbound-certificate" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <view v-if="activeTab === 'templates'" class="tab-content">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -942,5 +950,21 @@ watch(address, async (newAddr) => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

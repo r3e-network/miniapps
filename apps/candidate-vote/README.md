@@ -17,6 +17,14 @@ Vote for Neo N3 consensus node candidates
 
 Participate in Neo network governance by voting for consensus node candidates. Your NEO balance determines your voting power.
 
+
+## How It Works
+
+1. **Create Proposal**: Governance participants submit candidate proposals with a deposit
+2. **Voting Period**: Token holders cast votes during the designated voting window
+3. **Vote Weight**: Voting power is determined by governance token holdings
+4. **Results Tally**: Votes are counted and results are calculated on-chain
+5. **Execution**: Approved proposals can be queued for automatic execution
 ## Features
 
 - **On-Chain Voting**: Votes are recorded directly on the Neo blockchain.
@@ -28,6 +36,65 @@ Participate in Neo network governance by voting for consensus node candidates. Y
 2. Browse and select a candidate.
 3. Click Vote Now to cast your vote.
 4. Your NEO balance is your voting power.
+
+## Usage
+
+### Getting Started
+
+1. **Launch the App**: Open Candidate Vote from your Neo MiniApp dashboard
+2. **Connect Your Wallet**: Click "Connect Wallet" to link your Neo N3 wallet
+3. **View Candidates**: Browse the list of consensus node candidates
+
+### Voting Process
+
+1. **Review Candidates**:
+   - View candidate information including name and details
+   - Check current vote counts and popularity
+   - Consider candidate's contribution to the network
+
+2. **Cast Your Vote**:
+   - Click "Vote" on your chosen candidate
+   - Confirm the transaction in your wallet
+   - Your voting power is based on your NEO balance
+
+3. **Change Votes**:
+   - You can vote for multiple candidates
+   - Votes can be changed at any time
+   - Each vote uses your full voting power
+
+### Understanding Voting Power
+
+| Your NEO Balance | Voting Power |
+|-----------------|--------------|
+| 1 NEO | 1 vote |
+| 10 NEO | 10 votes |
+| 100 NEO | 100 votes |
+
+### Governance Participation
+
+- **Committee Elections**: Vote for candidates who will become part of the Neo committee
+- **Network Consensus**: Your votes help determine which nodes validate transactions
+- **Democratic Process**: Every NEO holder can participate in governance
+
+### FAQ
+
+**Can I vote for multiple candidates?**
+Yes, you can split your votes among multiple candidates.
+
+**Is there a cost to vote?**
+Voting requires a small GAS fee for transaction costs.
+
+**Can I change my vote?**
+Yes, you can change or remove votes at any time.
+
+**When are results counted?**
+Votes are counted in real-time on-chain.
+
+### Support
+
+For governance questions, refer to Neo N3 documentation.
+
+For technical issues, contact the Neo MiniApp team.
 
 ## Permissions
 

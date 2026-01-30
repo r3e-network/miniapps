@@ -15,7 +15,9 @@ namespace NeoMiniAppPlatform.Contracts
         private const string SCRIPT_SELECT_ITEM = "select-item";
 
         // Storage prefixes for hybrid mode (0x50+ to avoid collision with app prefixes 0x40-0x4F)
+        /// <summary>Storage prefix for play weight.</summary>
         private static readonly byte[] PREFIX_PLAY_WEIGHT = new byte[] { 0x50 };
+        /// <summary>Storage prefix for play rng.</summary>
         private static readonly byte[] PREFIX_PLAY_RNG = new byte[] { 0x51 };
 
         /// <summary>

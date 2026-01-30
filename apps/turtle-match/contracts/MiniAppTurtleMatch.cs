@@ -11,7 +11,9 @@ namespace NeoMiniAppPlatform.Contracts
 {
     // Hybrid Architecture: Only initial state (StartGame) and final state (SettleGame) on-chain
     // Middle process (game calculation) happens on frontend using deterministic seed
+    /// <summary>Event emitted when game started.</summary>
     public delegate void GameStartedHandler(UInt160 player, BigInteger sessionId, BigInteger boxCount, string seed);
+    /// <summary>Event emitted when game settled.</summary>
     public delegate void GameSettledHandler(UInt160 player, BigInteger sessionId, BigInteger totalMatches, BigInteger reward);
 
     [DisplayName("MiniAppTurtleMatch")]
@@ -23,9 +25,11 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppTurtleMatch : MiniAppGameComputeBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the turtle-match miniapp.</summary>
         private const string APP_ID = "miniapp-turtle-match";
         private const string SCRIPT_MATCH_LOGIC = "turtle-match-logic";
         private const int PLATFORM_FEE_PERCENT = 5;
+        /// <summary>Configuration constant .</summary>
         private const long BLINDBOX_PRICE = 10000000; // 0.1 GAS
         private const int GRID_SIZE = 9;              // 3x3 grid
         private const int MAX_QUEUE_SIZE = 10;
@@ -77,13 +81,21 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Prefixes (0x40+ to avoid collision with MiniAppGameComputeBase 0x30-0x3F)
+        /// <summary>Storage prefix for session.</summary>
         private static readonly byte[] PREFIX_SESSION = new byte[] { 0x40 };
+        /// <summary>Storage prefix for session id.</summary>
         private static readonly byte[] PREFIX_SESSION_ID = new byte[] { 0x41 };
+        /// <summary>Storage prefix for player sessions.</summary>
         private static readonly byte[] PREFIX_PLAYER_SESSIONS = new byte[] { 0x42 };
+        /// <summary>Storage prefix for player session count.</summary>
         private static readonly byte[] PREFIX_PLAYER_SESSION_COUNT = new byte[] { 0x43 };
+        /// <summary>Storage prefix for total sessions.</summary>
         private static readonly byte[] PREFIX_TOTAL_SESSIONS = new byte[] { 0x44 };
+        /// <summary>Storage prefix for total boxes.</summary>
         private static readonly byte[] PREFIX_TOTAL_BOXES = new byte[] { 0x45 };
+        /// <summary>Storage prefix for total matches.</summary>
         private static readonly byte[] PREFIX_TOTAL_MATCHES = new byte[] { 0x46 };
+        /// <summary>Storage prefix for total paid.</summary>
         private static readonly byte[] PREFIX_TOTAL_PAID = new byte[] { 0x47 };
         #endregion
 

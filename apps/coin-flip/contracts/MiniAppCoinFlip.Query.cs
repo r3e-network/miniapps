@@ -10,6 +10,22 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Bet Query
 
+        /// <summary>
+        /// Get detailed information about a specific bet.
+        /// 
+        /// RETURNS:
+        /// - id: Bet ID
+        /// - player: Player address
+        /// - amount: Bet amount in GAS
+        /// - choice: "heads" or "tails"
+        /// - timestamp: Bet timestamp
+        /// - resolved: Whether bet is resolved
+        /// - won: Whether player won (if resolved)
+        /// - payout: Payout amount (if won)
+        /// - streakBonus: Streak bonus amount (if won)
+        /// </summary>
+        /// <param name="betId">Bet ID to query</param>
+        /// <returns>Map of bet details (empty if bet not found)</returns>
         [Safe]
         public static Map<string, object> GetBetDetails(BigInteger betId)
         {

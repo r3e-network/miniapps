@@ -9,6 +9,7 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppLottery
     {
         #region Storage Helpers
+        // Player stats field identifiers (0x01-0x0B)
         private static readonly byte[] PLAYER_STATS_FIELD_TOTAL_TICKETS = new byte[] { 0x01 };
         private static readonly byte[] PLAYER_STATS_FIELD_TOTAL_SPENT = new byte[] { 0x02 };
         private static readonly byte[] PLAYER_STATS_FIELD_TOTAL_WINS = new byte[] { 0x03 };
@@ -21,6 +22,7 @@ namespace NeoMiniAppPlatform.Contracts
         private static readonly byte[] PLAYER_STATS_FIELD_JOIN_TIME = new byte[] { 0x0A };
         private static readonly byte[] PLAYER_STATS_FIELD_LAST_PLAY = new byte[] { 0x0B };
 
+        // Round data field identifiers (0x01-0x09)
         private static readonly byte[] ROUND_DATA_FIELD_ID = new byte[] { 0x01 };
         private static readonly byte[] ROUND_DATA_FIELD_TOTAL_TICKETS = new byte[] { 0x02 };
         private static readonly byte[] ROUND_DATA_FIELD_PRIZE_POOL = new byte[] { 0x03 };
@@ -31,47 +33,74 @@ namespace NeoMiniAppPlatform.Contracts
         private static readonly byte[] ROUND_DATA_FIELD_END_TIME = new byte[] { 0x08 };
         private static readonly byte[] ROUND_DATA_FIELD_COMPLETED = new byte[] { 0x09 };
 
+        /// <summary>Build storage key for player statistics.</summary>
+        /// <param name="player">Player address</param>
+        /// <returns>Storage key bytes</returns>
         private static byte[] GetPlayerStatsKey(UInt160 player) =>
             Helper.Concat(PREFIX_PLAYER_STATS, player);
 
+        /// <summary>Build storage key for round data.</summary>
+        /// <param name="roundId">Round ID</param>
+        /// <returns>Storage key bytes</returns>
         private static byte[] GetRoundDataKey(BigInteger roundId) =>
             Helper.Concat(PREFIX_ROUND_DATA, (ByteString)roundId.ToByteArray());
 
+        /// <summary>Get BigInteger from storage.</summary>
+        /// <param name="key">Storage key</param>
+        /// <returns>Stored value or 0 if not found</returns>
         private static BigInteger GetBigInteger(byte[] key)
         {
             ByteString data = Storage.Get(Storage.CurrentContext, key);
             return data == null ? 0 : (BigInteger)data;
         }
 
+        /// <summary>Get UInt160 address from storage.</summary>
+        /// <param name="key">Storage key</param>
+        /// <returns>Stored address or Zero if not found</returns>
         private static UInt160 GetUInt160(byte[] key)
         {
             ByteString data = Storage.Get(Storage.CurrentContext, key);
             return data == null ? UInt160.Zero : (UInt160)data;
         }
 
+        /// <summary>Get boolean from storage.</summary>
+        /// <param name="key">Storage key</param>
+        /// <returns>True if value exists and is non-zero</returns>
         private static bool GetBool(byte[] key)
         {
             ByteString data = Storage.Get(Storage.CurrentContext, key);
             return data != null && (BigInteger)data != 0;
         }
 
+        /// <summary>Store boolean value.</summary>
+        /// <param name="key">Storage key</param>
+        /// <param name="value">Boolean value</param>
         private static void PutBool(byte[] key, bool value)
         {
             Storage.Put(Storage.CurrentContext, key, value ? 1 : 0);
         }
 
+        /// <summary>Get participant count for a round.</summary>
+        /// <param name="roundId">Round ID</param>
+        /// <returns>Number of participants</returns>
         private static BigInteger GetParticipantCount(BigInteger roundId)
         {
             byte[] key = Helper.Concat(PREFIX_PARTICIPANT_COUNT, (ByteString)roundId.ToByteArray());
             return (BigInteger)Storage.Get(Storage.CurrentContext, key);
         }
 
+        /// <summary>Set participant count for a round.</summary>
+        /// <param name="roundId">Round ID</param>
+        /// <param name="count">Participant count</param>
         private static void SetParticipantCount(BigInteger roundId, BigInteger count)
         {
             byte[] key = Helper.Concat(PREFIX_PARTICIPANT_COUNT, (ByteString)roundId.ToByteArray());
             Storage.Put(Storage.CurrentContext, key, count);
         }
 
+        /// <summary>Store player statistics.</summary>
+        /// <param name="player">Player address</param>
+        /// <param name="stats">Player statistics</param>
         private static void StorePlayerStats(UInt160 player, PlayerStats stats)
         {
             byte[] key = GetPlayerStatsKey(player);
@@ -88,6 +117,9 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, Helper.Concat(key, PLAYER_STATS_FIELD_LAST_PLAY), stats.LastPlayTime);
         }
 
+        /// <summary>Store round data.</summary>
+        /// <param name="roundId">Round ID</param>
+        /// <param name="round">Round data</param>
         private static void StoreRoundData(BigInteger roundId, RoundData round)
         {
             byte[] key = GetRoundDataKey(roundId);

@@ -86,6 +86,35 @@ npm run dev
 npm run build
 ```
 
+## Usage
+
+### Sending Red Envelopes
+
+1. **Connect Wallet**: Link your Neo N3 wallet to the application
+2. **Create Envelope**: Choose total amount and number of recipients
+3. **Select Distribution**: Pick equal split or random (lucky draw) distribution
+4. **Add Message**: Include a greeting or occasion message
+5. **Send**: Confirm and distribute the red envelope
+
+### Receiving Red Envelopes
+
+1. Receive a red envelope link or QR code from sender
+2. Connect your wallet and open the envelope
+3. Claim your share of the GAS (amount depends on distribution type)
+4. View received amount and sender's message
+5. Send thank you or reciprocate with your own envelope
+
+## How It Works
+
+Red Envelope brings traditional gifting to the blockchain:
+
+1. **Cultural Tradition**: Based on the Chinese tradition of hongbao (lucky money)
+2. **Smart Contract Escrow**: Sender's GAS is held in the contract until claimed
+3. **Random Distribution**: "Lucky draw" mode assigns random amounts using verifiable RNG
+4. **Equal Distribution**: "Equal split" mode gives all recipients the same amount
+5. **Time Limits**: Unclaimed envelopes return to sender after expiry
+6. **Social Sharing**: Envelopes can be shared via links or QR codes
+
 ## Assets
 
 - **Allowed Assets**: GAS

@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neo-multisig" :tabs="tabs" :active-tab="activeTab" @tab-change="handleTabChange">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-neo-multisig" :tabs="tabs" :active-tab="activeTab" @tab-change="handleTabChange"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
     <view class="multisig-container">
@@ -111,7 +119,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+
+// Responsive state
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 import { ResponsiveLayout, ChainWarning } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
 
@@ -695,5 +712,61 @@ const formatDate = (ts: string) => {
   color: var(--multi-text-dim);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+  .multisig-container {
+    padding: 12px;
+  }
+  .hero-section {
+    margin-bottom: 24px;
+    padding-top: 12px;
+  }
+  .hero-title {
+    font-size: 22px;
+  }
+  .main-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .stats-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .stat-card {
+    padding: 12px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .multisig-container {
+    padding: 32px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .hero-title {
+    font-size: 32px;
+  }
+  .main-card {
+    padding: 32px;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

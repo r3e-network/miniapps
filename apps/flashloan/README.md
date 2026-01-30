@@ -9,13 +9,56 @@ Instant uncollateralized loans for arbitrage
 | **App ID** | `miniapp-flashloan` |
 | **Category** | DeFi |
 | **Version** | 1.0.0 |
-| **Framework** | Vue 3 (uni-app) |
+| **Framework** | Vue 3 (uni-app)
 
 ## Features
 
-- Flashloan
-- Lending
-- Defi
+- **Flash Loans**: Instant uncollateralized loans for arbitrage opportunities
+- **Zero Collateral**: No need to provide collateral for flash loans
+- **Atomic Execution**: Loan must be repaid in the same transaction
+- **Multi-Asset Support**: Support for various token types
+
+## Usage
+
+### Taking a Flash Loan
+
+1. **Identify Opportunity**: Find an arbitrage opportunity between exchanges
+2. **Prepare Contract**: Write a smart contract that executes the arbitrage
+3. **Execute Loan**: Call the flash loan function with your contract address
+4. **Profit**: The profit remains in your wallet after repayment
+
+### Flash Loan Process
+
+1. **Borrow**: Request a loan of any supported token
+2. **Execute**: Your contract receives the tokens and executes trades
+3. **Repay**: The contract must repay the loan + fees in the same transaction
+4. **Success**: Any remaining profit is yours; if repayment fails, transaction reverts
+
+### Best Practices
+
+- Always test arbitrage strategies on testnet first
+- Account for all gas costs in your calculations
+- Consider slippage and price impact
+- Have fallback mechanisms for failed transactions
+
+## How It Works
+
+Flash loans enable borrowing without collateral by leveraging atomic transaction execution:
+
+1. **Loan Initiation**: Borrower requests a loan of any amount
+2. **Token Transfer**: Contract sends tokens to the borrower
+3. **Arbitrage Execution**: Borrower executes trades acrossDEXs
+4. **Repayment**: Borrower must return the full amount + fee in same tx
+5. **Finalization**: If repayment succeeds, transaction completes
+6. **Revert on Failure**: If repayment fails, entire transaction reverts
+
+## Limits
+
+| Parameter | Value |
+|-----------|-------|
+| Max per Transaction | 1000 GAS |
+| Daily Cap | 10000 GAS |
+| Platform Fee | 0.3% |
 
 ## Permissions
 

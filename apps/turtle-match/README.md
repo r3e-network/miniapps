@@ -1,4 +1,4 @@
-# 乌龟对对碰
+# 乌龟对对碰 (Turtle Match)
 
 Turtle Match - Neo MiniApp Game
 
@@ -15,35 +15,229 @@ Turtle Match - Neo MiniApp Game
 
 Blindbox matching with GAS rewards
 
-Purchase blindboxes, auto-open turtles on a 3x3 grid, match pairs, and settle rewards on-chain. Rewards follow the contract odds and are paid after settlement.
+Purchase blindboxes, auto-open turtles on a 3x3 grid, match pairs, and settle rewards on-chain. Rewards follow the contract odds and are paid after settlement. An engaging game of chance with transparent on-chain mechanics and instant payouts.
 
 ## Features
 
-- **On-chain sessions**: Sessions, matches, and payouts are recorded by the contract.
-- **Deterministic reveals**: Turtle colors are derived from a seeded hash for transparent outcomes.
-- **Instant settlement**: Complete the session and claim rewards in a single settlement.
+- **🎮 Interactive Gameplay**: Purchase blindboxes and watch turtles auto-open on a beautiful 3x3 grid
+- **🔗 On-chain Sessions**: All sessions, matches, and payouts are recorded transparently on the blockchain
+- **🎯 Deterministic Reveals**: Turtle colors are derived from a seeded hash for provably fair outcomes
+- **⚡ Instant Settlement**: Complete the session and claim GAS rewards in a single settlement transaction
+- **🎨 Stunning Visuals**: Immersive underwater theme with animated turtle sprites and particle effects
+- **📊 Session Statistics**: Track your total sessions played and lifetime rewards earned
+- **🎁 Reward Tiers**: Multiple matching combinations with different payout multipliers
+- **📱 Mobile Optimized**: Smooth gameplay experience on mobile wallets and devices
 
-## How to use
+## Usage
 
-1. Connect your wallet to sync game sessions and stats.
-2. Choose 3-20 blindboxes and start the session (0.1 GAS each).
-3. Watch auto-opening, matches, and reward previews as the grid fills.
-4. Settle the session on-chain to receive GAS rewards, then start a new game.
+### Getting Started
+
+1. **Launch the App**: Open Turtle Match from your Neo MiniApp dashboard
+2. **Connect Wallet**: Connect your Neo N3 wallet to participate
+3. **View Stats**: Check the header to see total sessions played and rewards distributed
+4. **Start Playing**: Purchase blindboxes to begin a new game session
+
+### How to Play
+
+1. **Connect Your Wallet**: Tap the "Connect Wallet" button and authorize the connection
+2. **Select Box Count**: Choose how many blindboxes to purchase (3-20 boxes)
+   - More boxes = more chances to match
+   - Each box costs 0.1 GAS
+3. **Start the Game**: Click "Start Game" and confirm the transaction
+4. **Watch Auto-Opening**: Turtles appear on the 3x3 grid automatically
+5. **Match Pairs**: Match 2 or more turtles of the same color to win prizes:
+   - 2 matching turtles = Small prize
+   - 3 matching turtles = Medium prize
+   - 4+ matching turtles = Large prize
+6. **Settle Rewards**: After all boxes are opened, click "Settle" to claim your GAS
+7. **Play Again**: Start a new session anytime
+
+### Understanding the Grid
+
+The game uses a 3x3 grid (9 positions total):
+```
+┌───┬───┬───┐
+│ 1 │ 2 │ 3 │
+├───┼───┼───┤
+│ 4 │ 5 │ 6 │
+├───┼───┼───┤
+│ 7 │ 8 │ 9 │
+└───┴───┴───┘
+```
+
+- Turtles appear in random positions as boxes open
+- Each position can hold one turtle
+- Match colors across any positions to win
+
+### Turtle Colors and Rarity
+
+Different turtle colors have different rarities and reward values:
+
+| Color | Rarity | Match Reward |
+|-------|--------|--------------|
+| 🟢 Green | Common | Base reward |
+| 🔵 Blue | Uncommon | 1.5x base |
+| 🟣 Purple | Rare | 2x base |
+| 🟡 Gold | Legendary | 5x base |
+| ⚪ White | Mythic | 10x base |
+
+### Game Flow
+
+1. **Purchase Phase**: Select 3-20 blindboxes (0.1 GAS each)
+2. **Opening Phase**: Boxes open automatically with 2-second intervals
+3. **Matching Phase**: Matching colors are highlighted with animations
+4. **Settlement Phase**: Claim your total rewards
+5. **Completion**: View final results and start a new game
+
+### Winning Combinations
+
+**Single Pair (2 matching):**
+- Minimum win: 0.05 GAS
+- Covers part of your entry cost
+
+**Three of a Kind (3 matching):**
+- Medium win: 0.15-0.30 GAS
+- Profit potential begins
+
+**Four of a Kind (4 matching):**
+- Large win: 0.50-1.00 GAS
+- Significant return on investment
+
+**Full Grid Match (5+ matching):**
+- Jackpot: 2.00+ GAS
+- Rare but highly rewarding
+
+### Strategies and Tips
+
+1. **Box Count Strategy**:
+   - 3-5 boxes: Low risk, budget-friendly
+   - 6-10 boxes: Balanced approach
+   - 11-20 boxes: Maximum matching potential
+
+2. **Bankroll Management**:
+   - Never spend more than you can afford to lose
+   - Set a session limit before playing
+   - Take breaks between sessions
+
+3. **Understanding Odds**:
+   - More boxes = higher chance of matches
+   - Each box is an independent event
+   - Past results don't affect future outcomes
+
+4. **Best Practices**:
+   - Play during low network congestion for faster settlements
+   - Keep some GAS for transaction fees
+   - Track your results over time
+
+## How It Works
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Turtle Match Architecture                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌──────────────────────────────────────────────────────┐     │
+│   │                    Game Session                       │     │
+│   │  ┌──────────┐  ┌──────────┐  ┌──────────────────┐   │     │
+│   │  │ Purchase │─►│  Reveal  │─►│   Settlement     │   │     │
+│   │  │   Boxes  │  │  Turtles │  │   & Payout       │   │     │
+│   │  └──────────┘  └──────────┘  └──────────────────┘   │     │
+│   │        │            │                │              │     │
+│   └────────┼────────────┼────────────────┼──────────────┘     │
+│            │            │                │                     │
+│            ▼            ▼                ▼                     │
+│   ┌─────────────────────────────────────────────────────┐      │
+│   │              Neo N3 Smart Contract                  │      │
+│   │  - Session creation and tracking                    │      │
+│   │  - Deterministic randomness (hashed seed)           │      │
+│   │  - Match validation logic                           │      │
+│   │  - Automatic reward calculation                     │      │
+│   │  - GAS distribution to winners                      │      │
+│   └─────────────────────────────────────────────────────┘      │
+│                                                                 │
+│   Deterministic Randomness:                                     │
+│   - Seed derived from block hash + session ID                   │
+│   - Turtle colors = hash[0] % color_count                       │
+│   - Positions = hash[1] % 9                                     │
+│   - Provably fair and verifiable                                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Smart Contract Mechanics
+
+**Session Creation:**
+```solidity
+function createSession(boxCount, payment) -> sessionId
+```
+- Validates payment (0.1 GAS per box)
+- Generates unique session ID
+- Records session parameters on-chain
+
+**Deterministic Reveal:**
+```solidity
+function getTurtleColor(sessionId, boxIndex) -> color
+```
+- Uses keccak256(blockHash + sessionId + boxIndex)
+- Same input always produces same output
+- Results cannot be manipulated after session starts
+
+**Match Detection:**
+```solidity
+function calculateReward(sessionId) -> rewardAmount
+```
+- Counts matching turtle colors
+- Applies payout formula based on match count
+- Ensures contract has sufficient balance
+
+**Settlement:**
+```solidity
+function settleSession(sessionId) -> bool
+```
+- Transfers calculated rewards to player
+- Closes session to prevent double-claims
+- Emits event for frontend tracking
+
+### Payout Formula
+
+```
+Base Reward = 0.05 GAS
+Match Multiplier = (Match Count - 1) * Rarity Multiplier
+Total Reward = Sum of all match rewards
+
+Example:
+- 2 Green turtles: 0.05 * 1 = 0.05 GAS
+- 3 Purple turtles: 0.05 * 2 * 2 = 0.20 GAS
+- Total: 0.25 GAS
+```
+
+### Fairness Guarantees
+
+1. **Deterministic Outcomes**: Results derived from blockchain data, not server randomness
+2. **Transparent Odds**: Smart contract code is open and auditable
+3. **No House Edge**: All GAS paid in goes to player rewards
+4. **Instant Verification**: Anyone can verify results using the same hash function
+5. **Immutable History**: All sessions permanently recorded on-chain
 
 ## Permissions
 
 | Permission | Required |
 |------------|----------|
-| Wallet | ❌ No |
+| Wallet | ❌ No (optional for viewing) |
 | Payments | ✅ Yes |
-| RNG | ❌ No |
+| RNG | ❌ No (uses deterministic hashing) |
 | Data Feed | ❌ No |
 | Governance | ❌ No |
 | Automation | ❌ No |
 
 ## On-chain behavior
 
-- Validates payments on-chain (PaymentHub receipts when enabled).
+- Validates payments on-chain (PaymentHub receipts when enabled)
+- All game sessions recorded with unique IDs
+- Rewards calculated and distributed by smart contract
+- Complete transparency of all game mechanics
 
 ## Network Configuration
 
@@ -94,6 +288,10 @@ Purchase blindboxes, auto-open turtles on a 3x3 grid, match pairs, and settle re
 ## Assets
 
 - **Allowed Assets**: NEO, GAS
+- **Game Currency**: GAS only
+- **Cost Per Box**: 0.1 GAS
+- **Minimum Purchase**: 3 boxes (0.3 GAS)
+- **Maximum Purchase**: 20 boxes (2.0 GAS)
 
 ## Development
 
@@ -107,3 +305,86 @@ npm run dev
 # Build for H5
 npm run build
 ```
+
+### Project Structure
+
+```
+apps/turtle-match/
+├── src/
+│   ├── pages/
+│   │   ├── index/
+│   │   │   ├── index.vue              # Main game component
+│   │   │   └── components/
+│   │   │       ├── TurtleGrid.vue     # 3x3 game grid
+│   │   │       ├── TurtleSprite.vue   # Animated turtle SVG
+│   │   │       ├── BlindboxOpening.vue
+│   │   │       ├── MatchCelebration.vue
+│   │   │       ├── GameResult.vue
+│   │   │       └── GameSplash.vue
+│   │   └── docs/
+│   │       └── index.vue              # Documentation view
+│   ├── shared/
+│   │   └── composables/
+│   │       └── useTurtleMatch.ts      # Game logic
+│   ├── composables/
+│   │   └── useI18n.ts                 # Internationalization
+│   └── static/
+│       └── game.css                   # Game animations
+├── package.json
+└── README.md
+```
+
+### Component Details
+
+- **TurtleGrid**: Displays the 3x3 grid with turtle positions
+- **TurtleSprite**: SVG-based animated turtle with color variants
+- **BlindboxOpening**: Animation for box opening reveal
+- **MatchCelebration**: Winning match animation with reward display
+- **GameResult**: Session summary modal with statistics
+- **GameSplash**: Intro animation on app load
+
+## Troubleshooting
+
+**"Insufficient balance" error:**
+- Ensure you have at least 0.3 GAS (minimum 3 boxes)
+- Remember to keep some GAS for transaction fees
+
+**Transaction failing:**
+- Check network connectivity
+- Ensure you're on the correct network (mainnet/testnet)
+- Try refreshing the page and reconnecting wallet
+
+**Game not starting:**
+- Verify your wallet is properly connected
+- Check that the transaction was confirmed on-chain
+- Look for error messages in the UI
+
+**Cannot settle rewards:**
+- Ensure the session is complete (all boxes opened)
+- Check that you haven't already settled this session
+- Verify the contract has sufficient GAS balance
+
+**Animations not showing:**
+- Check your device's performance settings
+- Try closing other apps to free up memory
+- Ensure you're using a supported browser/wallet
+
+## Responsible Gaming
+
+Turtle Match is a game of chance. Please play responsibly:
+
+- Set a budget and stick to it
+- Never chase losses
+- Take regular breaks
+- Remember that outcomes are random
+- Seek help if gambling affects your life negatively
+
+## Support
+
+For questions about game mechanics or smart contracts, visit the Neo MiniApp documentation.
+
+For technical issues, contact the Neo MiniApp support team.
+
+---
+
+**Good luck and happy matching! 🐢🎮**

@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-on-chain-tarot" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-on-chain-tarot" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
@@ -346,5 +354,21 @@ onMounted(async () => {
   &:active {
     transform: scale(0.98);
   }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

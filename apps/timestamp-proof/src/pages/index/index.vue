@@ -1,9 +1,43 @@
 <template>
   <view class="theme-timestamp-proof">
-    <DesktopLayout title="Timestamp Proof" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+    <ResponsiveLayout
+      :title="t('title')"
+      :nav-items="navTabs"
+      :active-tab="activeTab"
+      :show-sidebar="isDesktop"
+      layout="sidebar"
+      @tab-change="activeTab = $event"
+    >
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
-      <view v-if="activeTab === 'proofs'" class="tab-content scrollable">
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="sidebar-stats">
+          <text class="sidebar-title">{{ t("proofStats") }}</text>
+          <view class="stat-item">
+            <text class="stat-label">{{ t("totalProofs") }}</text>
+            <text class="stat-value">{{ proofs.length }}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">{{ t("yourProofs") }}</text>
+            <text class="stat-value">{{ myProofsCount }}</text>
+          </view>
+        </view>
+      </template>
+
+      <view v-if="activeTab === 'proofs'" class="tab-content">
+        <!-- Mobile: Quick Stats -->
+        <view v-if="!isDesktop" class="mobile-stats">
+          <view class="stat-card">
+            <text class="stat-value">{{ proofs.length }}</text>
+            <text class="stat-label">{{ t("totalProofs") }}</text>
+          </view>
+          <view class="stat-card">
+            <text class="stat-value">{{ myProofsCount }}</text>
+            <text class="stat-label">{{ t("yourProofs") }}</text>
+          </view>
+        </view>
+
         <view class="create-section">
           <text class="section-title">{{ t("createProof") }}</text>
           <textarea
@@ -68,7 +102,7 @@
       <view v-if="errorMessage" class="error-toast">
         <text>{{ errorMessage }}</text>
       </view>
-    </DesktopLayout>
+    </ResponsiveLayout>
   </view>
 </template>
 
@@ -80,7 +114,7 @@ import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 import { useI18n } from "@/composables/useI18n";
-import { DesktopLayout, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 
 const { t } = useI18n();

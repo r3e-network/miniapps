@@ -10,12 +10,19 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for map piece lifecycle
+    /// <summary>Event emitted when piece claimed.</summary>
     public delegate void PieceClaimedHandler(BigInteger pieceId, UInt160 owner, BigInteger x, BigInteger y, BigInteger regionId);
+    /// <summary>Event emitted when piece traded.</summary>
     public delegate void PieceTradedHandler(BigInteger pieceId, UInt160 from, UInt160 to, BigInteger price);
+    /// <summary>Event emitted when piece listed.</summary>
     public delegate void PieceListedHandler(BigInteger pieceId, UInt160 owner, BigInteger price);
+    /// <summary>Event emitted when piece delisted.</summary>
     public delegate void PieceDelistedHandler(BigInteger pieceId, UInt160 owner);
+    /// <summary>Event emitted when region completed.</summary>
     public delegate void RegionCompletedHandler(BigInteger regionId, UInt160 completer, BigInteger bonus);
+    /// <summary>Event emitted when piece customized.</summary>
     public delegate void PieceCustomizedHandler(BigInteger pieceId, UInt160 owner, string metadata);
+    /// <summary>Event emitted when achievement unlocked.</summary>
     public delegate void AchievementUnlockedHandler(UInt160 user, BigInteger achievementId, string name);
 
     /// <summary>
@@ -30,9 +37,13 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppMillionPieceMap : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the million-piece-map miniapp.</summary>
         private const string APP_ID = "miniapp-millionpiecemap";
+        /// <summary>Configuration constant .</summary>
         private const long PIECE_PRICE = 10000000;
+        /// <summary>Fee rate .</summary>
         private const long CUSTOMIZE_FEE = 5000000;
+        /// <summary>Bonus amount .</summary>
         private const long REGION_BONUS = 100000000;
         private const int MAP_WIDTH = 100;
         private const int MAP_HEIGHT = 100;
@@ -43,16 +54,27 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Prefixes
+        /// <summary>Storage prefix for pieces.</summary>
         private static readonly byte[] PREFIX_PIECES = new byte[] { 0x20 };
+        /// <summary>Storage prefix for listings.</summary>
         private static readonly byte[] PREFIX_LISTINGS = new byte[] { 0x21 };
+        /// <summary>Storage prefix for user stats.</summary>
         private static readonly byte[] PREFIX_USER_STATS = new byte[] { 0x22 };
+        /// <summary>Storage prefix for user pieces.</summary>
         private static readonly byte[] PREFIX_USER_PIECES = new byte[] { 0x23 };
+        /// <summary>Storage prefix for user piece count.</summary>
         private static readonly byte[] PREFIX_USER_PIECE_COUNT = new byte[] { 0x24 };
+        /// <summary>Storage prefix for regions.</summary>
         private static readonly byte[] PREFIX_REGIONS = new byte[] { 0x25 };
+        /// <summary>Storage prefix for total claimed.</summary>
         private static readonly byte[] PREFIX_TOTAL_CLAIMED = new byte[] { 0x26 };
+        /// <summary>Storage prefix for total traded.</summary>
         private static readonly byte[] PREFIX_TOTAL_TRADED = new byte[] { 0x27 };
+        /// <summary>Storage prefix for total volume.</summary>
         private static readonly byte[] PREFIX_TOTAL_VOLUME = new byte[] { 0x28 };
+        /// <summary>Storage prefix for user badges.</summary>
         private static readonly byte[] PREFIX_USER_BADGES = new byte[] { 0x29 };
+        /// <summary>Storage prefix for total users.</summary>
         private static readonly byte[] PREFIX_TOTAL_USERS = new byte[] { 0x2A };
         #endregion
 

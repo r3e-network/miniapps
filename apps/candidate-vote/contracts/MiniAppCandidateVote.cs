@@ -10,13 +10,21 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for CandidateVote lifecycle
+    /// <summary>Event emitted when vote registered.</summary>
     public delegate void VoteRegisteredHandler(UInt160 voter, BigInteger epochId, BigInteger voteWeight);
+    /// <summary>Event emitted when vote withdrawn.</summary>
     public delegate void VoteWithdrawnHandler(UInt160 voter, BigInteger epochId, BigInteger voteWeight);
+    /// <summary>Event emitted when rewards deposited.</summary>
     public delegate void RewardsDepositedHandler(BigInteger epochId, BigInteger amount);
+    /// <summary>Event emitted when rewards claimed.</summary>
     public delegate void RewardsClaimedHandler(UInt160 voter, BigInteger epochId, BigInteger amount);
+    /// <summary>Event emitted when epoch advanced.</summary>
     public delegate void EpochAdvancedHandler(BigInteger oldEpoch, BigInteger newEpoch);
+    /// <summary>Event emitted when strategy changed.</summary>
     public delegate void StrategyChangedHandler(BigInteger epochId, string strategy, BigInteger totalVotes);
+    /// <summary>Event emitted when voter badge earned.</summary>
     public delegate void VoterBadgeEarnedHandler(UInt160 voter, BigInteger badgeType, string badgeName);
+    /// <summary>Event emitted when delegation changed.</summary>
     public delegate void DelegationChangedHandler(UInt160 delegator, UInt160 delegatee, BigInteger epochId);
 
     /// <summary>
@@ -46,9 +54,15 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppCandidateVote : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the candidate-vote miniapp.</summary>
         private const string APP_ID = "miniapp-candidate-vote";
+        /// <summary>Duration in seconds .</summary>
         private const long EPOCH_DURATION_SECONDS = 604800;    // 7 days
+        /// <summary>Minimum value for operation.</summary>
+        /// <summary>Configuration constant .</summary>
         private const long MIN_VOTE_WEIGHT = 100000000;   // 1 NEO minimum
+        /// <summary>Threshold value for tier calculation.</summary>
+        /// <summary>Threshold for tier .</summary>
         private const long DEFAULT_THRESHOLD = 500000000000; // 5000 NEO
         private const string STRATEGY_SELF = "self";
         private const string STRATEGY_NEOBURGER = "neoburger";
@@ -56,17 +70,29 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Prefixes (0x20+ to avoid collision with MiniAppBase)
+        /// <summary>Storage prefix for candidate.</summary>
         private static readonly byte[] PREFIX_CANDIDATE = new byte[] { 0x20 };
+        /// <summary>Storage prefix for epoch id.</summary>
         private static readonly byte[] PREFIX_EPOCH_ID = new byte[] { 0x21 };
+        /// <summary>Storage prefix for epochs.</summary>
         private static readonly byte[] PREFIX_EPOCHS = new byte[] { 0x22 };
+        /// <summary>Storage prefix for voter stats.</summary>
         private static readonly byte[] PREFIX_VOTER_STATS = new byte[] { 0x23 };
+        /// <summary>Storage prefix for voter epoch.</summary>
         private static readonly byte[] PREFIX_VOTER_EPOCH = new byte[] { 0x24 };
+        /// <summary>Storage prefix for voter claimed.</summary>
         private static readonly byte[] PREFIX_VOTER_CLAIMED = new byte[] { 0x25 };
+        /// <summary>Storage prefix for delegations.</summary>
         private static readonly byte[] PREFIX_DELEGATIONS = new byte[] { 0x26 };
+        /// <summary>Storage prefix for voter badges.</summary>
         private static readonly byte[] PREFIX_VOTER_BADGES = new byte[] { 0x27 };
+        /// <summary>Storage prefix for neoburger.</summary>
         private static readonly byte[] PREFIX_NEOBURGER = new byte[] { 0x28 };
+        /// <summary>Storage prefix for threshold.</summary>
         private static readonly byte[] PREFIX_THRESHOLD = new byte[] { 0x29 };
+        /// <summary>Storage prefix for total rewards.</summary>
         private static readonly byte[] PREFIX_TOTAL_REWARDS = new byte[] { 0x2A };
+        /// <summary>Storage prefix for total voters.</summary>
         private static readonly byte[] PREFIX_TOTAL_VOTERS = new byte[] { 0x2B };
         #endregion
 

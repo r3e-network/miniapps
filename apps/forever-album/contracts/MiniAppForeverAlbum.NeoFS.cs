@@ -79,7 +79,8 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region NeoFS Events
         
-        public delegate void PhotoMigratedHandler(ByteString photoId, string containerId, string objectId);
+        /// <summary>Event emitted when photo migrated.</summary>
+    public delegate void PhotoMigratedHandler(ByteString photoId, string containerId, string objectId);
         
         [DisplayName("PhotoMigrated")]
         public static event PhotoMigratedHandler OnPhotoMigrated;

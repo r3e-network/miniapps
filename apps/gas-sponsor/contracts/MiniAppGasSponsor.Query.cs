@@ -10,6 +10,27 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Query Methods
 
+        /// <summary>
+        /// Get detailed pool information.
+        /// 
+        /// RETURNS:
+        /// - id: Pool ID
+        /// - sponsor: Sponsor address
+        /// - poolType: 1=Public, 2=Whitelist, 3=AppSpecific
+        /// - initialAmount: Starting amount
+        /// - remainingAmount: Available amount
+        /// - maxClaimPerUser: Max per beneficiary
+        /// - totalClaimed: Amount claimed
+        /// - claimCount: Number of claims
+        /// - createTime: Creation timestamp
+        /// - expiryTime: Expiration timestamp
+        /// - active: Whether active
+        /// - description: Pool description
+        /// - status: "active", "expired", or "depleted"
+        /// - remainingTime: Seconds until expiry (if active)
+        /// </summary>
+        /// <param name="poolId">Pool identifier</param>
+        /// <returns>Map of pool details (empty if not found)</returns>
         [Safe]
         public static Map<string, object> GetPoolDetails(BigInteger poolId)
         {
@@ -43,6 +64,24 @@ namespace NeoMiniAppPlatform.Contracts
             return details;
         }
 
+        /// <summary>
+        /// Get detailed sponsor statistics.
+        /// 
+        /// RETURNS:
+        /// - poolsCreated: Total pools created
+        /// - totalSponsored: Total GAS sponsored
+        /// - totalClaimed: Total GAS claimed from pools
+        /// - beneficiariesHelped: Number of users helped
+        /// - badgeCount: Achievements earned
+        /// - joinTime: First sponsorship timestamp
+        /// - lastActivityTime: Most recent activity
+        /// - activePools: Currently active pools
+        /// - highestSinglePool: Largest single pool
+        /// - topUpsCount: Number of top-ups
+        /// - hasFirstPool, hasGenerous, hasPatron, hasBenefactor, hasPoolMaster, hasTopUpKing: Badge status
+        /// </summary>
+        /// <param name="sponsor">Sponsor address</param>
+        /// <returns>Map of sponsor statistics</returns>
         [Safe]
         public static Map<string, object> GetSponsorStatsDetails(UInt160 sponsor)
         {

@@ -9,6 +9,20 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Profile Methods
 
+        /// <summary>
+        /// Update a developer's profile field (admin only).
+        /// 
+        /// UPDATABLE FIELDS:
+        /// - "bio": Developer biography (max 500 chars)
+        /// - "link": Portfolio/social link (max 200 chars)
+        /// - "role": Developer role/specialty (max 64 chars)
+        /// 
+        /// PERMISSIONS:
+        /// - Only contract admin can update profiles
+        /// </summary>
+        /// <param name="devId">Developer ID</param>
+        /// <param name="field">Field to update</param>
+        /// <param name="value">New value</param>
         public static void UpdateDeveloperProfile(BigInteger devId, string field, string value)
         {
             ValidateAdmin();
@@ -40,6 +54,18 @@ namespace NeoMiniAppPlatform.Contracts
             OnDeveloperUpdated(devId, field, value);
         }
 
+        /// <summary>
+        /// Deactivate a developer account (admin only).
+        /// 
+        /// EFFECTS:
+        /// - Marks developer as inactive
+        /// - Decrements active developer count
+        /// - Emits DeveloperDeactivated event
+        /// 
+        /// PERMISSIONS:
+        /// - Only contract admin can deactivate
+        /// </summary>
+        /// <param name="devId">Developer ID</param>
         public static void DeactivateDeveloper(BigInteger devId)
         {
             ValidateAdmin();

@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-wallet-health" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-wallet-health" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <view v-if="activeTab === 'health'" class="tab-content">
       <view v-if="isEvm" class="mb-4">
         <NeoCard variant="danger">
@@ -120,7 +128,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from "vue";
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from "vue";
+
+// Responsive state
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
@@ -553,5 +570,55 @@ watch(address, async (next) => {
 .checklist-action {
   margin-left: 6px;
   font-size: 11px;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+  .tab-content {
+    padding: 12px;
+    gap: 12px;
+  }
+  .section-title {
+    font-size: 16px;
+  }
+  .balance-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .checklist-item {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .balance-value {
+    font-size: 16px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .tab-content {
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .health-stack {
+    gap: 20px;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

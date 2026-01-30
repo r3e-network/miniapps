@@ -9,55 +9,130 @@ using Neo.SmartContract.Framework.Services;
 
 namespace NeoMiniAppPlatform.Contracts
 {
-    public delegate void MachineCreatedHandler(UInt160 creator, BigInteger machineId);
-    public delegate void MachineUpdatedHandler(BigInteger machineId);
-    public delegate void MachineItemAddedHandler(BigInteger machineId, BigInteger itemIndex);
-    public delegate void MachineActivatedHandler(BigInteger machineId, bool active);
-    public delegate void MachineListedHandler(BigInteger machineId, bool listed);
-    public delegate void MachineBannedHandler(BigInteger machineId, bool banned);
-    public delegate void MachineSaleListedHandler(BigInteger machineId, BigInteger price);
-    public delegate void MachineSoldHandler(BigInteger machineId, UInt160 seller, UInt160 buyer, BigInteger price, BigInteger platformFee, BigInteger creatorRoyalty);
-    public delegate void InventoryDepositedHandler(BigInteger machineId, BigInteger itemIndex, BigInteger amount, string tokenId);
-    public delegate void InventoryWithdrawnHandler(BigInteger machineId, BigInteger itemIndex, BigInteger amount, string tokenId);
-    public delegate void PlayRequestedHandler(UInt160 player, BigInteger machineId, BigInteger playId, BigInteger requestId);
-    public delegate void PlayInitiatedHandler(UInt160 player, BigInteger machineId, BigInteger playId, string seed);
-    public delegate void PlayResolvedHandler(UInt160 player, BigInteger machineId, BigInteger itemIndex, BigInteger playId, BigInteger assetType, UInt160 assetHash, BigInteger amount, string tokenId);
-    public delegate void RngRequestedHandler(BigInteger playId, BigInteger requestId);
-
+    /// <summary>
+    /// NeoGacha MiniApp - On-chain blind box marketplace with transparent odds.
+    ///
+    /// KEY FEATURES:
+    /// - Create gacha machines with custom items
+    /// - Weighted probability system
+    /// - Escrowed prizes before draw
+    /// - Verifiable randomness for draws
+    /// - Machine marketplace (buy/sell machines)
+    /// - Inventory management system
+    /// - Hybrid mode with TEE verification
+    ///
+    /// SECURITY:
+    /// - Escrow ensures prizes exist
+    /// - Verifiable random number generation
+    /// - Creator royalty on machine sales
+    /// - Platform fee on plays
+    ///
+    /// PERMISSIONS:
+    /// - GAS token transfers for plays
+    /// - NEP-17/NEP-11 token transfers for prizes
+    /// </summary>
     [DisplayName("MiniAppNeoGacha")]
     [ManifestExtra("Author", "R3E Network")]
     [ManifestExtra("Email", "dev@r3e.network")]
     [ManifestExtra("Version", "3.0.0")]
-    [ManifestExtra("Description", "This is Neo R3E Network MiniApp. NeoGacha is an on-chain blind box marketplace with escrowed prizes, transparent odds, and verifiable randomness.")]
-    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]  // GAS token
+    [ManifestExtra("Description", "NeoGacha is an on-chain blind box marketplace with escrowed prizes, transparent odds, and verifiable randomness.")]
+    [ContractPermission("0xd2a4cff31913016155e38e474a2c06d08be276cf", "*")]
     public partial class MiniAppNeoGacha : MiniAppGameComputeBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the NeoGacha miniapp.</summary>
+        /// <summary>Unique application identifier for the neo-gacha miniapp.</summary>
         private const string APP_ID = "miniapp-neo-gacha";
+        
+        /// <summary>Maximum items per machine.</summary>
         private const int MAX_ITEMS_PER_MACHINE = 100;
+        
+        /// <summary>Maximum machine name length.</summary>
         private const int MAX_NAME_LENGTH = 64;
+        
+        /// <summary>Maximum description length.</summary>
         private const int MAX_DESCRIPTION_LENGTH = 256;
+        
+        /// <summary>Maximum category length.</summary>
         private const int MAX_CATEGORY_LENGTH = 32;
+        
+        /// <summary>Maximum tags length.</summary>
         private const int MAX_TAGS_LENGTH = 128;
+        
+        /// <summary>Maximum rarity string length.</summary>
         private const int MAX_RARITY_LENGTH = 32;
+        
+        /// <summary>Maximum total weight (100%).</summary>
         private const int MAX_TOTAL_WEIGHT = 100;
+        
+        /// <summary>Platform fee 2.5% (250 bps).</summary>
         private const int PLATFORM_FEE_BPS = 250;
+        
+        /// <summary>Creator royalty 5% (500 bps) on machine sales.</summary>
         private const int CREATOR_ROYALTY_BPS = 500;
+        
+        /// <summary>Asset type: NEP-17 token.</summary>
         private const byte ASSET_NEP17 = 1;
+        
+        /// <summary>Asset type: NEP-11 NFT.</summary>
         private const byte ASSET_NEP11 = 2;
         #endregion
 
-        #region App Prefixes (0x40+ to avoid collision with MiniAppGameComputeBase 0x30-0x3F)
+        #region App Prefixes (0x40+ to avoid collision with MiniAppGameComputeBase)
+        /// <summary>Prefix 0x40: Current machine ID counter.</summary>
+        /// <summary>Storage prefix for machine id.</summary>
         private static readonly byte[] PREFIX_MACHINE_ID = new byte[] { 0x40 };
+        
+        /// <summary>Prefix 0x41: Machine data storage.</summary>
+        /// <summary>Storage prefix for machines.</summary>
         private static readonly byte[] PREFIX_MACHINES = new byte[] { 0x41 };
+        
+        /// <summary>Prefix 0x42: Machine items storage.</summary>
+        /// <summary>Storage prefix for machine items.</summary>
         private static readonly byte[] PREFIX_MACHINE_ITEMS = new byte[] { 0x42 };
+        
+        /// <summary>Prefix 0x43: Current play ID counter.</summary>
+        /// <summary>Storage prefix for play id.</summary>
         private static readonly byte[] PREFIX_PLAY_ID = new byte[] { 0x43 };
+        
+        /// <summary>Prefix 0x44: Play data storage.</summary>
+        /// <summary>Storage prefix for plays.</summary>
         private static readonly byte[] PREFIX_PLAYS = new byte[] { 0x44 };
+        
+        /// <summary>Prefix 0x45: Request to play mapping.</summary>
+        /// <summary>Storage prefix for request to play.</summary>
         private static readonly byte[] PREFIX_REQUEST_TO_PLAY = new byte[] { 0x45 };
+        
+        /// <summary>Prefix 0x46: Item token list.</summary>
+        /// <summary>Storage prefix for item token list.</summary>
         private static readonly byte[] PREFIX_ITEM_TOKEN_LIST = new byte[] { 0x46 };
         #endregion
 
         #region Data Structures
+        /// <summary>
+        /// Gacha machine data.
+        /// FIELDS:
+        /// - Creator: Machine creator address
+        /// - Owner: Current owner address
+        /// - Name: Machine display name
+        /// - Description: Machine description
+        /// - Category: Machine category
+        /// - Tags: Searchable tags
+        /// - Price: Play price in GAS
+        /// - ItemCount: Number of item types
+        /// - TotalWeight: Sum of all item weights
+        /// - Plays: Total play count
+        /// - Revenue: Total revenue earned
+        /// - Sales: Number of times machine sold
+        /// - SalesVolume: Total GAS from sales
+        /// - CreatedAt: Creation timestamp
+        /// - LastPlayedAt: Last play timestamp
+        /// - Active: Whether machine is active
+        /// - Listed: Whether machine is publicly listed
+        /// - Banned: Whether banned by admin
+        /// - Locked: Whether locked during play
+        /// - SalePrice: Current sale price (0 if not for sale)
+        /// </summary>
         public struct MachineData
         {
             public UInt160 Creator;
@@ -82,6 +157,20 @@ namespace NeoMiniAppPlatform.Contracts
             public BigInteger SalePrice;
         }
 
+        /// <summary>
+        /// Gacha item data.
+        /// FIELDS:
+        /// - Name: Item display name
+        /// - Weight: Probability weight
+        /// - Rarity: Rarity string (e.g., "Common", "Rare")
+        /// - AssetType: 1=NEP-17, 2=NEP-11
+        /// - AssetHash: Token contract hash
+        /// - Amount: Token amount (for NEP-17)
+        /// - TokenId: Token ID (for NEP-11)
+        /// - Stock: Remaining stock
+        /// - TokenCount: Total tokens in inventory
+        /// - Decimals: Token decimals
+        /// </summary>
         public struct ItemData
         {
             public string Name;
@@ -96,6 +185,18 @@ namespace NeoMiniAppPlatform.Contracts
             public BigInteger Decimals;
         }
 
+        /// <summary>
+        /// Play session data.
+        /// FIELDS:
+        /// - Player: Player address
+        /// - MachineId: Machine played
+        /// - ItemIndex: Won item index
+        /// - Price: Play price paid
+        /// - Timestamp: Play timestamp
+        /// - Resolved: Whether prize claimed
+        /// - Seed: Random seed for hybrid mode
+        /// - HybridMode: Whether using hybrid resolution
+        /// </summary>
         public struct PlayData
         {
             public UInt160 Player;
@@ -104,12 +205,115 @@ namespace NeoMiniAppPlatform.Contracts
             public BigInteger Price;
             public BigInteger Timestamp;
             public bool Resolved;
-            public ByteString Seed;        // Deterministic seed for hybrid mode
-            public bool HybridMode;        // True if using hybrid (seed-based) resolution
+            public ByteString Seed;
+            public bool HybridMode;
         }
         #endregion
 
-        #region App Events
+        #region Event Delegates
+        /// <summary>Event emitted when machine is created.</summary>
+        /// <param name="creator">Creator address.</param>
+        /// <param name="machineId">New machine identifier.</param>
+        /// <summary>Event emitted when machine created.</summary>
+    public delegate void MachineCreatedHandler(UInt160 creator, BigInteger machineId);
+        
+        /// <summary>Event emitted when machine is updated.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <summary>Event emitted when machine updated.</summary>
+    public delegate void MachineUpdatedHandler(BigInteger machineId);
+        
+        /// <summary>Event emitted when item is added to machine.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="itemIndex">Item index in machine.</param>
+        /// <summary>Event emitted when machine item added.</summary>
+    public delegate void MachineItemAddedHandler(BigInteger machineId, BigInteger itemIndex);
+        
+        /// <summary>Event emitted when machine activation changes.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="active">New active status.</param>
+        /// <summary>Event emitted when machine activated.</summary>
+    public delegate void MachineActivatedHandler(BigInteger machineId, bool active);
+        
+        /// <summary>Event emitted when machine listing changes.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="listed">New listed status.</param>
+        /// <summary>Event emitted when machine listed.</summary>
+    public delegate void MachineListedHandler(BigInteger machineId, bool listed);
+        
+        /// <summary>Event emitted when machine ban status changes.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="banned">New banned status.</param>
+        /// <summary>Event emitted when machine banned.</summary>
+    public delegate void MachineBannedHandler(BigInteger machineId, bool banned);
+        
+        /// <summary>Event emitted when machine is listed for sale.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="price">Sale price.</param>
+        /// <summary>Event emitted when machine sale listed.</summary>
+    public delegate void MachineSaleListedHandler(BigInteger machineId, BigInteger price);
+        
+        /// <summary>Event emitted when machine is sold.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="seller">Previous owner.</param>
+        /// <param name="buyer">New owner.</param>
+        /// <param name="price">Sale price.</param>
+        /// <param name="platformFee">Platform fee paid.</param>
+        /// <param name="creatorRoyalty">Creator royalty paid.</param>
+        /// <summary>Event emitted when machine sold.</summary>
+    public delegate void MachineSoldHandler(BigInteger machineId, UInt160 seller, UInt160 buyer, BigInteger price, BigInteger platformFee, BigInteger creatorRoyalty);
+        
+        /// <summary>Event emitted when inventory is deposited.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="itemIndex">Item index.</param>
+        /// <param name="amount">Amount deposited.</param>
+        /// <param name="tokenId">Token ID (for NFTs).</param>
+        /// <summary>Event emitted when inventory deposited.</summary>
+    public delegate void InventoryDepositedHandler(BigInteger machineId, BigInteger itemIndex, BigInteger amount, string tokenId);
+        
+        /// <summary>Event emitted when inventory is withdrawn.</summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="itemIndex">Item index.</param>
+        /// <param name="amount">Amount withdrawn.</param>
+        /// <param name="tokenId">Token ID (for NFTs).</param>
+        /// <summary>Event emitted when inventory withdrawn.</summary>
+    public delegate void InventoryWithdrawnHandler(BigInteger machineId, BigInteger itemIndex, BigInteger amount, string tokenId);
+        
+        /// <summary>Event emitted when play is requested.</summary>
+        /// <param name="player">Player address.</param>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="playId">Play session identifier.</param>
+        /// <param name="requestId">RNG request identifier.</param>
+        /// <summary>Event emitted when play requested.</summary>
+    public delegate void PlayRequestedHandler(UInt160 player, BigInteger machineId, BigInteger playId, BigInteger requestId);
+        
+        /// <summary>Event emitted when play is initiated.</summary>
+        /// <param name="player">Player address.</param>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="playId">Play session identifier.</param>
+        /// <param name="seed">Random seed.</param>
+        /// <summary>Event emitted when play initiated.</summary>
+    public delegate void PlayInitiatedHandler(UInt160 player, BigInteger machineId, BigInteger playId, string seed);
+        
+        /// <summary>Event emitted when play is resolved.</summary>
+        /// <param name="player">Player address.</param>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="itemIndex">Won item index.</param>
+        /// <param name="playId">Play session identifier.</param>
+        /// <param name="assetType">Asset type won.</param>
+        /// <param name="assetHash">Asset contract hash.</param>
+        /// <param name="amount">Amount won.</param>
+        /// <param name="tokenId">Token ID won.</param>
+        /// <summary>Event emitted when play resolved.</summary>
+    public delegate void PlayResolvedHandler(UInt160 player, BigInteger machineId, BigInteger itemIndex, BigInteger playId, BigInteger assetType, UInt160 assetHash, BigInteger amount, string tokenId);
+        
+        /// <summary>Event emitted when RNG is requested.</summary>
+        /// <param name="playId">Play session identifier.</param>
+        /// <param name="requestId">RNG request identifier.</param>
+        /// <summary>Event emitted when rng requested.</summary>
+    public delegate void RngRequestedHandler(BigInteger playId, BigInteger requestId);
+        #endregion
+
+        #region Events
         [DisplayName("MachineCreated")]
         public static event MachineCreatedHandler OnMachineCreated;
 
@@ -154,6 +358,11 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region Lifecycle
+        /// <summary>
+        /// Contract deployment initialization.
+        /// </summary>
+        /// <param name="data">Deployment data (unused).</param>
+        /// <param name="update">True if this is a contract update.</param>
         public static void _deploy(object data, bool update)
         {
             if (update) return;
@@ -164,10 +373,19 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region Read Methods
+        /// <summary>
+        /// Gets total machines created.
+        /// </summary>
+        /// <returns>Total machine count.</returns>
         [Safe]
         public static BigInteger TotalMachines() =>
             (BigInteger)Storage.Get(Storage.CurrentContext, PREFIX_MACHINE_ID);
 
+        /// <summary>
+        /// Gets machine data as Map.
+        /// </summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <returns>Machine data as Map.</returns>
         [Safe]
         public static Map<string, object> GetMachine(BigInteger machineId)
         {
@@ -198,6 +416,12 @@ namespace NeoMiniAppPlatform.Contracts
             return machine;
         }
 
+        /// <summary>
+        /// Gets item data as Map.
+        /// </summary>
+        /// <param name="machineId">Machine identifier.</param>
+        /// <param name="itemIndex">Item index.</param>
+        /// <returns>Item data as Map.</returns>
         [Safe]
         public static Map<string, object> GetMachineItem(BigInteger machineId, BigInteger itemIndex)
         {
@@ -217,6 +441,11 @@ namespace NeoMiniAppPlatform.Contracts
             return item;
         }
 
+        /// <summary>
+        /// Gets play data as Map.
+        /// </summary>
+        /// <param name="playId">Play identifier.</param>
+        /// <returns>Play data as Map.</returns>
         [Safe]
         public static Map<string, object> GetPlay(BigInteger playId)
         {

@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
@@ -80,13 +80,14 @@ const navItems = computed<NavItem[]>(() => [
 const activeTab = ref("swap");
 const selectedPair = ref("neo-gas");
 
-const isDesktop = computed(() => {
-  try {
-    return window.innerWidth >= 768;
-  } catch {
-    return false;
-  }
-});
+// Responsive layout
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 
 const popularPairs = [
   { id: "neo-gas", name: "NEO/GAS", rate: "1:45.2", fromIcon: "/static/neo-token.png", toIcon: "/static/gas-token.png" },
@@ -191,5 +192,23 @@ const docFeatures = computed(() => [
 .pair-rate {
   font-size: 12px;
   color: var(--swap-text-secondary);
+}
+
+// Responsive styles
+@media (max-width: 767px) {
+  .tab-content { padding: 12px; }
+  .pair-list {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 8px;
+  }
+  .pair-item {
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+}
+@media (min-width: 1024px) {
+  .tab-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
 }
 </style>

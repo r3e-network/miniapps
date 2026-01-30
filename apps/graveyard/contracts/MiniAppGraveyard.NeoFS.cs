@@ -54,11 +54,17 @@ namespace NeoMiniAppPlatform.Contracts
         private const BigInteger MEMORY_TYPE_SECRET = 5;
         
         // Additional storage prefixes (0x30+ range, non-conflicting)
+        /// <summary>Storage prefix for memory nefos container.</summary>
         private static readonly byte[] PREFIX_MEMORY_NEFOS_CONTAINER = new byte[] { 0x30 };
+        /// <summary>Storage prefix for memory nefos object.</summary>
         private static readonly byte[] PREFIX_MEMORY_NEFOS_OBJECT = new byte[] { 0x31 };
+        /// <summary>Storage prefix for memory nefos size.</summary>
         private static readonly byte[] PREFIX_MEMORY_NEFOS_SIZE = new byte[] { 0x32 };
+        /// <summary>Storage prefix for memory nefos encrypted.</summary>
         private static readonly byte[] PREFIX_MEMORY_NEFOS_ENCRYPTED = new byte[] { 0x33 };
+        /// <summary>Storage prefix for epitaph nefos ref.</summary>
         private static readonly byte[] PREFIX_EPITAPH_NEFOS_REF = new byte[] { 0x34 };
+        /// <summary>Storage prefix for memorial media ref.</summary>
         private static readonly byte[] PREFIX_MEMORIAL_MEDIA_REF = new byte[] { 0x35 };
         
         #endregion
@@ -105,8 +111,10 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region NeoFS Events
         
-        public delegate void MemoryStoredInNeoFSHandler(BigInteger memoryId, string containerId, string objectId);
-        public delegate void MemorialMediaAddedHandler(BigInteger memorialId, string mediaType);
+        /// <summary>Event emitted when memory stored in neo f s.</summary>
+    public delegate void MemoryStoredInNeoFSHandler(BigInteger memoryId, string containerId, string objectId);
+        /// <summary>Event emitted when memorial media added.</summary>
+    public delegate void MemorialMediaAddedHandler(BigInteger memorialId, string mediaType);
         
         [DisplayName("MemoryStoredInNeoFS")]
         public static event MemoryStoredInNeoFSHandler OnMemoryStoredInNeoFS;

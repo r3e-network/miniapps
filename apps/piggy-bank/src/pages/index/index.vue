@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-piggy-bank" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-piggy-bank" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <!-- Main Tab -->
     <view v-if="activeTab === 'main'" class="tab-content">
       <!-- Header with wallet status -->
@@ -140,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import { usePiggyStore, type PiggyBank } from "@/stores/piggy";
 import { storeToRefs } from "pinia";
 import { useI18n } from "@/composables/useI18n";
@@ -238,6 +246,15 @@ const goToCreate = () => {
 const goToDetail = (id: string) => {
   uni.navigateTo({ url: `/pages/detail/detail?id=${id}` });
 };
+
+// Responsive layout
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 </script>
 
 <style scoped lang="scss">
@@ -515,5 +532,44 @@ const goToDetail = (id: string) => {
   padding: 12px;
   font-weight: 700;
   font-size: 14px;
+}
+
+// Responsive styles
+@media (max-width: 767px) {
+  .header { padding: 12px; }
+  .title { font-size: 24px; }
+  .grid {
+    padding: 0 12px;
+    gap: 12px;
+  }
+  .fab {
+    right: 12px;
+    bottom: 70px;
+  }
+  .settings-container { padding: 12px; }
+}
+@media (min-width: 1024px) {
+  .tab-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

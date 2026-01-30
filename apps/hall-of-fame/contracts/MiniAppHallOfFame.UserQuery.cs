@@ -10,6 +10,28 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region User Stats Query
 
+        /// <summary>
+        /// Get detailed user statistics and badge status.
+        /// 
+        /// RETURNS:
+        /// - totalVoted: Total GAS voted
+        /// - voteCount: Number of votes cast
+        /// - seasonsParticipated: Seasons participated
+        /// - rewardsClaimed: Rewards claimed
+        /// - nomineesAdded: Nominees added by user
+        /// - highestSingleVote: Largest single vote
+        /// - badgeCount: Number of badges earned
+        /// - joinTime: User join timestamp
+        /// - lastActivityTime: Last activity timestamp
+        /// - hasFirstVote: Has First Vote badge
+        /// - hasActiveVoter: Has Active Voter badge
+        /// - hasWhaleVoter: Has Whale Voter badge
+        /// - hasSeasonVeteran: Has Season Veteran badge
+        /// - hasNominator: Has Nominator badge
+        /// - hasLoyalSupporter: Has Loyal Supporter badge
+        /// </summary>
+        /// <param name="user">User address</param>
+        /// <returns>Map of user statistics</returns>
         [Safe]
         public static Map<string, object> GetUserStatsDetails(UInt160 user)
         {

@@ -111,6 +111,33 @@ Purchase keys for the current round.
 | `keyCount` | Integer | Number of keys to buy |
 | `receiptId` | Integer | Payment receipt ID from PaymentHub |
 
+## Usage
+
+### Playing the Game
+
+1. **Connect Wallet**: Link your Neo N3 wallet to participate
+2. **View Timer**: Check the countdown timer showing time until doomsday
+3. **Buy Keys**: Purchase keys to extend the timer and increase your chance to win
+4. **Extend Timer**: Each key purchase adds time to the countdown
+5. **Win the Pot**: Be the last buyer when the timer hits zero to win the entire jackpot
+
+### Game Strategy
+
+- Keys become more expensive as the pot grows
+- Buying multiple keys increases your chance of winning
+- Watch for the final moments when other players might hesitate
+- The jackpot includes all GAS contributed by key buyers
+
+## How It Works
+
+Doomsday Clock implements a FOMO3D-style game mechanism:
+
+1. **Countdown Timer**: A timer counts down to "doomsday" - when the game ends
+2. **Key Purchases**: Players buy keys using GAS to extend the timer
+3. **Price Escalation**: Key prices increase as the jackpot grows
+4. **Winner Takes All**: The last player to buy a key before the timer expires wins
+5. **Pot Distribution**: The entire jackpot goes to the winner, minus platform fees
+6. **Round System**: After each round ends, a new round begins with fresh timer
 
 ## License
 

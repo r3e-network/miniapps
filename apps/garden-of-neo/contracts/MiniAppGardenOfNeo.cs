@@ -10,13 +10,21 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for garden lifecycle
+    /// <summary>Event emitted when plant seeded.</summary>
     public delegate void PlantSeededHandler(UInt160 owner, BigInteger plantId, BigInteger seedType, string name);
+    /// <summary>Event emitted when plant grown.</summary>
     public delegate void PlantGrownHandler(BigInteger plantId, BigInteger growthStage, BigInteger size);
+    /// <summary>Event emitted when plant harvested.</summary>
     public delegate void PlantHarvestedHandler(UInt160 owner, BigInteger plantId, BigInteger reward);
+    /// <summary>Event emitted when plant watered.</summary>
     public delegate void PlantWateredHandler(BigInteger plantId, UInt160 waterer, BigInteger waterBonus);
+    /// <summary>Event emitted when plant fertilized.</summary>
     public delegate void PlantFertilizedHandler(BigInteger plantId, UInt160 fertilizer, BigInteger growthBoost);
+    /// <summary>Event emitted when garden created.</summary>
     public delegate void GardenCreatedHandler(UInt160 owner, BigInteger gardenId, string name);
+    /// <summary>Event emitted when season changed.</summary>
     public delegate void SeasonChangedHandler(BigInteger seasonId, BigInteger seasonType, BigInteger startTime);
+    /// <summary>Event emitted when achievement unlocked.</summary>
     public delegate void AchievementUnlockedHandler(UInt160 user, BigInteger achievementId, string name);
 
     /// <summary>
@@ -31,10 +39,15 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppGardenOfNeo : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the garden-of-neo miniapp.</summary>
         private const string APP_ID = "miniapp-garden-of-neo";
+        /// <summary>Fee rate .</summary>
         private const long PLANT_FEE = 10000000;
+        /// <summary>Fee rate .</summary>
         private const long WATER_FEE = 5000000;
+        /// <summary>Fee rate .</summary>
         private const long FERTILIZE_FEE = 20000000;
+        /// <summary>Fee rate .</summary>
         private const long GARDEN_FEE = 100000000;
         private const int GROWTH_BLOCKS = 100;
         private const int MAX_PLANTS_PER_GARDEN = 20;
@@ -53,26 +66,44 @@ namespace NeoMiniAppPlatform.Contracts
         private const int SEED_LIGHT = 5;
         private const int SEED_DARK = 6;
         private const int SEED_RARE = 7;
+        /// <summary>Reward amount .</summary>
         private const long REWARD_FIRE = 15000000;
+        /// <summary>Reward amount .</summary>
         private const long REWARD_ICE = 15000000;
+        /// <summary>Reward amount .</summary>
         private const long REWARD_EARTH = 20000000;
+        /// <summary>Reward amount .</summary>
         private const long REWARD_WIND = 20000000;
+        /// <summary>Reward amount .</summary>
         private const long REWARD_LIGHT = 30000000;
+        /// <summary>Reward amount .</summary>
         private const long REWARD_DARK = 30000000;
+        /// <summary>Reward amount .</summary>
         private const long REWARD_RARE = 100000000;
         #endregion
 
         #region App Prefixes
+        /// <summary>Storage prefix for plant id.</summary>
         private static readonly byte[] PREFIX_PLANT_ID = new byte[] { 0x20 };
+        /// <summary>Storage prefix for plants.</summary>
         private static readonly byte[] PREFIX_PLANTS = new byte[] { 0x21 };
+        /// <summary>Storage prefix for garden id.</summary>
         private static readonly byte[] PREFIX_GARDEN_ID = new byte[] { 0x22 };
+        /// <summary>Storage prefix for gardens.</summary>
         private static readonly byte[] PREFIX_GARDENS = new byte[] { 0x23 };
+        /// <summary>Storage prefix for user stats.</summary>
         private static readonly byte[] PREFIX_USER_STATS = new byte[] { 0x24 };
+        /// <summary>Storage prefix for user plants.</summary>
         private static readonly byte[] PREFIX_USER_PLANTS = new byte[] { 0x25 };
+        /// <summary>Storage prefix for user plant count.</summary>
         private static readonly byte[] PREFIX_USER_PLANT_COUNT = new byte[] { 0x26 };
+        /// <summary>Storage prefix for season.</summary>
         private static readonly byte[] PREFIX_SEASON = new byte[] { 0x27 };
+        /// <summary>Storage prefix for total harvested.</summary>
         private static readonly byte[] PREFIX_TOTAL_HARVESTED = new byte[] { 0x28 };
+        /// <summary>Storage prefix for total rewards.</summary>
         private static readonly byte[] PREFIX_TOTAL_REWARDS = new byte[] { 0x29 };
+        /// <summary>Storage prefix for water count.</summary>
         private static readonly byte[] PREFIX_WATER_COUNT = new byte[] { 0x2A };
         #endregion
 

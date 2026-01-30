@@ -11,6 +11,14 @@ Store photo memories on Neo per wallet address, with optional AES-GCM encryption
 | **Version** | 1.1.0 |
 | **Framework** | Vue 3 (uni-app) |
 
+
+## How It Works
+
+1. **Upload Photos**: Select and encrypt photos before uploading
+2. **Encryption**: Photos are encrypted client-side using AES-256
+3. **On-Chain Storage**: Metadata and encryption references are stored on Neo
+4. **Share Album**: Create shared albums with specific viewers
+5. **Permanent Access**: Photos remain accessible as long as the contract exists
 ## Features
 
 - Per-wallet album indexing (each address owns its own album)

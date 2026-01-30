@@ -9,6 +9,20 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Stats Update
 
+        /// <summary>
+        /// Update player statistics after ticket purchase.
+        /// 
+        /// EFFECTS:
+        /// - Increments total tickets
+        /// - Adds to total spent
+        /// - Increments rounds played
+        /// - Sets join time for new players
+        /// - Awards eligible achievements
+        /// </summary>
+        /// <param name="player">Player address</param>
+        /// <param name="tickets">Number of tickets purchased</param>
+        /// <param name="cost">Total cost in GAS</param>
+        /// <param name="isNew">Whether this is a new player</param>
         private static void UpdatePlayerStatsOnPurchase(UInt160 player, BigInteger tickets, BigInteger cost, bool isNew)
         {
             PlayerStats stats = GetPlayerStats(player);
@@ -29,6 +43,19 @@ namespace NeoMiniAppPlatform.Contracts
             CheckAchievements(player, stats);
         }
 
+        /// <summary>
+        /// Update player statistics after winning.
+        /// 
+        /// EFFECTS:
+        /// - Increments total wins
+        /// - Adds to total won
+        /// - Increments consecutive wins
+        /// - Updates best win streak if applicable
+        /// - Updates highest win if applicable
+        /// - Awards eligible achievements
+        /// </summary>
+        /// <param name="player">Player address</param>
+        /// <param name="prize">Prize amount won</param>
         private static void UpdatePlayerStatsOnWin(UInt160 player, BigInteger prize)
         {
             PlayerStats stats = GetPlayerStats(player);

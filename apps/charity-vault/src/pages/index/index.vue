@@ -1,22 +1,52 @@
 <template>
   <view class="theme-charity-vault">
-    <DesktopLayout title="Charity Vault" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
-      <!-- Chain Warning - Framework Component -->
+    <ResponsiveLayout
+      :title="t('title')"
+      :nav-items="navTabs"
+      :active-tab="activeTab"
+      :show-sidebar="isDesktop"
+      layout="sidebar"
+      @tab-change="activeTab = $event"
+    >
+      <!-- Chain Warning -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
-      <!-- Campaigns Tab -->
-      <view v-if="activeTab === 'campaigns'" class="tab-content scrollable">
-        <!-- Category Filter -->
-        <view class="category-filter">
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="sidebar-stats">
+          <text class="sidebar-title">{{ t("totalRaised") }}</text>
+          <text class="sidebar-value">{{ totalRaised }} GAS</text>
+        </view>
+
+        <view class="sidebar-categories">
+          <text class="sidebar-title">{{ t("categories") }}</text>
           <view
             v-for="cat in categories"
             :key="cat.id"
-            class="category-chip"
+            class="category-item"
             :class="{ active: selectedCategory === cat.id }"
             @click="selectedCategory = cat.id"
           >
-            <text>{{ cat.label }}</text>
+            <text class="category-name">{{ cat.label }}</text>
           </view>
+        </view>
+      </template>
+
+      <!-- Campaigns Tab -->
+      <view v-if="activeTab === 'campaigns'" class="tab-content">
+        <!-- Mobile: Category Filter -->
+        <view v-if="!isDesktop" class="category-filter">
+          <scroll-view scroll-x class="category-scroll">
+            <view
+              v-for="cat in categories"
+              :key="cat.id"
+              class="category-chip"
+              :class="{ active: selectedCategory === cat.id }"
+              @click="selectedCategory = cat.id"
+            >
+              <text>{{ cat.label }}</text>
+            </view>
+          </scroll-view>
         </view>
 
         <!-- Campaign List -->
@@ -78,7 +108,7 @@
       <view v-if="errorMessage" class="error-toast">
         <text>{{ errorMessage }}</text>
       </view>
-    </DesktopLayout>
+    </ResponsiveLayout>
   </view>
 </template>
 
@@ -90,7 +120,7 @@ import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 import { useI18n } from "@/composables/useI18n";
-import { DesktopLayout, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import CampaignCard from "./components/CampaignCard.vue";
 import CampaignDetail from "./components/CampaignDetail.vue";

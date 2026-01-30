@@ -85,6 +85,34 @@ npm run dev
 npm run build
 ```
 
+## Usage
+
+### Creating a Protection Policy
+
+1. **Connect Wallet**: Link your Neo N3 wallet to the application
+2. **Select Assets**: Choose which assets to include in the protection policy
+3. **Set Triggers**: Define conditions that trigger protective actions (price thresholds, time locks, etc.)
+4. **Configure Actions**: Specify what happens when triggers are met (alerts, automatic transfers, freezes)
+5. **Activate Policy**: Confirm and deploy your protection policy to the blockchain
+
+### Managing Policies
+
+1. View all active policies in your dashboard
+2. Monitor trigger conditions and policy status
+3. Edit or deactivate policies as needed
+4. Review policy execution history
+
+## How It Works
+
+Guardian Policy provides automated portfolio protection through smart contracts:
+
+1. **Condition Monitoring**: Policies continuously monitor on-chain conditions
+2. **Trigger Detection**: When conditions are met, the policy automatically executes
+3. **Protective Actions**: Actions can include notifications, asset transfers, or access restrictions
+4. **Non-Custodial**: You retain full control of your assets at all times
+5. **Customizable**: Create multiple policies with different triggers and actions
+6. **On-Chain Security**: All policy logic and execution is transparent and verifiable
+
 ## Assets
 
 - **Allowed Assets**: GAS

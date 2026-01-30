@@ -9,6 +9,27 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Service Callback
 
+        /// <summary>
+        /// Handle RNG service callback for lottery draws.
+        /// 
+        /// TRIGGERED BY: Oracle RNG service
+        /// 
+        /// PROCESS:
+        /// - Validates callback from authorized gateway
+        /// - Retrieves round data from request ID
+        /// - If failed: clears draw pending flag
+        /// - If successful: processes draw with random result
+        /// 
+        /// SECURITY:
+        /// - Validates request data exists
+        /// - Validates result data present on success
+        /// </summary>
+        /// <param name="requestId">RNG request ID</param>
+        /// <param name="appId">Application ID</param>
+        /// <param name="serviceType">Service type</param>
+        /// <param name="success">Whether RNG request succeeded</param>
+        /// <param name="result">Random result bytes</param>
+        /// <param name="error">Error message if failed</param>
         public static void OnServiceCallback(
             BigInteger requestId, string appId, string serviceType,
             bool success, ByteString result, string error)

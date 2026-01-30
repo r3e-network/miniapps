@@ -10,6 +10,9 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Internal Helpers
 
+        /// <summary>Serialize and store bet data.</summary>
+        /// <param name="betId">Bet identifier</param>
+        /// <param name="bet">Bet data struct</param>
         private static void StoreBet(BigInteger betId, BetData bet)
         {
             Storage.Put(Storage.CurrentContext,
@@ -17,6 +20,9 @@ namespace NeoMiniAppPlatform.Contracts
                 StdLib.Serialize(bet));
         }
 
+        /// <summary>Add a bet to user's bet history.</summary>
+        /// <param name="player">Player address</param>
+        /// <param name="betId">Bet identifier</param>
         private static void AddUserBet(UInt160 player, BigInteger betId)
         {
             byte[] countKey = Helper.Concat(PREFIX_USER_BET_COUNT, player);
@@ -36,6 +42,9 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, countKey, count + 1);
         }
 
+        /// <summary>Serialize and store player statistics.</summary>
+        /// <param name="player">Player address</param>
+        /// <param name="stats">Player stats struct</param>
         private static void StorePlayerStats(UInt160 player, PlayerStats stats)
         {
             Storage.Put(Storage.CurrentContext,
@@ -43,6 +52,9 @@ namespace NeoMiniAppPlatform.Contracts
                 StdLib.Serialize(stats));
         }
 
+        /// <summary>Convert bytes to positive BigInteger.</summary>
+        /// <param name="bytes">Byte array</param>
+        /// <returns>Positive BigInteger value</returns>
         private static BigInteger ToPositiveInteger(byte[] bytes)
         {
             byte[] unsigned = new byte[bytes.Length + 1];

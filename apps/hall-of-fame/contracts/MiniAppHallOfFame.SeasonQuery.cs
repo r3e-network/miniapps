@@ -10,6 +10,21 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Season Query
 
+        /// <summary>
+        /// Get detailed information about a specific season.
+        /// 
+        /// RETURNS:
+        /// - id: Season ID
+        /// - startTime: Season start timestamp
+        /// - endTime: Season end timestamp
+        /// - totalVotes: Total GAS votes in season
+        /// - voterCount: Number of unique voters
+        /// - active: Whether season is active
+        /// - settled: Whether season is settled
+        /// - remainingTime: Seconds remaining (if active)
+        /// </summary>
+        /// <param name="seasonId">Season ID to query</param>
+        /// <returns>Map of season details</returns>
         [Safe]
         public static Map<string, object> GetSeasonDetails(BigInteger seasonId)
         {

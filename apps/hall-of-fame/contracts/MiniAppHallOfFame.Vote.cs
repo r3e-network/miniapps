@@ -9,6 +9,34 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Vote Method
 
+        /// <summary>
+        /// Cast a vote for a nominee in the current season.
+        /// 
+        /// REQUIREMENTS:
+        /// - Platform not globally paused
+        /// - Minimum vote: 0.1 GAS
+        /// - Active season must be running
+        /// - Season must not have ended
+        /// - Voter must be authenticated (CheckWitness or Gateway)
+        /// - Nominee must exist in category
+        /// - Valid payment receipt for vote amount
+        /// 
+        /// EFFECTS:
+        /// - Updates nominee vote totals
+        /// - Updates season totals
+        /// - Updates user statistics
+        /// - Increases total pool
+        /// - Emits VoteRecorded event
+        /// 
+        /// PLATFORM FEE: 5% deducted from vote amount
+        /// VOTER REWARD: 10% of season pool distributed to voters
+        /// </summary>
+        /// <param name="voter">Address of the voter</param>
+        /// <param name="category">Category being voted in</param>
+        /// <param name="nominee">Name of nominee being voted for</param>
+        /// <param name="amount">Vote amount in GAS (neo-atomic units)</param>
+        /// <param name="receiptId">Payment receipt ID for validation</param>
+        /// <exception cref="Exception">If validation fails or unauthorized</exception>
         public static void Vote(UInt160 voter, string category, string nominee, BigInteger amount, BigInteger receiptId)
         {
             ValidateNotGloballyPaused(APP_ID);

@@ -8,7 +8,15 @@
       { id: 'docs', label: t('docs'), icon: 'Book' },
     ]"
     @tab-change="onTabChange"
-  >
+  
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <view class="container">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -76,7 +84,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+
+// Responsive state
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 import { ResponsiveLayout, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
@@ -351,5 +368,50 @@ const copyToClipboard = (text: string) => {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+  .container {
+    padding: 16px;
+    gap: 16px;
+  }
+  .title {
+    font-size: 22px;
+  }
+  .subtitle {
+    font-size: 13px;
+  }
+  .textarea {
+    height: 100px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .container {
+    padding: 32px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .title {
+    font-size: 32px;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

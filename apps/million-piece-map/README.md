@@ -85,6 +85,34 @@ npm run dev
 npm run build
 ```
 
+## Usage
+
+### Claiming Map Pieces
+
+1. **Connect Wallet**: Link your Neo N3 wallet to the application
+2. **Browse Map**: Explore the world map divided into claimable pieces
+3. **Select Piece**: Choose an available piece to claim
+4. **Pay Fee**: Submit the required GAS to claim ownership
+5. **Personalize**: Add your name, message, or color to your piece
+
+### Trading Pieces
+
+1. View your owned pieces in your portfolio
+2. List pieces for sale at your desired price
+3. Browse pieces listed by other users
+4. Purchase pieces to expand your territory
+
+## How It Works
+
+Million Piece Map creates a collaborative ownership game:
+
+1. **World Division**: The world map is divided into millions of unique, ownable pieces
+2. **Ownership NFTs**: Each piece is represented as an NEP-11 NFT
+3. **Claim System**: Unowned pieces can be claimed by paying a fee
+4. **Transferable**: Owners can sell or trade their pieces freely
+5. **Visual Representation**: The map updates in real-time showing ownership
+6. **Community Creation**: Together, users create a collaborative digital artwork
+
 ## Assets
 
 - **Allowed Assets**: GAS

@@ -11,6 +11,14 @@ Hacker bounty vaults secured by SHA-256 hashes
 | **Version** | 1.0.0 |
 | **Framework** | Vue 3 (uni-app) |
 
+
+## How It Works
+
+1. **Deposit Assets**: Send GAS or NEO to the vault contract
+2. **Security Level**: Choose security configuration
+3. **Time-Lock**: Assets are locked for a configurable period
+4. **Emergency Recovery**: Set up recovery addresses for edge cases
+5. **Claim**: After lock period, withdraw to your address
 ## Features
 
 - Create bounty vaults locked by a secret hash

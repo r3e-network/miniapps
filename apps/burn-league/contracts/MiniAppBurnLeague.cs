@@ -10,13 +10,21 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for burn league lifecycle
+    /// <summary>Event emitted when gas burned.</summary>
     public delegate void GasBurnedHandler(UInt160 burner, BigInteger amount, BigInteger seasonId);
+    /// <summary>Event emitted when reward claimed.</summary>
     public delegate void RewardClaimedHandler(UInt160 claimer, BigInteger reward, BigInteger seasonId);
+    /// <summary>Event emitted when season started.</summary>
     public delegate void SeasonStartedHandler(BigInteger seasonId, BigInteger startTime, BigInteger endTime);
+    /// <summary>Event emitted when season ended.</summary>
     public delegate void SeasonEndedHandler(BigInteger seasonId, UInt160 winner, BigInteger totalBurned);
+    /// <summary>Event emitted when achievement unlocked.</summary>
     public delegate void AchievementUnlockedHandler(UInt160 user, BigInteger achievementId, string name);
+    /// <summary>Event emitted when leaderboard updated.</summary>
     public delegate void LeaderboardUpdatedHandler(BigInteger seasonId, UInt160 user, BigInteger rank);
+    /// <summary>Event emitted when streak bonus.</summary>
     public delegate void StreakBonusHandler(UInt160 user, BigInteger streakDays, BigInteger bonusMultiplier);
+    /// <summary>Event emitted when burner badge earned.</summary>
     public delegate void BurnerBadgeEarnedHandler(UInt160 burner, BigInteger badgeType, string badgeName);
 
     /// <summary>
@@ -47,7 +55,10 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppBurnLeague : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the burn-league miniapp.</summary>
         private const string APP_ID = "miniapp-burn-league";
+        /// <summary>Minimum value for operation.</summary>
+        /// <summary>Configuration constant .</summary>
         private const long MIN_BURN = 10000000;           // 0.1 GAS minimum
         private const long TIER1_THRESHOLD = 100000000;   // 1 GAS - 1x multiplier
         private const long TIER2_THRESHOLD = 1000000000;  // 10 GAS - 1.5x multiplier
@@ -59,23 +70,41 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Prefixes (0x20+ to avoid collision with MiniAppBase)
+        /// <summary>Storage prefix for season id.</summary>
         private static readonly byte[] PREFIX_SEASON_ID = new byte[] { 0x20 };
+        /// <summary>Storage prefix for seasons.</summary>
         private static readonly byte[] PREFIX_SEASONS = new byte[] { 0x21 };
+        /// <summary>Storage prefix for user season burns.</summary>
         private static readonly byte[] PREFIX_USER_SEASON_BURNS = new byte[] { 0x22 };
+        /// <summary>Storage prefix for user total burns.</summary>
         private static readonly byte[] PREFIX_USER_TOTAL_BURNS = new byte[] { 0x23 };
+        /// <summary>Storage prefix for user points.</summary>
         private static readonly byte[] PREFIX_USER_POINTS = new byte[] { 0x24 };
+        /// <summary>Storage prefix for total burned.</summary>
         private static readonly byte[] PREFIX_TOTAL_BURNED = new byte[] { 0x25 };
+        /// <summary>Storage prefix for reward pool.</summary>
         private static readonly byte[] PREFIX_REWARD_POOL = new byte[] { 0x26 };
+        /// <summary>Storage prefix for user streak.</summary>
         private static readonly byte[] PREFIX_USER_STREAK = new byte[] { 0x27 };
+        /// <summary>Storage prefix for user last burn.</summary>
         private static readonly byte[] PREFIX_USER_LAST_BURN = new byte[] { 0x28 };
+        /// <summary>Storage prefix for achievements.</summary>
         private static readonly byte[] PREFIX_ACHIEVEMENTS = new byte[] { 0x29 };
+        /// <summary>Storage prefix for user achievements.</summary>
         private static readonly byte[] PREFIX_USER_ACHIEVEMENTS = new byte[] { 0x2A };
+        /// <summary>Storage prefix for leaderboard.</summary>
         private static readonly byte[] PREFIX_LEADERBOARD = new byte[] { 0x2B };
+        /// <summary>Storage prefix for user rank.</summary>
         private static readonly byte[] PREFIX_USER_RANK = new byte[] { 0x2C };
+        /// <summary>Storage prefix for total participants.</summary>
         private static readonly byte[] PREFIX_TOTAL_PARTICIPANTS = new byte[] { 0x2D };
+        /// <summary>Storage prefix for user rewards claimed.</summary>
         private static readonly byte[] PREFIX_USER_REWARDS_CLAIMED = new byte[] { 0x2E };
+        /// <summary>Storage prefix for burner stats.</summary>
         private static readonly byte[] PREFIX_BURNER_STATS = new byte[] { 0x2F };
+        /// <summary>Storage prefix for burner badges.</summary>
         private static readonly byte[] PREFIX_BURNER_BADGES = new byte[] { 0x30 };
+        /// <summary>Storage prefix for total burners.</summary>
         private static readonly byte[] PREFIX_TOTAL_BURNERS = new byte[] { 0x31 };
         #endregion
 

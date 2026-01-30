@@ -17,6 +17,14 @@ Earn GAS by checking in daily
 
 Check in every day to build your streak. Complete 7 consecutive days to earn 1 GAS, then earn 1.5 GAS for every additional 7 days. Miss a day and your streak resets!
 
+
+## How It Works
+
+1. **Check In Daily**: Users check in once per UTC day to earn rewards
+2. **Streak Bonus**: Consecutive check-ins increase reward multipliers
+3. **Milestone Rewards**: Special bonuses are awarded at day 7, 14, 30, and beyond
+4. **On-Chain Verification**: All check-ins are recorded and verifiable on Neo
+5. **No Gas Fee**: Check-ins are free - platform sponsors the gas costs
 ## Features
 
 - **UTC Day Reset**: Global countdown to UTC 00:00, same for all users
@@ -28,6 +36,91 @@ Check in every day to build your streak. Complete 7 consecutive days to earn 1 G
 2. Check in once per UTC day
 3. Build your streak to earn rewards
 4. Claim your GAS rewards anytime
+
+## Usage
+
+### Getting Started
+
+1. **Launch the App**: Open Daily Check-in from your Neo MiniApp dashboard
+2. **Connect Your Wallet**: Click "Connect Wallet" to link your Neo N3 wallet
+3. **Check In**: Click the check-in button to claim your daily reward
+
+### Check-in Mechanics
+
+1. **Daily Check-in**:
+   - Click "Check In" to claim your daily reward
+   - Check-ins reset at UTC 00:00 (midnight)
+   - Only one check-in per UTC day is allowed
+
+2. **Streak Building**:
+   - Check in every day to maintain your streak
+   - Missing a day resets your streak to 0
+   - Consistent check-ins maximize your rewards
+
+3. **Reward Schedule**:
+   | Streak Length | Reward per Check-in |
+   |---------------|---------------------|
+   | Day 1-6 | 0 GAS (build streak) |
+   | Day 7 | 1 GAS |
+   | Day 8-13 | 0 GAS (build streak) |
+   | Day 14+ | 1.5 GAS every 7 days |
+
+### Claiming Rewards
+
+1. **First 7 Days**: Check in daily to unlock your first reward
+2. **After Day 7**: Earn 1 GAS per check-in
+3. **After Day 14**: Earn 1.5 GAS per check-in
+4. **Claim Anytime**: GAS rewards can be claimed at any time
+
+### Maximizing Rewards
+
+- **Consistency is Key**: Check in every UTC day without missing
+- **Track Your Streak**: Monitor your current streak in the app
+- **Set Reminders**: Use the countdown timer to know when you can check in
+
+### Streak Recovery
+
+**Unfortunately, missed days cannot be recovered.**
+- Streak resets to 0 if you miss a day
+- Plan your check-ins around your schedule
+- Consider time zone differences
+
+### FAQ
+
+**What time does the day reset?**
+UTC 00:00 (midnight Coordinated Universal Time).
+
+**Can I check in twice in one day?**
+No, only one check-in is allowed per UTC day.
+
+**Do I need to claim rewards separately?**
+No, rewards are automatically added to your balance.
+
+**What happens if I miss a day?**
+Your streak resets to day 0.
+
+**Can I see my history?**
+Check the app for your current streak and reward history.
+
+### Troubleshooting
+
+**Check-in button disabled:**
+- You may have already checked in today
+- Wait for UTC reset
+
+**Streak showing incorrectly:**
+- Refresh the app
+- Check if you've missed any days
+
+**Rewards not showing:**
+- Check your GAS balance in wallet
+- Transaction may still be processing
+
+### Support
+
+For reward questions, refer to the Neo documentation.
+
+For technical issues, contact the Neo MiniApp team.
 
 ## Permissions
 

@@ -63,3 +63,35 @@ NEP-11 event tickets with QR check-in.
 | **Explorer** | `https://neotube.io` |
 
 > Contract deployment is pending; `neo-manifest.json` keeps empty addresses until deployment.
+
+## Usage
+
+### For Event Creators
+
+1. **Create Event**: Set event title, venue, date/time, and ticket supply limit
+2. **Configure Details**: Add event description and any special requirements
+3. **Issue Tickets**: Send tickets to attendee wallet addresses
+4. **Manage Check-ins**: Scan attendee QR codes and mark tickets as used at the event
+
+### For Attendees
+
+1. **Receive Ticket**: Get ticket transferred to your Neo wallet address
+2. **View Ticket**: Open "My Tickets" to see event details and QR code
+3. **Show QR**: Present your QR code at the event entrance for scanning
+4. **Verify Entry**: Organizer scans and validates your ticket on the blockchain
+
+## How It Works
+
+Event Ticket Pass uses NEP-11 non-fungible tokens for ticketing:
+
+1. **NFT Tickets**: Each ticket is a unique NEP-11 token on Neo N3 blockchain
+2. **Event Creation**: Organizers create events with defined supply and metadata
+3. **Ticket Distribution**: Tickets are minted and transferred to attendee wallets
+4. **QR Code Generation**: Each ticket generates a scannable QR code containing token ID
+5. **On-Chain Verification**: Organizers verify authenticity by checking the blockchain
+6. **Anti-Fraud**: Tickets can only be used once through the check-in mechanism
+7. **Transferability**: Tickets can be transferred between wallets if allowed by the event
+
+## License
+
+MIT License - R3E Network

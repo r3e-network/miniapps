@@ -10,13 +10,21 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for governance mercenary lifecycle
+    /// <summary>Event emitted when merc deposit.</summary>
     public delegate void MercDepositHandler(UInt160 depositor, BigInteger amount, BigInteger newTotal);
+    /// <summary>Event emitted when merc withdraw.</summary>
     public delegate void MercWithdrawHandler(UInt160 depositor, BigInteger amount, BigInteger reward);
+    /// <summary>Event emitted when bid placed.</summary>
     public delegate void BidPlacedHandler(BigInteger epoch, UInt160 candidate, BigInteger bidAmount);
+    /// <summary>Event emitted when epoch started.</summary>
     public delegate void EpochStartedHandler(BigInteger epoch, BigInteger startTime, BigInteger endTime);
+    /// <summary>Event emitted when epoch settled.</summary>
     public delegate void EpochSettledHandler(BigInteger epoch, UInt160 winner, BigInteger totalBid);
+    /// <summary>Event emitted when reward claimed.</summary>
     public delegate void RewardClaimedHandler(UInt160 depositor, BigInteger epoch, BigInteger reward);
+    /// <summary>Event emitted when delegation active.</summary>
     public delegate void DelegationActiveHandler(BigInteger epoch, UInt160 winner, BigInteger votingPower);
+    /// <summary>Event emitted when depositor badge earned.</summary>
     public delegate void DepositorBadgeEarnedHandler(UInt160 depositor, BigInteger badgeType, string badgeName);
 
     /// <summary>
@@ -46,24 +54,40 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppGovMerc : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the gov-merc miniapp.</summary>
         private const string APP_ID = "miniapp-gov-merc";
         private const int EPOCH_DURATION_SECONDS = 604800;  // 7 days
+        /// <summary>Minimum value for operation.</summary>
+        /// <summary>Configuration constant .</summary>
         private const long MIN_DEPOSIT = 100000000;       // 1 NEO minimum
+        /// <summary>Minimum value for operation.</summary>
+        /// <summary>Configuration constant .</summary>
         private const long MIN_BID = 10000000;            // 0.1 GAS minimum
         private const int PLATFORM_FEE_BPS = 500;         // 5% platform fee
         #endregion
 
         #region App Prefixes (0x20+ to avoid collision with MiniAppBase)
+        /// <summary>Storage prefix for deposits.</summary>
         private static readonly byte[] PREFIX_DEPOSITS = new byte[] { 0x20 };
+        /// <summary>Storage prefix for total pool.</summary>
         private static readonly byte[] PREFIX_TOTAL_POOL = new byte[] { 0x21 };
+        /// <summary>Storage prefix for current epoch.</summary>
         private static readonly byte[] PREFIX_CURRENT_EPOCH = new byte[] { 0x22 };
+        /// <summary>Storage prefix for epochs.</summary>
         private static readonly byte[] PREFIX_EPOCHS = new byte[] { 0x23 };
+        /// <summary>Storage prefix for epoch bids.</summary>
         private static readonly byte[] PREFIX_EPOCH_BIDS = new byte[] { 0x24 };
+        /// <summary>Storage prefix for user rewards.</summary>
         private static readonly byte[] PREFIX_USER_REWARDS = new byte[] { 0x25 };
+        /// <summary>Storage prefix for total distributed.</summary>
         private static readonly byte[] PREFIX_TOTAL_DISTRIBUTED = new byte[] { 0x26 };
+        /// <summary>Storage prefix for depositor stats.</summary>
         private static readonly byte[] PREFIX_DEPOSITOR_STATS = new byte[] { 0x27 };
+        /// <summary>Storage prefix for depositor badges.</summary>
         private static readonly byte[] PREFIX_DEPOSITOR_BADGES = new byte[] { 0x28 };
+        /// <summary>Storage prefix for total depositors.</summary>
         private static readonly byte[] PREFIX_TOTAL_DEPOSITORS = new byte[] { 0x29 };
+        /// <summary>Storage prefix for total bidders.</summary>
         private static readonly byte[] PREFIX_TOTAL_BIDDERS = new byte[] { 0x2A };
         #endregion
 

@@ -10,6 +10,24 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Platform Stats
 
+        /// <summary>
+        /// Get comprehensive platform statistics.
+        /// 
+        /// RETURNS:
+        /// - totalLoans: Total loans executed
+        /// - totalBorrowed: Total amount borrowed
+        /// - totalFees: Total fees collected
+        /// - totalBorrowers: Number of unique borrowers
+        /// - totalProviders: Number of liquidity providers
+        /// - poolBalance: Current pool liquidity
+        /// - minLoan: Minimum loan amount
+        /// - maxLoan: Maximum loan amount
+        /// - feeBasisPoints: Fee rate in basis points
+        /// - loanCooldownSeconds: Cooldown between loans
+        /// - maxDailyLoans: Daily loan limit per borrower
+        /// - providerFeeShare: Provider percentage of fees
+        /// </summary>
+        /// <returns>Map of platform statistics</returns>
         [Safe]
         public static Map<string, object> GetPlatformStats()
         {
@@ -29,6 +47,19 @@ namespace NeoMiniAppPlatform.Contracts
             return stats;
         }
 
+        /// <summary>
+        /// Get borrower's current eligibility status.
+        /// 
+        /// RETURNS:
+        /// - poolBalance: Current pool liquidity
+        /// - maxAvailableLoan: Maximum loan available now
+        /// - cooldownRemaining: Seconds until can borrow again
+        /// - canBorrow: Whether borrower can take loan now
+        /// - dailyLoansUsed: Loans taken today
+        /// - dailyLoansRemaining: Loans remaining today
+        /// </summary>
+        /// <param name="borrower">Borrower address</param>
+        /// <returns>Map of eligibility info</returns>
         [Safe]
         public static Map<string, object> GetBorrowerEligibility(UInt160 borrower)
         {

@@ -85,6 +85,34 @@ npm run dev
 npm run build
 ```
 
+## Usage
+
+### Getting a Tarot Reading
+
+1. **Connect Wallet**: Link your Neo N3 wallet to the application
+2. **Focus Your Question**: Think about what guidance you seek
+3. **Pay Fee**: Submit GAS payment for the reading
+4. **Draw Cards**: The smart contract draws cards using verifiable randomness
+5. **Receive Reading**: View your cards and their interpretations on-chain
+
+### Understanding Your Reading
+
+1. View drawn cards with their positions (Past, Present, Future, etc.)
+2. Read the meaning of each card as revealed by the contract
+3. Consider the combined interpretation of all cards
+4. Save or share your reading as a permanent blockchain record
+
+## How It Works
+
+On-Chain Tarot combines ancient divination with blockchain technology:
+
+1. **Verifiable Randomness**: Card draws use cryptographically secure randomness from the blockchain
+2. **Immutable Record**: Each reading is permanently recorded on Neo N3
+3. **Fair Drawing**: No one can predict or manipulate the card selection
+4. **Smart Contract Interpretation**: Card meanings are stored and interpreted on-chain
+5. **Transparent Process**: The entire drawing process is auditable and verifiable
+6. **Payment Integration**: GAS payments fund the randomness oracle and platform
+
 ## Assets
 
 - **Allowed Assets**: GAS

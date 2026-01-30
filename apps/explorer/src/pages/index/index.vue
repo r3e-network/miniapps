@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-explorer" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-explorer" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <view class="app-container">
       <!-- Network Tab -->
       <view v-if="activeTab === 'network'" class="tab-content">
@@ -52,6 +60,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+
+// Responsive state
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+const handleResize = () => { windowWidth.value = window.innerWidth; };
 import { formatNumber } from "@shared/utils/format";
 import { useI18n } from "@/composables/useI18n";
 import { useWallet } from "@neo/uniapp-sdk";
@@ -223,6 +237,11 @@ onMounted(() => {
   fetchStats();
   fetchRecentTxs();
   statsInterval = setInterval(fetchStats, 15000);
+  window.addEventListener('resize', handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
 });
 
 watch(selectedNetwork, () => {
@@ -342,5 +361,44 @@ onUnmounted(() => {
 .scrollable {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+  .app-container {
+    padding: 12px;
+    gap: 12px;
+  }
+  .tab-content {
+    gap: 12px;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .app-container {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .tab-content {
+    gap: 20px;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

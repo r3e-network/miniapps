@@ -39,6 +39,7 @@ namespace NeoMiniAppPlatform.Contracts
         #region NeoFS Configuration
         
         // Content size thresholds
+        /// <summary>Maximum allowed value .</summary>
         private const long MAX_ONCHAIN_SIZE = 1024;        // 1KB max on-chain
         private const long MAX_NEFOS_SIZE = 100 * 1024 * 1024;  // 100MB max per file
         
@@ -50,10 +51,15 @@ namespace NeoMiniAppPlatform.Contracts
         private const BigInteger CONTENT_TYPE_ARCHIVE = 5;
         
         // Additional storage prefixes (0x30+)
+        /// <summary>Storage prefix for record nefos container.</summary>
         private static readonly byte[] PREFIX_RECORD_NEFOS_CONTAINER = new byte[] { 0x30 };
+        /// <summary>Storage prefix for record nefos object.</summary>
         private static readonly byte[] PREFIX_RECORD_NEFOS_OBJECT = new byte[] { 0x31 };
+        /// <summary>Storage prefix for record nefos size.</summary>
         private static readonly byte[] PREFIX_RECORD_NEFOS_SIZE = new byte[] { 0x32 };
+        /// <summary>Storage prefix for record nefos type.</summary>
         private static readonly byte[] PREFIX_RECORD_NEFOS_TYPE = new byte[] { 0x33 };
+        /// <summary>Storage prefix for record verified hash.</summary>
         private static readonly byte[] PREFIX_RECORD_VERIFIED_HASH = new byte[] { 0x34 };
         
         #endregion
@@ -102,9 +108,12 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region NeoFS Events
         
-        public delegate void RecordStoredInNeoFSHandler(BigInteger recordId, string containerId, string objectId, BigInteger contentSize);
-        public delegate void RecordMigratedToNeoFSHandler(BigInteger recordId, string containerId, string objectId);
-        public delegate void RecordContentVerifiedHandler(BigInteger recordId, bool valid);
+        /// <summary>Event emitted when record stored in neo f s.</summary>
+    public delegate void RecordStoredInNeoFSHandler(BigInteger recordId, string containerId, string objectId, BigInteger contentSize);
+        /// <summary>Event emitted when record migrated to neo f s.</summary>
+    public delegate void RecordMigratedToNeoFSHandler(BigInteger recordId, string containerId, string objectId);
+        /// <summary>Event emitted when record content verified.</summary>
+    public delegate void RecordContentVerifiedHandler(BigInteger recordId, bool valid);
         
         [DisplayName("RecordStoredInNeoFS")]
         public static event RecordStoredInNeoFSHandler OnRecordStoredInNeoFS;

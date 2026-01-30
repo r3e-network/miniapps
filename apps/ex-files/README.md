@@ -11,11 +11,83 @@ Anonymous ex-partner database with encrypted records
 | **Version** | 1.0.0 |
 | **Framework** | Vue 3 (uni-app) |
 
+
+## How It Works
+
+1. **Add Records**: Store important file references and metadata on-chain
+2. **Categorize**: Organize files into custom categories
+3. **Share**: Share records with specific addresses or publicly
+4. **Verify**: All records have timestamp and creator verification
+5. **Retrieve**: Access your records anytime from any device
 ## Features
 
-- Dating
-- Anonymous
-- Database
+- Anonymous Records: Store encrypted records of ex-partners
+- Privacy-First: All data is encrypted and anonymous
+- Community Database: Contributions from the community
+
+## Usage
+
+### Getting Started
+
+1. **Launch the App**: Open The Ex-Files from your Neo MiniApp dashboard
+2. **Connect Wallet**: Link your Neo N3 wallet to participate
+3. **Browse Records**: View anonymous ex-partner records
+4. **Add Records**: Contribute to the database (requires payment)
+
+### Adding Records
+
+1. **Prepare Information**:
+   - Gather details about the ex-partner
+   - Ensure information is accurate and fair
+   - Consider the impact of your contribution
+
+2. **Submit Record**:
+   - Click "Add Record" or similar action
+   - Fill in the required information
+   - Pay the required GAS fee for submission
+
+3. **Verification**:
+   - Records may go through a review process
+   - Some records may require community verification
+   - Approved records become visible to others
+
+### Browsing Records
+
+1. **Search**: Use search to find specific records
+2. **Filter**: Filter by category or other criteria
+3. **View Details**: Click on a record to see full details
+
+### Privacy Considerations
+
+- **Anonymity**: Records are stored anonymously
+- **Encryption**: All data is encrypted on-chain
+- **Permanence**: Records cannot be easily deleted
+
+### Best Practices
+
+- **Accuracy**: Only add accurate information
+- **Fairness**: Be fair and balanced in descriptions
+- **Respect**: Consider privacy and legal implications
+
+### FAQ
+
+**Is this anonymous?**
+Yes, records are stored with encryption and no personal identifiers.
+
+**Can I remove my record?**
+Contact the app administrators for record removal requests.
+
+**Is there a cost to add records?**
+Yes, a small GAS fee is required for each submission.
+
+**How are records verified?**
+Records may go through community or admin verification.
+
+### Support
+
+For privacy questions, review the app's privacy policy.
+
+For technical issues, contact the Neo MiniApp team.
 
 ## Permissions
 

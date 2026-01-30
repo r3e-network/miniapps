@@ -11,6 +11,14 @@ On-chain blind box marketplace with escrowed prizes, transparent odds, and verif
 | **Version** | 2.0.0 |
 | **Framework** | Vue 3 (uni-app) |
 
+
+## How It Works
+
+1. **Acquire Gacha**: Use GAS to operate gacha machines
+2. **Random Drop**: Characters are selected using on-chain randomness
+3. **Rarity System**: Different characters have different rarity levels
+4. **Collection**: Build your collection of unique characters
+5. **Trade**: Characters can be transferred or traded
 ## Features
 
 - Creator-built gacha machines with escrowed inventory

@@ -85,6 +85,32 @@ npm run dev
 npm run build
 ```
 
+## Usage
+
+### Burning GAS
+
+1. **Connect Wallet**: Link your Neo N3 wallet to the application
+2. **Enter Amount**: Specify how much GAS you want to burn (minimum 1 GAS)
+3. **Confirm Transaction**: Review and sign the burn transaction
+4. **Earn Rewards**: Receive platform equity proportional to your burn contribution
+
+### Viewing Stats
+
+1. Navigate to the Stats tab to see total GAS burned
+2. Check your personal burn statistics and rank
+3. View the global leaderboard to see top burners
+4. Monitor the reward pool distribution
+
+## How It Works
+
+Burn League operates on a deflationary tokenomics model:
+
+1. **Token Burning**: Users permanently destroy GAS tokens by sending them to the burn contract
+2. **Leaderboard System**: All burns are tracked and ranked on a public leaderboard
+3. **Reward Distribution**: Platform equity is distributed to burners based on their contribution
+4. **Deflationary Effect**: As GAS is burned, the circulating supply decreases, potentially increasing value
+5. **Transparency**: All burn events are recorded on-chain and publicly verifiable
+
 ## Assets
 
 - **Allowed Assets**: GAS

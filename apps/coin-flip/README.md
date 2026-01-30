@@ -9,8 +9,16 @@
 | **App ID** | `miniapp-coinflip` |
 | **Category** | Gaming |
 | **Version** | 2.0.0 |
-| **Framework** | Vue 3 (uni-app) |
+| **Framework** | Vue 3 (uni-app)
 
+
+## How It Works
+
+1. **Place Bet**: Players bet GAS on either heads or tails
+2. **Randomness**: The Neo blockchain provides verifiable randomness via NCG
+3. **Outcome Determination**: The result is determined by on-chain randomness
+4. **Rewards**: Winners receive payouts based on the odds
+5. **House Edge**: A small house edge funds the platform运营
 ## Features
 
 - **Provably Fair**: TEE VRF randomness ensures transparent outcome
@@ -19,6 +27,36 @@
 - **Achievement System**: 10 unlockable achievements
 - **Streak Bonuses**: Win streak bonuses up to 5% extra payout
 - **Bet History**: Complete bet history per player
+
+## Usage
+
+### Placing a Bet
+1. Connect your Neo wallet
+2. Select **Heads** or **Tails**
+3. Choose your bet amount (0.1 - 50 GAS)
+4. Click **Flip Coin** to place your bet
+5. Confirm the transaction in your wallet
+
+### Winning
+- Correct guess: Win 2x your bet (minus 3% platform fee)
+- Jackpot win: Win the current jackpot pool (0.5% chance)
+
+### Streak Bonuses
+| Streak | Bonus |
+|--------|-------|
+| 3 wins | +1% |
+| 5 wins | +3% |
+| 10 wins | +5% |
+
+### Tracking Progress
+- **Stats Tab**: View your total bets, wins, losses, and profit/loss
+- **History Tab**: See detailed history of all your bets
+- **Achievements Tab**: Track progress toward unlockable badges
+
+### Responsible Gaming
+- Set personal betting limits
+- Never bet more than you can afford to lose
+- Take breaks between sessions
 
 ## Permissions
 

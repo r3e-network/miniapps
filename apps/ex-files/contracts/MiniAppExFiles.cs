@@ -10,12 +10,19 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for ExFiles lifecycle
+    /// <summary>Event emitted when record created.</summary>
     public delegate void RecordCreatedHandler(BigInteger recordId, UInt160 creator, ByteString dataHash, BigInteger category);
+    /// <summary>Event emitted when record queried.</summary>
     public delegate void RecordQueriedHandler(BigInteger recordId, UInt160 querier, BigInteger queryType);
+    /// <summary>Event emitted when record deleted.</summary>
     public delegate void RecordDeletedHandler(BigInteger recordId, UInt160 owner);
+    /// <summary>Event emitted when record updated.</summary>
     public delegate void RecordUpdatedHandler(BigInteger recordId, BigInteger newRating, string updateReason);
+    /// <summary>Event emitted when record verified.</summary>
     public delegate void RecordVerifiedHandler(BigInteger recordId, UInt160 verifier, bool verified);
+    /// <summary>Event emitted when report submitted.</summary>
     public delegate void ReportSubmittedHandler(BigInteger recordId, UInt160 reporter, string reason);
+    /// <summary>Event emitted when user badge earned.</summary>
     public delegate void UserBadgeEarnedHandler(UInt160 user, BigInteger badgeType, string badgeName);
 
     [DisplayName("MiniAppExFiles")]
@@ -48,27 +55,45 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppExFiles : MiniAppNeoFSBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the ex-files miniapp.</summary>
         private const string APP_ID = "miniapp-exfiles";
+        /// <summary>Fee rate .</summary>
         private const long CREATE_FEE = 10000000;
+        /// <summary>Fee rate .</summary>
         private const long QUERY_FEE = 5000000;
+        /// <summary>Fee rate .</summary>
         private const long UPDATE_FEE = 5000000;
+        /// <summary>Fee rate .</summary>
         private const long VERIFY_FEE = 20000000;
+        /// <summary>Fee rate .</summary>
         private const long REPORT_FEE = 10000000;
         private const int MAX_REASON_LENGTH = 500;
         #endregion
 
         #region App Prefixes
+        /// <summary>Storage prefix for record id.</summary>
         private static readonly byte[] PREFIX_RECORD_ID = new byte[] { 0x20 };
+        /// <summary>Storage prefix for records.</summary>
         private static readonly byte[] PREFIX_RECORDS = new byte[] { 0x21 };
+        /// <summary>Storage prefix for hash index.</summary>
         private static readonly byte[] PREFIX_HASH_INDEX = new byte[] { 0x22 };
+        /// <summary>Storage prefix for user stats.</summary>
         private static readonly byte[] PREFIX_USER_STATS = new byte[] { 0x23 };
+        /// <summary>Storage prefix for user records.</summary>
         private static readonly byte[] PREFIX_USER_RECORDS = new byte[] { 0x24 };
+        /// <summary>Storage prefix for user record count.</summary>
         private static readonly byte[] PREFIX_USER_RECORD_COUNT = new byte[] { 0x25 };
+        /// <summary>Storage prefix for reports.</summary>
         private static readonly byte[] PREFIX_REPORTS = new byte[] { 0x26 };
+        /// <summary>Storage prefix for total queries.</summary>
         private static readonly byte[] PREFIX_TOTAL_QUERIES = new byte[] { 0x27 };
+        /// <summary>Storage prefix for total verified.</summary>
         private static readonly byte[] PREFIX_TOTAL_VERIFIED = new byte[] { 0x28 };
+        /// <summary>Storage prefix for user badges.</summary>
         private static readonly byte[] PREFIX_USER_BADGES = new byte[] { 0x29 };
+        /// <summary>Storage prefix for total users.</summary>
         private static readonly byte[] PREFIX_TOTAL_USERS = new byte[] { 0x2A };
+        /// <summary>Storage prefix for total reports.</summary>
         private static readonly byte[] PREFIX_TOTAL_REPORTS = new byte[] { 0x2B };
         #endregion
 

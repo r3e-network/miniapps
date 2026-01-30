@@ -10,6 +10,22 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Round Query
 
+        /// <summary>
+        /// Get detailed information about a lottery round.
+        /// 
+        /// RETURNS:
+        /// - id: Round ID
+        /// - totalTickets: Total tickets sold
+        /// - prizePool: Total prize pool amount
+        /// - participantCount: Number of participants
+        /// - winner: Winner address (if completed)
+        /// - winnerPrize: Winner prize amount (if completed)
+        /// - startTime: Round start timestamp
+        /// - endTime: Round end timestamp
+        /// - completed: Whether round is completed
+        /// </summary>
+        /// <param name="roundId">Round ID to query</param>
+        /// <returns>Map of round details (empty if not found)</returns>
         [Safe]
         public static Map<string, object> GetRoundDetails(BigInteger roundId)
         {

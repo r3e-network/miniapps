@@ -113,6 +113,32 @@ Unlock a matured capsule and withdraw funds.
 
 **Note**: Owner verification is done internally by the contract.
 
+## Usage
+
+### Creating a Capsule
+
+1. **Connect Wallet**: Link your Neo N3 wallet to the application
+2. **Select Amount**: Choose how much NEO to lock in the capsule
+3. **Set Duration**: Specify the lock period in days
+4. **Confirm Creation**: Review terms and confirm the transaction
+5. **Monitor Growth**: Watch your savings grow through automatic compounding
+
+### Unlocking a Capsule
+
+1. Wait for the lock period to complete
+2. Navigate to your active capsules
+3. Click "Unlock" to withdraw your matured NEO plus rewards
+4. **Early Withdrawal**: If you withdraw early, a penalty fee will be deducted
+
+## How It Works
+
+Compound Capsule uses time-locked savings with automatic compounding:
+
+1. **Time Lock Mechanism**: Your NEO is locked for a specified period, preventing impulsive withdrawals
+2. **Auto-Compounding**: Rewards are automatically reinvested during the lock period
+3. **Penalty System**: Early withdrawal incurs a penalty to encourage long-term saving
+4. **Smart Contract Security**: All operations are executed on-chain via audited smart contracts
+5. **Yield Generation**: Locked NEO generates yield through Neo network participation
 
 ## License
 

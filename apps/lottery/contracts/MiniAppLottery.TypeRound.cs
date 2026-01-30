@@ -11,6 +11,9 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Type-Specific Round Management
 
+        /// <summary>Get round data for a specific lottery type.</summary>
+        /// <param name="lotteryType">Lottery type identifier</param>
+        /// <returns>TypeRoundData for the type (default if not exists)</returns>
         [Safe]
         public static TypeRoundData GetTypeRound(byte lotteryType)
         {
@@ -33,6 +36,9 @@ namespace NeoMiniAppPlatform.Contracts
             return (TypeRoundData)StdLib.Deserialize(data);
         }
 
+        /// <summary>Store round data for a specific lottery type.</summary>
+        /// <param name="lotteryType">Lottery type identifier</param>
+        /// <param name="round">Round data to store</param>
         private static void StoreTypeRound(byte lotteryType, TypeRoundData round)
         {
             byte[] key = Helper.Concat(PREFIX_TYPE_ROUND, new byte[] { lotteryType });
@@ -43,6 +49,9 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region Type Pool Management
 
+        /// <summary>Get pool balance for a specific lottery type.</summary>
+        /// <param name="lotteryType">Lottery type identifier</param>
+        /// <returns>Pool balance in GAS</returns>
         [Safe]
         public static BigInteger GetTypePool(byte lotteryType)
         {
@@ -51,6 +60,9 @@ namespace NeoMiniAppPlatform.Contracts
             return data == null ? 0 : (BigInteger)data;
         }
 
+        /// <summary>Update pool stats when tickets purchased.</summary>
+        /// <param name="lotteryType">Lottery type identifier</param>
+        /// <param name="amount">Amount added to pool</param>
         private static void UpdateTypePoolStats(byte lotteryType, BigInteger amount)
         {
             // Update pool balance
@@ -66,6 +78,15 @@ namespace NeoMiniAppPlatform.Contracts
 
         #region Type Statistics
 
+        /// <summary>
+        /// Statistics for a lottery type.
+        /// 
+        /// FIELDS:
+        /// - TotalTicketsSold: Total tickets sold
+        /// - TotalRevenue: Total revenue in GAS
+        /// - TotalPrizesPaid: Total prizes distributed
+        /// - TotalWinners: Number of winners
+        /// </summary>
         public struct TypeStats
         {
             public BigInteger TotalTicketsSold;
@@ -74,6 +95,9 @@ namespace NeoMiniAppPlatform.Contracts
             public BigInteger TotalWinners;
         }
 
+        /// <summary>Get statistics for a specific lottery type.</summary>
+        /// <param name="lotteryType">Lottery type identifier</param>
+        /// <returns>TypeStats struct</returns>
         [Safe]
         public static TypeStats GetTypeStats(byte lotteryType)
         {

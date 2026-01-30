@@ -9,6 +9,24 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Achievement Check
 
+        /// <summary>
+        /// Check and award achievements based on player stats and bet.
+        /// 
+        /// ACHIEVEMENTS:
+        /// - 1 "First Win": First win
+        /// - 2 "Ten Wins": 10 total wins
+        /// - 3 "Hundred Wins": 100 total wins
+        /// - 4 "High Roller": Bet >= 10 GAS
+        /// - 5 "Lucky Streak": 5+ win streak
+        /// - 6 "Jackpot Winner": Won jackpot
+        /// - 7 "Veteran": 100 total bets
+        /// - 8 "Big Spender": 100 GAS total wagered
+        /// - 9 "Comeback King": 5 loss streak then win
+        /// - 10 "Whale": Single bet >= 50 GAS
+        /// </summary>
+        /// <param name="player">Player address</param>
+        /// <param name="stats">Player statistics</param>
+        /// <param name="betAmount">Current bet amount</param>
         private static void CheckAchievements(UInt160 player, PlayerStats stats, BigInteger betAmount)
         {
             // Achievement 1: First Win

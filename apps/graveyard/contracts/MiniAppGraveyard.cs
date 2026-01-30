@@ -18,6 +18,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// <param name="owner">Memory owner's address</param>
     /// <param name="contentHash">SHA256 hash of encrypted content</param>
     /// <param name="memoryType">Type of memory (1-5: Secret, Regret, Wish, etc.)</param>
+    /// <summary>Event emitted when memory buried.</summary>
     public delegate void MemoryBuriedHandler(BigInteger memoryId, UInt160 owner, string contentHash, BigInteger memoryType);
     
     /// <summary>
@@ -26,6 +27,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// <param name="memoryId">The memory identifier</param>
     /// <param name="owner">Memory owner's address</param>
     /// <param name="forgetTime">Unix timestamp when forgotten</param>
+    /// <summary>Event emitted when memory forgotten.</summary>
     public delegate void MemoryForgottenHandler(BigInteger memoryId, UInt160 owner, BigInteger forgetTime);
     
     /// <summary>
@@ -33,6 +35,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// </summary>
     /// <param name="memoryId">The memory identifier</param>
     /// <param name="newHash">New SHA256 content hash</param>
+    /// <summary>Event emitted when memory updated.</summary>
     public delegate void MemoryUpdatedHandler(BigInteger memoryId, string newHash);
     
     /// <summary>
@@ -40,6 +43,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// </summary>
     /// <param name="memoryId">The memory identifier</param>
     /// <param name="epitaph">The epitaph text</param>
+    /// <summary>Event emitted when epitaph added.</summary>
     public delegate void EpitaphAddedHandler(BigInteger memoryId, string epitaph);
     
     /// <summary>
@@ -48,6 +52,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// <param name="memorialId">Unique memorial identifier</param>
     /// <param name="creator">Memorial creator's address</param>
     /// <param name="title">Memorial title</param>
+    /// <summary>Event emitted when memorial created.</summary>
     public delegate void MemorialCreatedHandler(BigInteger memorialId, UInt160 creator, string title);
     
     /// <summary>
@@ -56,6 +61,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// <param name="memorialId">The memorial identifier</param>
     /// <param name="sender">Tribute sender's address</param>
     /// <param name="amount">Tribute amount in GAS</param>
+    /// <summary>Event emitted when tribute added.</summary>
     public delegate void TributeAddedHandler(BigInteger memorialId, UInt160 sender, BigInteger amount);
     
     /// <summary>
@@ -64,6 +70,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// <param name="user">User's address</param>
     /// <param name="badgeType">Badge type identifier</param>
     /// <param name="badgeName">Badge name</param>
+    /// <summary>Event emitted when user badge earned.</summary>
     public delegate void UserBadgeEarnedHandler(UInt160 user, BigInteger badgeType, string badgeName);
 
     /// <summary>
@@ -99,6 +106,7 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region App Constants
         /// <summary>Unique application identifier for the Graveyard miniapp.</summary>
+        /// <summary>Unique application identifier for the graveyard miniapp.</summary>
         private const string APP_ID = "miniapp-graveyard";
         
         /// <summary>Fee to bury a memory (0.1 GAS = 10,000,000).</summary>
@@ -111,6 +119,7 @@ namespace NeoMiniAppPlatform.Contracts
         private const long MEMORIAL_FEE = 500000000;
         
         /// <summary>Minimum tribute amount for memorials (0.1 GAS = 10,000,000).</summary>
+        /// <summary>Minimum value for operation.</summary>
         private const long MIN_TRIBUTE = 10000000;
         
         /// <summary>Maximum length for on-chain epitaphs (500 characters). Longer content uses NeoFS.</summary>
@@ -121,17 +130,29 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Prefixes (0x20+)
+        /// <summary>Storage prefix for memory id.</summary>
         private static readonly byte[] PREFIX_MEMORY_ID = new byte[] { 0x20 };
+        /// <summary>Storage prefix for memories.</summary>
         private static readonly byte[] PREFIX_MEMORIES = new byte[] { 0x21 };
+        /// <summary>Storage prefix for user memories.</summary>
         private static readonly byte[] PREFIX_USER_MEMORIES = new byte[] { 0x22 };
+        /// <summary>Storage prefix for user memory count.</summary>
         private static readonly byte[] PREFIX_USER_MEMORY_COUNT = new byte[] { 0x23 };
+        /// <summary>Storage prefix for memorial id.</summary>
         private static readonly byte[] PREFIX_MEMORIAL_ID = new byte[] { 0x24 };
+        /// <summary>Storage prefix for memorials.</summary>
         private static readonly byte[] PREFIX_MEMORIALS = new byte[] { 0x25 };
+        /// <summary>Storage prefix for total buried.</summary>
         private static readonly byte[] PREFIX_TOTAL_BURIED = new byte[] { 0x26 };
+        /// <summary>Storage prefix for total forgotten.</summary>
         private static readonly byte[] PREFIX_TOTAL_FORGOTTEN = new byte[] { 0x27 };
+        /// <summary>Storage prefix for total tributes.</summary>
         private static readonly byte[] PREFIX_TOTAL_TRIBUTES = new byte[] { 0x28 };
+        /// <summary>Storage prefix for user stats.</summary>
         private static readonly byte[] PREFIX_USER_STATS = new byte[] { 0x29 };
+        /// <summary>Storage prefix for user badges.</summary>
         private static readonly byte[] PREFIX_USER_BADGES = new byte[] { 0x2A };
+        /// <summary>Storage prefix for total users.</summary>
         private static readonly byte[] PREFIX_TOTAL_USERS = new byte[] { 0x2B };
         #endregion
 

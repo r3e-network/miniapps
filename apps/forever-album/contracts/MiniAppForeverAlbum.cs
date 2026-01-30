@@ -17,6 +17,7 @@ namespace NeoMiniAppPlatform.Contracts
     /// <param name="photoId">Unique photo identifier (SHA256 hash)</param>
     /// <param name="encrypted">Whether the photo is client-side encrypted</param>
     /// <param name="index">User's photo index (0-based)</param>
+    /// <summary>Event emitted when photo uploaded.</summary>
     public delegate void PhotoUploadedHandler(UInt160 owner, ByteString photoId, bool encrypted, BigInteger index);
 
     [DisplayName("MiniAppForeverAlbum")]
@@ -51,6 +52,7 @@ namespace NeoMiniAppPlatform.Contracts
     public class MiniAppForeverAlbum : MiniAppNeoFSBase
     {
         /// <summary>Unique application identifier for the ForeverAlbum miniapp.</summary>
+        /// <summary>Unique application identifier for the forever-album miniapp.</summary>
         private const string APP_ID = "miniapp-forever-album";
         
         /// <summary>Maximum photos per upload batch (10). Prevents transaction size issues.</summary>
@@ -65,12 +67,19 @@ namespace NeoMiniAppPlatform.Contracts
         /// <summary>Maximum photo size for NeoFS storage (100MB). Supports high-resolution images and videos.</summary>
         private const long MAX_NEFOS_PHOTO_SIZE = 100 * 1024 * 1024;
 
+        /// <summary>Storage prefix for photo data.</summary>
         private static readonly byte[] PREFIX_PHOTO_DATA = new byte[] { 0x20 };
+        /// <summary>Storage prefix for photo encrypted.</summary>
         private static readonly byte[] PREFIX_PHOTO_ENCRYPTED = new byte[] { 0x21 };
+        /// <summary>Storage prefix for photo owner.</summary>
         private static readonly byte[] PREFIX_PHOTO_OWNER = new byte[] { 0x22 };
+        /// <summary>Storage prefix for photo time.</summary>
         private static readonly byte[] PREFIX_PHOTO_TIME = new byte[] { 0x23 };
+        /// <summary>Storage prefix for user photo count.</summary>
         private static readonly byte[] PREFIX_USER_PHOTO_COUNT = new byte[] { 0x24 };
+        /// <summary>Storage prefix for user photo index.</summary>
         private static readonly byte[] PREFIX_USER_PHOTO_INDEX = new byte[] { 0x25 };
+        /// <summary>Storage prefix for total photos.</summary>
         private static readonly byte[] PREFIX_TOTAL_PHOTOS = new byte[] { 0x26 };
 
         /// <summary>

@@ -9,6 +9,19 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Admin Methods
 
+        /// <summary>
+        /// Add a new voting category (admin only).
+        /// 
+        /// REQUIREMENTS:
+        /// - Caller must be contract admin
+        /// - Category name: 1-50 characters
+        /// 
+        /// EFFECTS:
+        /// - Creates new category
+        /// - Enables nominees in category
+        /// </summary>
+        /// <param name="category">New category name</param>
+        /// <exception cref="Exception">If not admin or invalid category</exception>
         public static void AddCategory(string category)
         {
             ValidateAdmin();
@@ -17,6 +30,22 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, key, 1);
         }
 
+        /// <summary>
+        /// Start a new voting season (admin only).
+        /// 
+        /// REQUIREMENTS:
+        /// - Caller must be contract admin
+        /// - No active season currently
+        /// 
+        /// EFFECTS:
+        /// - Increments season ID
+        /// - Creates new season record
+        /// - Sets start and end times (30 days)
+        /// - Emits SeasonStarted event
+        /// 
+        /// SEASON DURATION: 30 days (SEASON_DURATION_SECONDS)
+        /// </summary>
+        /// <exception cref="Exception">If season already active</exception>
         public static void StartSeason()
         {
             ValidateAdmin();

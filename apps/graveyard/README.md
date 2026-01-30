@@ -11,6 +11,14 @@ Encrypted memory burial with paid forgetting
 | **Version** | 1.0.0 |
 | **Framework** | Vue 3 (uni-app) |
 
+
+## How It Works
+
+1. **Memorialize**: Create permanent tributes to lost projects or addresses
+2. **Tombstone Design**: Choose from various tombstone designs and inscriptions
+3. **On-Chain Record**: Memorials are permanently recorded on Neo blockchain
+4. **Verify Loss**: Optionally verify the loss through oracle attestation
+5. **Public View**: All memorials are publicly viewable and searchable
 ## Features
 
 - Encrypted hashes

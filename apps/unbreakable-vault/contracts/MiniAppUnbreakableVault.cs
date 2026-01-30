@@ -10,14 +10,23 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for vault lifecycle
+    /// <summary>Event emitted when vault created.</summary>
     public delegate void VaultCreatedHandler(BigInteger vaultId, UInt160 creator, BigInteger bounty, BigInteger difficulty);
+    /// <summary>Event emitted when attempt made.</summary>
     public delegate void AttemptMadeHandler(BigInteger vaultId, UInt160 attacker, bool success, BigInteger attemptNumber);
+    /// <summary>Event emitted when vault broken.</summary>
     public delegate void VaultBrokenHandler(BigInteger vaultId, UInt160 winner, BigInteger reward);
+    /// <summary>Event emitted when bounty increased.</summary>
     public delegate void BountyIncreasedHandler(BigInteger vaultId, BigInteger amount, BigInteger newTotal);
+    /// <summary>Event emitted when vault expired.</summary>
     public delegate void VaultExpiredHandler(BigInteger vaultId, UInt160 creator, BigInteger refund);
+    /// <summary>Event emitted when hint revealed.</summary>
     public delegate void HintRevealedHandler(BigInteger vaultId, BigInteger hintIndex, string hint);
+    /// <summary>Event emitted when leaderboard updated.</summary>
     public delegate void LeaderboardUpdatedHandler(UInt160 hacker, BigInteger totalBroken, BigInteger totalEarned);
+    /// <summary>Event emitted when hacker badge earned.</summary>
     public delegate void HackerBadgeEarnedHandler(UInt160 hacker, BigInteger badgeType, string badgeName);
+    /// <summary>Event emitted when creator badge earned.</summary>
     public delegate void CreatorBadgeEarnedHandler(UInt160 creator, BigInteger badgeType, string badgeName);
 
     /// <summary>
@@ -48,10 +57,16 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppUnbreakableVault : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the unbreakable-vault miniapp.</summary>
         private const string APP_ID = "miniapp-unbreakablevault";
+        /// <summary>Minimum value for operation.</summary>
+        /// <summary>Configuration constant .</summary>
         private const long MIN_BOUNTY = 100000000;        // 1 GAS minimum
+        /// <summary>Fee rate .</summary>
         private const long ATTEMPT_FEE_EASY = 10000000;   // 0.1 GAS
+        /// <summary>Fee rate .</summary>
         private const long ATTEMPT_FEE_MEDIUM = 50000000; // 0.5 GAS
+        /// <summary>Fee rate .</summary>
         private const long ATTEMPT_FEE_HARD = 100000000;  // 1 GAS
         private const int HINT_COST_BPS = 500;            // 5% of bounty per hint
         private const int PLATFORM_FEE_BPS = 200;         // 2% platform fee
@@ -60,19 +75,33 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Prefixes (0x20+ to avoid collision with MiniAppBase)
+        /// <summary>Storage prefix for vault id.</summary>
         private static readonly byte[] PREFIX_VAULT_ID = new byte[] { 0x20 };
+        /// <summary>Storage prefix for vaults.</summary>
         private static readonly byte[] PREFIX_VAULTS = new byte[] { 0x21 };
+        /// <summary>Storage prefix for user vaults.</summary>
         private static readonly byte[] PREFIX_USER_VAULTS = new byte[] { 0x22 };
+        /// <summary>Storage prefix for user vault count.</summary>
         private static readonly byte[] PREFIX_USER_VAULT_COUNT = new byte[] { 0x23 };
+        /// <summary>Storage prefix for hacker stats.</summary>
         private static readonly byte[] PREFIX_HACKER_STATS = new byte[] { 0x24 };
+        /// <summary>Storage prefix for total bounties.</summary>
         private static readonly byte[] PREFIX_TOTAL_BOUNTIES = new byte[] { 0x25 };
+        /// <summary>Storage prefix for total broken.</summary>
         private static readonly byte[] PREFIX_TOTAL_BROKEN = new byte[] { 0x26 };
+        /// <summary>Storage prefix for vault hints.</summary>
         private static readonly byte[] PREFIX_VAULT_HINTS = new byte[] { 0x27 };
+        /// <summary>Storage prefix for creator stats.</summary>
         private static readonly byte[] PREFIX_CREATOR_STATS = new byte[] { 0x28 };
+        /// <summary>Storage prefix for hacker badges.</summary>
         private static readonly byte[] PREFIX_HACKER_BADGES = new byte[] { 0x29 };
+        /// <summary>Storage prefix for creator badges.</summary>
         private static readonly byte[] PREFIX_CREATOR_BADGES = new byte[] { 0x2A };
+        /// <summary>Storage prefix for total hackers.</summary>
         private static readonly byte[] PREFIX_TOTAL_HACKERS = new byte[] { 0x2B };
+        /// <summary>Storage prefix for total creators.</summary>
         private static readonly byte[] PREFIX_TOTAL_CREATORS = new byte[] { 0x2C };
+        /// <summary>Storage prefix for total attempts.</summary>
         private static readonly byte[] PREFIX_TOTAL_ATTEMPTS = new byte[] { 0x2D };
         #endregion
 

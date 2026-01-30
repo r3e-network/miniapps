@@ -85,6 +85,34 @@ npm run dev
 npm run build
 ```
 
+## Usage
+
+### Participating in Anonymous Voting
+
+1. **Connect Wallet**: Link your Neo N3 wallet to the application
+2. **Acquire Mask**: Purchase or receive a mask identity token
+3. **Join Proposal**: Enter an active DAO proposal room
+4. **Cast Vote**: Submit your anonymous vote (For/Against/Abstain)
+5. **Verify**: Confirm your vote was recorded without revealing identity
+
+### Creating Proposals
+
+1. Submit a new proposal with title and description
+2. Set voting duration and quorum requirements
+3. Define the execution action if passed
+4. Announce to the DAO community
+
+## How It Works
+
+Masquerade DAO enables anonymous voting through mask identities:
+
+1. **Mask Minting**: Users acquire unique mask NFTs that serve as voting credentials
+2. **Identity Separation**: The mask is separate from the wallet, preserving anonymity
+3. **One Mask One Vote**: Each mask can vote once per proposal
+4. **Zero-Knowledge Verification**: Votes are verified without linking to real identities
+5. **Proposal Execution**: Passed proposals execute automatically via smart contracts
+6. **Transparent Results**: Vote counts are public while individual voters remain anonymous
+
 ## Assets
 
 - **Allowed Assets**: GAS

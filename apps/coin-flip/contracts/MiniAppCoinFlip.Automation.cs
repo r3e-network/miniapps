@@ -9,6 +9,21 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Automation
 
+        /// <summary>
+        /// Handle periodic automation tasks.
+        /// 
+        /// TRIGGERED BY: Authorized automation service
+        /// 
+        /// POTENTIAL TASKS:
+        /// - Jackpot pool management
+        /// - Statistics aggregation
+        /// - Maintenance operations
+        /// 
+        /// PERMISSIONS:
+        /// - Only callable by authorized automation anchor
+        /// </summary>
+        /// <param name="taskId">Automation task ID</param>
+        /// <param name="payload">Task payload data</param>
         public static new void OnPeriodicExecution(BigInteger taskId, ByteString payload)
         {
             UInt160 anchor = AutomationAnchor();

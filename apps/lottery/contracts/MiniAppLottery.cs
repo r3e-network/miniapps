@@ -149,58 +149,120 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Storage Prefixes (0x40+ to avoid collision with MiniAppGameComputeBase)
+        // STORAGE LAYOUT:
+        // 0x40-0x4F: Classic lottery data
+        // 0x50-0x5F: Multi-type lottery data
+        // Note: coin-flip uses 0x40-0x49, lottery uses overlapping range - ensure separate deployments
+        
+        /// <summary>Prefix 0x40: Current round ID storage.</summary>
         private static readonly byte[] PREFIX_ROUND = new byte[] { 0x40 };
+        /// <summary>Prefix 0x41: Total prize pool storage.</summary>
         private static readonly byte[] PREFIX_POOL = new byte[] { 0x41 };
+        /// <summary>Prefix 0x42: Ticket ownership storage.</summary>
         private static readonly byte[] PREFIX_TICKETS = new byte[] { 0x42 };
+        /// <summary>Prefix 0x43: Total ticket count storage.</summary>
         private static readonly byte[] PREFIX_TICKET_COUNT = new byte[] { 0x43 };
+        /// <summary>Prefix 0x44: Round participants list storage.</summary>
         private static readonly byte[] PREFIX_PARTICIPANTS = new byte[] { 0x44 };
+        /// <summary>Prefix 0x45: Pending draw flag storage.</summary>
         private static readonly byte[] PREFIX_DRAW_PENDING = new byte[] { 0x45 };
+        /// <summary>Prefix 0x46: Participant count storage.</summary>
         private static readonly byte[] PREFIX_PARTICIPANT_COUNT = new byte[] { 0x46 };
+        /// <summary>Prefix 0x47: Player statistics storage.</summary>
         private static readonly byte[] PREFIX_PLAYER_STATS = new byte[] { 0x47 };
+        /// <summary>Prefix 0x48: Round data storage.</summary>
         private static readonly byte[] PREFIX_ROUND_DATA = new byte[] { 0x48 };
+        /// <summary>Prefix 0x49: Player achievements storage.</summary>
         private static readonly byte[] PREFIX_ACHIEVEMENTS = new byte[] { 0x49 };
+        /// <summary>Prefix 0x4A: Total players count storage.</summary>
         private static readonly byte[] PREFIX_TOTAL_PLAYERS = new byte[] { 0x4A };
+        /// <summary>Prefix 0x4B: Total prizes paid storage.</summary>
         private static readonly byte[] PREFIX_TOTAL_PRIZES = new byte[] { 0x4B };
+        /// <summary>Prefix 0x4C: Rollover amount storage.</summary>
         private static readonly byte[] PREFIX_ROLLOVER = new byte[] { 0x4C };
 
         // Multi-type lottery storage prefixes (0x50-0x5F)
+        /// <summary>Prefix 0x50: Lottery type configuration storage.</summary>
         private static readonly byte[] PREFIX_LOTTERY_CONFIG = new byte[] { 0x50 };
+        /// <summary>Prefix 0x51: Scratch ticket data storage.</summary>
         private static readonly byte[] PREFIX_SCRATCH_TICKET = new byte[] { 0x51 };
+        /// <summary>Prefix 0x52: Scratch ticket ID counter storage.</summary>
         private static readonly byte[] PREFIX_SCRATCH_ID = new byte[] { 0x52 };
+        /// <summary>Prefix 0x53: Type-specific prize pool storage.</summary>
         private static readonly byte[] PREFIX_TYPE_POOL = new byte[] { 0x53 };
+        /// <summary>Prefix 0x54: Type statistics storage.</summary>
         private static readonly byte[] PREFIX_TYPE_STATS = new byte[] { 0x54 };
+        /// <summary>Prefix 0x55: Player scratch ticket ownership storage.</summary>
         private static readonly byte[] PREFIX_PLAYER_SCRATCH = new byte[] { 0x55 };
+        /// <summary>Prefix 0x56: Type-specific round data storage.</summary>
         private static readonly byte[] PREFIX_TYPE_ROUND = new byte[] { 0x56 };
+        /// <summary>Prefix 0x57: Player scratch ticket count storage.</summary>
         private static readonly byte[] PREFIX_PLAYER_SCRATCH_COUNT = new byte[] { 0x57 };
         #endregion
 
         #region App Events
 
+        /// <summary>
+        /// Emitted when tickets are purchased.
+        /// Parameters: player, ticketCount, roundId
+        /// </summary>
         [DisplayName("TicketPurchased")]
         public static event TicketPurchasedHandler OnTicketPurchased;
 
+        /// <summary>
+        /// Emitted when a draw is initiated via oracle.
+        /// Parameters: roundId, requestId
+        /// </summary>
         [DisplayName("DrawInitiated")]
         public static event DrawInitiatedHandler OnDrawInitiated;
 
+        /// <summary>
+        /// Emitted when a winner is drawn.
+        /// Parameters: winner, prize, roundId
+        /// </summary>
         [DisplayName("WinnerDrawn")]
         public static event WinnerDrawnHandler OnWinnerDrawn;
 
+        /// <summary>
+        /// Emitted when a round completes.
+        /// Parameters: roundId, winner, prize, totalTickets
+        /// </summary>
         [DisplayName("RoundCompleted")]
         public static event RoundCompletedHandler OnRoundCompleted;
 
+        /// <summary>
+        /// Emitted when a player unlocks an achievement.
+        /// Parameters: player, achievementId, achievementName
+        /// </summary>
         [DisplayName("AchievementUnlocked")]
         public static event AchievementUnlockedHandler OnAchievementUnlocked;
 
+        /// <summary>
+        /// Emitted when jackpot rolls over to next round.
+        /// Parameters: roundId, rolloverAmount
+        /// </summary>
         [DisplayName("JackpotRollover")]
         public static event JackpotRolloverHandler OnJackpotRollover;
 
         // Multi-type lottery events
+        /// <summary>
+        /// Emitted when a scratch ticket is purchased.
+        /// Parameters: player, ticketId, lotteryType, price
+        /// </summary>
         [DisplayName("ScratchTicketPurchased")]
         public static event ScratchTicketPurchasedHandler OnScratchTicketPurchased;
 
+        /// <summary>
+        /// Emitted when a scratch ticket is revealed.
+        /// Parameters: player, ticketId, prize, isWinner
+        /// </summary>
         [DisplayName("ScratchTicketRevealed")]
         public static event ScratchTicketRevealedHandler OnScratchTicketRevealed;
 
+        /// <summary>
+        /// Emitted when type-specific tickets are purchased.
+        /// Parameters: player, lotteryType, ticketCount, roundId
+        /// </summary>
         [DisplayName("TypeTicketPurchased")]
         public static event TypeTicketPurchasedHandler OnTypeTicketPurchased;
 

@@ -10,6 +10,23 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Query Methods
 
+        /// <summary>
+        /// Get detailed loan information.
+        /// 
+        /// RETURNS:
+        /// - id: Loan ID
+        /// - borrower: Borrower address
+        /// - amount: Loan amount
+        /// - fee: Loan fee
+        /// - callbackContract: Callback contract address
+        /// - callbackMethod: Callback method name
+        /// - timestamp: Request timestamp
+        /// - executed: Whether executed
+        /// - success: Whether successful
+        /// - status: "pending", "completed", or "failed"
+        /// </summary>
+        /// <param name="loanId">Loan identifier</param>
+        /// <returns>Map of loan details (empty if not found)</returns>
         [Safe]
         public static Map<string, object> GetLoanDetails(BigInteger loanId)
         {
@@ -37,6 +54,24 @@ namespace NeoMiniAppPlatform.Contracts
             return details;
         }
 
+        /// <summary>
+        /// Get detailed borrower statistics.
+        /// 
+        /// RETURNS:
+        /// - totalLoans: Total loans taken
+        /// - successfulLoans: Successful repayments
+        /// - failedLoans: Failed repayments
+        /// - totalBorrowed: Total amount borrowed
+        /// - totalFeesPaid: Total fees paid
+        /// - highestLoan: Largest loan amount
+        /// - badgeCount: Achievements earned
+        /// - joinTime: First loan timestamp
+        /// - lastLoanTime: Most recent loan
+        /// - successRate: Success rate (basis points)
+        /// - hasFirstLoan, hasFrequentBorrower, hasHighVolume, hasPerfectRecord: Badge status
+        /// </summary>
+        /// <param name="borrower">Borrower address</param>
+        /// <returns>Map of borrower statistics</returns>
         [Safe]
         public static Map<string, object> GetBorrowerStatsDetails(UInt160 borrower)
         {
@@ -64,6 +99,22 @@ namespace NeoMiniAppPlatform.Contracts
             return details;
         }
 
+        /// <summary>
+        /// Get detailed provider statistics.
+        /// 
+        /// RETURNS:
+        /// - totalDeposited: Total amount deposited
+        /// - currentBalance: Current liquidity balance
+        /// - totalWithdrawn: Total amount withdrawn
+        /// - totalFeesEarned: Fees earned from pool
+        /// - badgeCount: Achievements earned
+        /// - joinTime: First deposit timestamp
+        /// - lastActivityTime: Most recent activity
+        /// - tenureDays: Days since joining
+        /// - hasFirstDeposit, hasLiquidityKing, hasLongTermProvider, hasTopEarner: Badge status
+        /// </summary>
+        /// <param name="provider">Provider address</param>
+        /// <returns>Map of provider statistics</returns>
         [Safe]
         public static Map<string, object> GetProviderStatsDetails(UInt160 provider)
         {

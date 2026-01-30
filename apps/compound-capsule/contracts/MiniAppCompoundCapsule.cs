@@ -10,13 +10,21 @@ using Neo.SmartContract.Framework.Services;
 namespace NeoMiniAppPlatform.Contracts
 {
     // Event delegates for capsule lifecycle
+    /// <summary>Event emitted when capsule created.</summary>
     public delegate void CapsuleCreatedHandler(BigInteger capsuleId, UInt160 owner, BigInteger amount, BigInteger unlockTime);
+    /// <summary>Event emitted when capsule unlocked.</summary>
     public delegate void CapsuleUnlockedHandler(BigInteger capsuleId, UInt160 owner, BigInteger payout);
+    /// <summary>Event emitted when compound added.</summary>
     public delegate void CompoundAddedHandler(BigInteger capsuleId, BigInteger yieldAmount, BigInteger totalCompound);
+    /// <summary>Event emitted when capsule extended.</summary>
     public delegate void CapsuleExtendedHandler(BigInteger capsuleId, BigInteger newUnlockTime);
+    /// <summary>Event emitted when early withdraw.</summary>
     public delegate void EarlyWithdrawHandler(BigInteger capsuleId, UInt160 owner, BigInteger penalty);
+    /// <summary>Event emitted when deposit added.</summary>
     public delegate void DepositAddedHandler(BigInteger capsuleId, BigInteger amount, BigInteger newPrincipal);
+    /// <summary>Event emitted when user badge earned.</summary>
     public delegate void UserBadgeEarnedHandler(UInt160 user, BigInteger badgeType, string badgeName);
+    /// <summary>Event emitted when tier upgraded.</summary>
     public delegate void TierUpgradedHandler(BigInteger capsuleId, BigInteger oldTier, BigInteger newTier);
 
     /// <summary>
@@ -32,9 +40,12 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppCompoundCapsule : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the compound-capsule miniapp.</summary>
         private const string APP_ID = "miniapp-compound-capsule";
         private const int PLATFORM_FEE_BPS = 100;           // 1% platform fee
         private const int EARLY_WITHDRAW_PENALTY_BPS = 500; // 5% early withdrawal penalty
+        /// <summary>Minimum value for operation.</summary>
+        /// <summary>Configuration constant .</summary>
         private const long MIN_DEPOSIT = 100000000;         // 1 NEO
         private const int MIN_LOCK_DAYS = 7;
         private const int MAX_LOCK_DAYS = 365;
@@ -51,17 +62,29 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Prefixes (0x20+)
+        /// <summary>Storage prefix for capsule id.</summary>
         private static readonly byte[] PREFIX_CAPSULE_ID = new byte[] { 0x20 };
+        /// <summary>Storage prefix for capsules.</summary>
         private static readonly byte[] PREFIX_CAPSULES = new byte[] { 0x21 };
+        /// <summary>Storage prefix for user capsules.</summary>
         private static readonly byte[] PREFIX_USER_CAPSULES = new byte[] { 0x22 };
+        /// <summary>Storage prefix for user capsule count.</summary>
         private static readonly byte[] PREFIX_USER_CAPSULE_COUNT = new byte[] { 0x23 };
+        /// <summary>Storage prefix for total locked.</summary>
         private static readonly byte[] PREFIX_TOTAL_LOCKED = new byte[] { 0x24 };
+        /// <summary>Storage prefix for total compound.</summary>
         private static readonly byte[] PREFIX_TOTAL_COMPOUND = new byte[] { 0x25 };
+        /// <summary>Storage prefix for user stats.</summary>
         private static readonly byte[] PREFIX_USER_STATS = new byte[] { 0x26 };
+        /// <summary>Storage prefix for user badges.</summary>
         private static readonly byte[] PREFIX_USER_BADGES = new byte[] { 0x27 };
+        /// <summary>Storage prefix for total users.</summary>
         private static readonly byte[] PREFIX_TOTAL_USERS = new byte[] { 0x28 };
+        /// <summary>Storage prefix for total withdrawn.</summary>
         private static readonly byte[] PREFIX_TOTAL_WITHDRAWN = new byte[] { 0x29 };
+        /// <summary>Storage prefix for total penalties.</summary>
         private static readonly byte[] PREFIX_TOTAL_PENALTIES = new byte[] { 0x2A };
+        /// <summary>Storage prefix for user total earned.</summary>
         private static readonly byte[] PREFIX_USER_TOTAL_EARNED = new byte[] { 0x2B };
         #endregion
 

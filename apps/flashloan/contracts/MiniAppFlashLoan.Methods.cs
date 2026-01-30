@@ -12,8 +12,30 @@ namespace NeoMiniAppPlatform.Contracts
         #region User-Facing Methods
 
         /// <summary>
-        /// Request a flash loan with callback verification.
+        /// Request a flash loan with TEE callback verification.
+        /// 
+        /// REQUIREMENTS:
+        /// - Platform not paused
+        /// - Borrower must be authenticated
+        /// - Amount between MIN_LOAN and MAX_LOAN
+        /// - Valid callback contract and method
+        /// - Cooldown period passed since last loan
+        /// - Sufficient pool balance
+        /// 
+        /// PROCESS:
+        /// - Validates loan parameters
+        /// - Checks rate limiting (cooldown, daily max)
+        /// - Creates loan record
+        /// - Requests TEE verification of callback
+        /// - Emits LoanRequested and LoanVerification events
+        /// 
+        /// FEE: 0.09% of loan amount
         /// </summary>
+        /// <param name="borrower">Borrower address</param>
+        /// <param name="amount">Loan amount in GAS</param>
+        /// <param name="callbackContract">Contract to call with loan</param>
+        /// <param name="callbackMethod">Method to invoke</param>
+        /// <returns>Loan ID</returns>
         public static BigInteger RequestLoan(UInt160 borrower, BigInteger amount, UInt160 callbackContract, string callbackMethod)
         {
             ValidateNotGloballyPaused(APP_ID);
@@ -61,6 +83,9 @@ namespace NeoMiniAppPlatform.Contracts
             return loanId;
         }
 
+        /// <summary>Get loan data by ID.</summary>
+        /// <param name="loanId">Loan identifier</param>
+        /// <returns>Loan data (empty if not found)</returns>
         [Safe]
         public static LoanData GetLoan(BigInteger loanId)
         {
@@ -70,6 +95,8 @@ namespace NeoMiniAppPlatform.Contracts
             return (LoanData)StdLib.Deserialize(data);
         }
 
+        /// <summary>Get current pool liquidity balance.</summary>
+        /// <returns>Pool balance in GAS</returns>
         [Safe]
         public static BigInteger GetPoolBalance()
         {
@@ -80,7 +107,23 @@ namespace NeoMiniAppPlatform.Contracts
 
         /// <summary>
         /// Deposit liquidity to the flash loan pool.
+        /// 
+        /// REQUIREMENTS:
+        /// - Platform not paused
+        /// - Depositor must be authenticated
+        /// - Amount must be positive
+        /// - Valid payment receipt
+        /// 
+        /// EFFECTS:
+        /// - Increases pool balance
+        /// - Updates provider stats
+        /// - Emits LiquidityDeposited event
+        /// 
+        /// PROVIDER SHARE: 80% of all fees
         /// </summary>
+        /// <param name="depositor">Provider address</param>
+        /// <param name="amount">Deposit amount in GAS</param>
+        /// <param name="receiptId">Payment receipt ID</param>
         public static void Deposit(UInt160 depositor, BigInteger amount, BigInteger receiptId)
         {
             ValidateNotGloballyPaused(APP_ID);

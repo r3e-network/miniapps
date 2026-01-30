@@ -1,5 +1,13 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-quadratic-funding" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-quadratic-funding" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange"
+
+      <!-- Desktop Sidebar -->
+      <template #desktop-sidebar>
+        <view class="desktop-sidebar">
+          <text class="sidebar-title">{{ t('overview') }}</text>
+        </view>
+      </template>
+>
     <view v-if="activeTab === 'rounds'" class="tab-content">
       <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
@@ -377,7 +385,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from "vue";
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
@@ -448,6 +456,15 @@ const isAddingMatching = ref(false);
 const isFinalizing = ref(false);
 const isClaimingUnused = ref(false);
 const claimingProjectId = ref<string | null>(null);
+
+// Responsive layout
+const windowWidth = ref(window.innerWidth);
+const isMobile = computed(() => windowWidth.value < 768);
+const isDesktop = computed(() => windowWidth.value >= 1024);
+
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 
 interface RoundItem {
   id: string;
@@ -1332,5 +1349,48 @@ watch(address, async (newAddr) => {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
+}
+
+// Responsive styles
+@media (max-width: 767px) {
+  .tab-content { padding: 12px; }
+  .round-metrics,
+  .project-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .round-card__header,
+  .project-card__header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .round-actions,
+  .project-actions {
+    flex-direction: column;
+  }
+}
+@media (min-width: 1024px) {
+  .tab-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .round-cards,
+  .project-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+
+// Desktop sidebar
+.desktop-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.sidebar-title {
+  font-size: var(--font-size-sm, 13px);
+  font-weight: 600;
+  color: var(--text-secondary, rgba(248, 250, 252, 0.7));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>

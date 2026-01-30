@@ -8,15 +8,24 @@ using Neo.SmartContract.Framework.Services;
 
 namespace NeoMiniAppPlatform.Contracts
 {
+    /// <summary>Event emitted when round created.</summary>
     public delegate void RoundCreatedHandler(BigInteger roundId, UInt160 creator, UInt160 asset, BigInteger matchingPool);
+    /// <summary>Event emitted when matching pool added.</summary>
     public delegate void MatchingPoolAddedHandler(BigInteger roundId, UInt160 contributor, BigInteger amount, BigInteger totalPool);
+    /// <summary>Event emitted when round finalized.</summary>
     public delegate void RoundFinalizedHandler(BigInteger roundId, BigInteger matchingAllocated);
+    /// <summary>Event emitted when round cancelled.</summary>
     public delegate void RoundCancelledHandler(BigInteger roundId, UInt160 creator);
+    /// <summary>Event emitted when matching withdrawn.</summary>
     public delegate void MatchingWithdrawnHandler(BigInteger roundId, UInt160 creator, BigInteger amount);
 
+    /// <summary>Event emitted when project registered.</summary>
     public delegate void ProjectRegisteredHandler(BigInteger projectId, BigInteger roundId, UInt160 owner, string name);
+    /// <summary>Event emitted when project updated.</summary>
     public delegate void ProjectUpdatedHandler(BigInteger projectId);
+    /// <summary>Event emitted when contribution made.</summary>
     public delegate void ContributionMadeHandler(BigInteger roundId, BigInteger projectId, UInt160 contributor, BigInteger amount, string memo);
+    /// <summary>Event emitted when project claimed.</summary>
     public delegate void ProjectClaimedHandler(BigInteger projectId, UInt160 owner, BigInteger amount);
 
     /// <summary>
@@ -32,8 +41,12 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppQuadraticFunding : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the quadratic-funding miniapp.</summary>
         private const string APP_ID = "miniapp-quadratic-funding";
+        /// <summary>Minimum value for operation.</summary>
         private const long MIN_NEO = 1;
+        /// <summary>Minimum value for operation.</summary>
+        /// <summary>Configuration constant .</summary>
         private const long MIN_GAS = 10000000; // 0.1 GAS
         private const int MAX_TITLE_LENGTH = 60;
         private const int MAX_DESC_LENGTH = 240;
@@ -44,16 +57,27 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region Storage Prefixes
+        /// <summary>Storage prefix for round id.</summary>
         private static readonly byte[] PREFIX_ROUND_ID = new byte[] { 0x20 };
+        /// <summary>Storage prefix for project id.</summary>
         private static readonly byte[] PREFIX_PROJECT_ID = new byte[] { 0x21 };
+        /// <summary>Storage prefix for rounds.</summary>
         private static readonly byte[] PREFIX_ROUNDS = new byte[] { 0x22 };
+        /// <summary>Storage prefix for projects.</summary>
         private static readonly byte[] PREFIX_PROJECTS = new byte[] { 0x23 };
+        /// <summary>Storage prefix for round project count.</summary>
         private static readonly byte[] PREFIX_ROUND_PROJECT_COUNT = new byte[] { 0x24 };
+        /// <summary>Storage prefix for round projects.</summary>
         private static readonly byte[] PREFIX_ROUND_PROJECTS = new byte[] { 0x25 };
+        /// <summary>Storage prefix for owner project count.</summary>
         private static readonly byte[] PREFIX_OWNER_PROJECT_COUNT = new byte[] { 0x26 };
+        /// <summary>Storage prefix for owner projects.</summary>
         private static readonly byte[] PREFIX_OWNER_PROJECTS = new byte[] { 0x27 };
+        /// <summary>Storage prefix for creator round count.</summary>
         private static readonly byte[] PREFIX_CREATOR_ROUND_COUNT = new byte[] { 0x28 };
+        /// <summary>Storage prefix for creator rounds.</summary>
         private static readonly byte[] PREFIX_CREATOR_ROUNDS = new byte[] { 0x29 };
+        /// <summary>Storage prefix for contribution.</summary>
         private static readonly byte[] PREFIX_CONTRIBUTION = new byte[] { 0x2A };
         #endregion
 

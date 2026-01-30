@@ -9,6 +9,23 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Platform Stats
 
+        /// <summary>
+        /// Get comprehensive platform statistics.
+        /// 
+        /// RETURNS:
+        /// - currentRound: Current round ID
+        /// - prizePool: Current prize pool amount
+        /// - totalTickets: Total tickets sold
+        /// - totalPlayers: Number of unique players
+        /// - totalPrizesDistributed: Total prizes paid
+        /// - rolloverAmount: Rollover to next round
+        /// - ticketPrice: Price per ticket
+        /// - platformFee: Platform fee percentage
+        /// - maxTicketsPerTx: Max tickets per transaction
+        /// - minParticipants: Minimum participants for draw
+        /// - isDrawPending: Whether draw is in progress
+        /// </summary>
+        /// <returns>Map of platform statistics</returns>
         [Safe]
         public static Map<string, object> GetPlatformStats()
         {

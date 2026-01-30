@@ -17,6 +17,14 @@ Community recognition through GAS voting
 
 Neo Hall of Fame is a community-driven leaderboard where you can boost your favorite people, communities, and developers in the Neo ecosystem by voting with GAS.
 
+
+## How It Works
+
+1. **Nomination**: Community members nominate candidates for recognition
+2. **Boosting**: Supporters can boost their favorite candidates
+3. **Voting Period**: During voting, the community decides rankings
+4. **Leaderboard**: Rankings are displayed on a public leaderboard
+5. **Permanent Record**: Inductees are permanently recorded on-chain
 ## Features
 
 - **GAS Voting**: Vote with real GAS tokens to boost rankings.
@@ -28,6 +36,94 @@ Neo Hall of Fame is a community-driven leaderboard where you can boost your favo
 2. Browse categories: People, Communities, Developers
 3. Click BOOST to vote with GAS
 4. Watch your favorites climb the leaderboard
+
+## Usage
+
+### Getting Started
+
+1. **Launch the App**: Open Neo Hall of Fame from your Neo MiniApp dashboard
+2. **Connect Wallet**: Connect your Neo N3 wallet (optional for browsing)
+3. **Browse Categories**: Explore People, Communities, and Developers
+4. **Vote**: Use GAS to boost your favorites
+
+### Categories
+
+| Category | Description |
+|----------|-------------|
+| **People** | Individual community members, contributors, and leaders |
+| **Communities** | Neo ecosystem projects, teams, and groups |
+| **Developers** | Smart contract developers, tool builders, and core contributors |
+
+### Boosting (Voting)
+
+1. **Select Entry**: Browse the leaderboard and find someone to support
+2. **Click BOOST**: Click the boost button on your chosen entry
+3. **Enter Amount**: Specify how much GAS to vote with
+4. **Confirm**: Confirm the transaction in your wallet
+
+### Voting Power
+
+- **1 GAS = 1 Vote**: Each GAS token equals one vote
+- **Cumulative**: You can vote multiple times for the same entry
+- **Real-Time**: Rankings update immediately after votes
+
+### Leaderboard Features
+
+- **Live Rankings**: See real-time position changes
+- **Category Filter**: Switch between People, Communities, Developers
+- **Search**: Find specific entries by name
+
+### Maximizing Impact
+
+- **Strategic Voting**: Focus on entries you believe deserve recognition
+- **Community Support**: Coordinate with others to boost community favorites
+- **Regular Participation**: Check back regularly for new entrants
+
+### Best Practices
+
+- **Vote Thoughtfully**: Your GAS represents real value
+- **Support Diverse Voices**: Consider recognizing unsung contributors
+- **Engage Respectfully**: The Hall of Fame celebrates achievements
+
+### FAQ
+
+**Does voting cost anything?**
+Yes, you spend GAS to vote. The GAS goes to the recipient.
+
+**Can I unvote?**
+No, votes are final once submitted.
+
+**How are rankings calculated?**
+By total GAS received, highest first.
+
+**Can I vote for myself?**
+Yes, self-nomination is allowed.
+
+**Is there a minimum vote?**
+Check the app for current minimum requirements.
+
+### Troubleshooting
+
+**Transaction failed:**
+- Ensure you have sufficient GAS
+- Check network connectivity
+- Try with a smaller amount
+
+**Wallet not connecting:**
+- Refresh the page
+- Check wallet extension
+- Try reconnecting
+
+**Rankings not updating:**
+- Wait for block confirmation
+- Refresh the app
+- Check transaction status
+
+### Support
+
+For voting questions, refer to Neo documentation.
+
+For technical issues, contact the Neo MiniApp team.
 
 ## Permissions
 

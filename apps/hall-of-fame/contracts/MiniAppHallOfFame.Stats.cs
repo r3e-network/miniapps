@@ -9,6 +9,20 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Stats Update
 
+        /// <summary>
+        /// Update user statistics after voting.
+        /// 
+        /// EFFECTS:
+        /// - Increments total voted amount
+        /// - Increments vote count
+        /// - Updates join time for new voters
+        /// - Tracks highest single vote
+        /// - Tracks seasons participated
+        /// - Awards eligible badges
+        /// </summary>
+        /// <param name="user">Voter address</param>
+        /// <param name="amount">Vote amount</param>
+        /// <param name="seasonId">Current season ID</param>
         private static void UpdateUserStats(UInt160 user, BigInteger amount, BigInteger seasonId)
         {
             UserStats stats = GetUserStats(user);
@@ -45,6 +59,15 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, key, prevSeasonVotes + amount);
         }
 
+        /// <summary>
+        /// Update user statistics after adding a nominee.
+        /// 
+        /// EFFECTS:
+        /// - Increments nominees added count
+        /// - Updates join time for new users
+        /// - Awards eligible badges
+        /// </summary>
+        /// <param name="user">User address who added nominee</param>
         private static void UpdateUserStatsOnNominee(UInt160 user)
         {
             UserStats stats = GetUserStats(user);

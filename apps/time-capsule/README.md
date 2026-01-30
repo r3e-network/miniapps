@@ -11,6 +11,14 @@ Time-locked message hashes with public fishing and local content storage
 | **Version** | 1.0.0 |
 | **Framework** | Vue 3 (uni-app) |
 
+
+## How It Works
+
+1. **Create Capsule**: Seal messages or digital assets in a time capsule
+2. **Set Release Time**: Define when the capsule can be opened
+3. **On-Chain Storage**: Capsule metadata is stored permanently on Neo
+4. **Restricted Access**: Cannot be opened before the release time
+5. **Claim Capsule**: After release time, the owner can claim contents
 ## Features
 
 - Store message hashes on-chain while keeping full content locally

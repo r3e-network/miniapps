@@ -12,9 +12,12 @@ namespace NeoMiniAppPlatform.Contracts
         #region Hybrid Mode - Frontend Voting Power Calculation
 
         // Reverse delegation index: stores list of delegators for each mask
+        /// <summary>Storage prefix for delegators.</summary>
         private static readonly byte[] PREFIX_DELEGATORS = new byte[] { 0x40 };
+        /// <summary>Storage prefix for delegator count.</summary>
         private static readonly byte[] PREFIX_DELEGATOR_COUNT = new byte[] { 0x41 };
         // Cached delegated power for each mask
+        /// <summary>Storage prefix for cached power.</summary>
         private static readonly byte[] PREFIX_CACHED_POWER = new byte[] { 0x42 };
 
         /// <summary>

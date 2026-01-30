@@ -10,6 +10,25 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Internal Helpers
 
+        /// <summary>
+        /// Process draw result and complete the round.
+        /// 
+        /// PROCESS:
+        /// - Calculates prize pool with rollover
+        /// - Selects winner using randomness
+        /// - Updates winner statistics
+        /// - Stores completed round data
+        /// - Starts new round
+        /// - Emits WinnerDrawn and RoundCompleted events
+        /// 
+        /// PRIZE CALCULATION:
+        /// - Total pool = current pool + rollover
+        /// - Prize = pool * (100% - platform fee%)
+        /// - Platform fee goes to treasury
+        /// </summary>
+        /// <param name="requestId">RNG request ID</param>
+        /// <param name="roundId">Round being drawn</param>
+        /// <param name="result">Random result bytes</param>
         private static void ProcessDrawResult(BigInteger requestId, BigInteger roundId, ByteString result)
         {
             BigInteger pool = PrizePool() + RolloverAmount();

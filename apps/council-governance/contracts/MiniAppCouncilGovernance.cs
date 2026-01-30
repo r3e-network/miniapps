@@ -9,14 +9,23 @@ using Neo.SmartContract.Framework.Services;
 
 namespace NeoMiniAppPlatform.Contracts
 {
+    /// <summary>Event emitted when proposal created.</summary>
     public delegate void ProposalCreatedHandler(BigInteger proposalId, UInt160 creator, byte proposalType);
+    /// <summary>Event emitted when vote cast.</summary>
     public delegate void VoteCastHandler(BigInteger proposalId, UInt160 voter, bool support);
+    /// <summary>Event emitted when proposal revoked.</summary>
     public delegate void ProposalRevokedHandler(BigInteger proposalId, UInt160 creator);
+    /// <summary>Event emitted when proposal finalized.</summary>
     public delegate void ProposalFinalizedHandler(BigInteger proposalId, byte status);
+    /// <summary>Event emitted when proposal executed.</summary>
     public delegate void ProposalExecutedHandler(BigInteger proposalId);
+    /// <summary>Event emitted when member badge earned.</summary>
     public delegate void MemberBadgeEarnedHandler(UInt160 member, BigInteger badgeType, string badgeName);
+    /// <summary>Event emitted when delegation set.</summary>
     public delegate void DelegationSetHandler(UInt160 delegator, UInt160 delegatee);
+    /// <summary>Event emitted when delegation revoked.</summary>
     public delegate void DelegationRevokedHandler(UInt160 delegator);
+    /// <summary>Event emitted when quorum reached.</summary>
     public delegate void QuorumReachedHandler(BigInteger proposalId, BigInteger totalVotes);
 
     /// <summary>
@@ -44,8 +53,12 @@ namespace NeoMiniAppPlatform.Contracts
     public partial class MiniAppCouncilGovernance : MiniAppBase
     {
         #region App Constants
+        /// <summary>Unique application identifier for the council-governance miniapp.</summary>
         private const string APP_ID = "miniapp-council-governance";
+        /// <summary>Minimum value for operation.</summary>
+        /// <summary>Duration in seconds .</summary>
         private const long MIN_DURATION_SECONDS = 86400;      // 1 day minimum
+        /// <summary>Maximum allowed value .</summary>
         private const long MAX_DURATION_SECONDS = 2592000;    // 30 days maximum
         private const int THRESHOLD_PERCENT = 50;        // >50% for passing
         private const int QUORUM_PERCENT = 30;           // 30% of committee must vote
@@ -55,19 +68,33 @@ namespace NeoMiniAppPlatform.Contracts
         #endregion
 
         #region App Prefixes (0x20+ to avoid collision with MiniAppBase)
+        /// <summary>Storage prefix for candidate contract.</summary>
         private static readonly byte[] PREFIX_CANDIDATE_CONTRACT = new byte[] { 0x20 };
+        /// <summary>Storage prefix for policy contract.</summary>
         private static readonly byte[] PREFIX_POLICY_CONTRACT = new byte[] { 0x21 };
+        /// <summary>Storage prefix for proposal count.</summary>
         private static readonly byte[] PREFIX_PROPOSAL_COUNT = new byte[] { 0x22 };
+        /// <summary>Storage prefix for proposal.</summary>
         private static readonly byte[] PREFIX_PROPOSAL = new byte[] { 0x23 };
+        /// <summary>Storage prefix for vote.</summary>
         private static readonly byte[] PREFIX_VOTE = new byte[] { 0x24 };
+        /// <summary>Storage prefix for voter list.</summary>
         private static readonly byte[] PREFIX_VOTER_LIST = new byte[] { 0x25 };
+        /// <summary>Storage prefix for signature.</summary>
         private static readonly byte[] PREFIX_SIGNATURE = new byte[] { 0x26 };
+        /// <summary>Storage prefix for member stats.</summary>
         private static readonly byte[] PREFIX_MEMBER_STATS = new byte[] { 0x27 };
+        /// <summary>Storage prefix for member badges.</summary>
         private static readonly byte[] PREFIX_MEMBER_BADGES = new byte[] { 0x28 };
+        /// <summary>Storage prefix for delegation.</summary>
         private static readonly byte[] PREFIX_DELEGATION = new byte[] { 0x29 };
+        /// <summary>Storage prefix for total proposals.</summary>
         private static readonly byte[] PREFIX_TOTAL_PROPOSALS = new byte[] { 0x2A };
+        /// <summary>Storage prefix for total votes.</summary>
         private static readonly byte[] PREFIX_TOTAL_VOTES = new byte[] { 0x2B };
+        /// <summary>Storage prefix for passed proposals.</summary>
         private static readonly byte[] PREFIX_PASSED_PROPOSALS = new byte[] { 0x2C };
+        /// <summary>Storage prefix for total members.</summary>
         private static readonly byte[] PREFIX_TOTAL_MEMBERS = new byte[] { 0x2D };
         #endregion
 

@@ -86,6 +86,35 @@ npm run dev
 npm run build
 ```
 
+## Usage
+
+### Taking a Self-Repaying Loan
+
+1. **Connect Wallet**: Link your Neo N3 wallet to the application
+2. **Deposit Collateral**: Lock your NEO as collateral in the contract
+3. **Select LTV Tier**: Choose 20%, 30%, or 40% loan-to-value ratio
+4. **Receive GAS**: Borrow GAS against your collateral immediately
+5. **Monitor Yield**: Watch your collateral generate yield to repay the loan
+
+### Managing Your Loan
+
+1. View your active loan status and repayment progress
+2. Add more collateral to increase borrowing power
+3. Partially repay with external GAS if desired
+4. Withdraw excess collateral as yield accrues
+5. Close loan fully when yield has repaid principal
+
+## How It Works
+
+Self Loan uses yield-bearing collateral to create self-repaying loans:
+
+1. **Collateral Yield**: Your locked NEO generates GAS rewards over time
+2. **Loan Issuance**: Borrow GAS immediately against your NEO collateral
+3. **Auto-Repayment**: Generated yield automatically pays down the loan balance
+4. **No Liquidation**: Since the loan repays itself, liquidation risk is eliminated
+5. **LTV Tiers**: Higher LTV = higher fee, lower LTV = faster repayment
+6. **Flexibility**: Users can repay early or add collateral at any time
+
 ## Assets
 
 - **Allowed Assets**: GAS

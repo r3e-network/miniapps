@@ -10,6 +10,17 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Deployment
 
+        /// <summary>
+        /// Contract deployment initialization.
+        /// 
+        /// INITIALIZATION:
+        /// - Sets deployer as admin
+        /// - Initializes round counter to 1
+        /// - Resets all totals and counters
+        /// - Creates first round with ID 1
+        /// </summary>
+        /// <param name="data">Deployment data (unused)</param>
+        /// <param name="update">Whether this is a contract update</param>
         public static void _deploy(object data, bool update)
         {
             if (update) return;

@@ -10,6 +10,26 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Platform Stats
 
+        /// <summary>
+        /// Get comprehensive platform statistics.
+        /// 
+        /// RETURNS:
+        /// - totalBets: Total bets placed
+        /// - totalPlayers: Number of unique players
+        /// - totalWagered: Total GAS wagered
+        /// - totalPaid: Total GAS paid to winners
+        /// - jackpotPool: Current jackpot amount
+        /// - minBet: Minimum bet amount
+        /// - maxBet: Maximum bet amount
+        /// - platformFee: Platform fee percentage
+        /// - jackpotThreshold: Minimum bet for jackpot eligibility
+        /// - jackpotChance: Jackpot chance in basis points
+        /// - highRollerThreshold: High roller achievement threshold
+        /// - streakBonusBps: Streak bonus per win (basis points)
+        /// - maxStreakBonus: Maximum streak bonus
+        /// - houseEdge: Actual house edge (basis points)
+        /// </summary>
+        /// <returns>Map of platform statistics</returns>
         [Safe]
         public static Map<string, object> GetPlatformStats()
         {

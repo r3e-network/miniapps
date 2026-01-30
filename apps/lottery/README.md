@@ -12,6 +12,14 @@ Decentralized lottery with provably fair TEE VRF randomness and instant scratch 
 | **Framework** | Vue 3 (uni-app) |
 | **Theme** | Chinese Lucky (红金色) |
 
+
+## How It Works
+
+1. **Buy Tickets**: Purchase lottery tickets with GAS
+2. **Draw Period**: Wait for the scheduled draw time
+3. **Random Selection**: Winning numbers are selected using Neo blockchain randomness
+4. **Prize Pool**: A portion of ticket sales forms the prize pool
+5. **Claim Rewards**: Winners can claim their prizes after the draw
 ## Features
 
 ### Scheduled Draws (定期开奖)
@@ -27,6 +35,41 @@ Decentralized lottery with provably fair TEE VRF randomness and instant scratch 
 - **Prize Tiers**: 5 prize levels from 1x to 100x multiplier
 - **Canvas Interaction**: Touch-based scratch card experience
 - **Win Celebration**: Gold coins and confetti animations
+
+## Usage
+
+### Playing Scheduled Lotteries
+
+1. **Connect Wallet**: Link your Neo N3 wallet
+2. **Select Lottery Type**: Choose from 双色球, 快乐8, 七乐彩, 大乐透, 至尊彩
+3. **Buy Tickets**: Purchase 1-100 tickets at 0.1 GAS each
+4. **Wait for Draw**: Results announced when minimum participants reached
+5. **Check Results**: View if your numbers match the winning combination
+6. **Claim Winnings**: Winning tickets automatically pay out
+
+### Playing Scratch Cards
+
+1. **Select Scratch Card**: Choose from available instant lottery types
+2. **Purchase Ticket**: Buy a scratch card (0.05 - 1 GAS)
+3. **Scratch**: Swipe to reveal the prize underneath
+4. **Win or Lose**: See instant results with prize multipliers
+
+### Prize Tiers (Scheduled Lottery)
+
+| Match | Prize |
+|-------|-------|
+| All 5 numbers | 50% of pool |
+| 4 numbers | 20% of pool |
+| 3 numbers | 15% of pool |
+| 2 numbers | 10% of pool |
+| 1 number | 5% of pool |
+
+### Responsible Gaming
+
+- Set a budget before playing
+- Never chase losses
+- Take regular breaks
+- Play for entertainment, not as an investment
 
 ## Lottery Types 🆕
 

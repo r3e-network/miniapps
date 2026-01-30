@@ -10,6 +10,27 @@ namespace NeoMiniAppPlatform.Contracts
     {
         #region Player Query
 
+        /// <summary>
+        /// Get detailed player statistics.
+        /// 
+        /// RETURNS:
+        /// - totalTickets: Total tickets purchased
+        /// - totalSpent: Total GAS spent
+        /// - totalWins: Total winning rounds
+        /// - totalWon: Total GAS won
+        /// - roundsPlayed: Number of rounds participated
+        /// - consecutiveWins: Current consecutive wins
+        /// - bestWinStreak: Best win streak achieved
+        /// - highestWin: Largest single win
+        /// - achievementCount: Achievements unlocked
+        /// - joinTime: Player join timestamp
+        /// - lastPlayTime: Last play timestamp
+        /// - winRate: Win rate (basis points)
+        /// - netProfit: Net profit (won - spent)
+        /// - currentRoundTickets: Tickets in current round
+        /// </summary>
+        /// <param name="player">Player address</param>
+        /// <returns>Map of player statistics</returns>
         [Safe]
         public static Map<string, object> GetPlayerStatsDetails(UInt160 player)
         {

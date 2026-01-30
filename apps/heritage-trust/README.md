@@ -11,6 +11,14 @@ Living trust DAO - lock NEO/GAS, earn rewards, and release monthly inheritances 
 | **Version** | 2.0.0 |
 | **Framework** | Vue 3 (uni-app) |
 
+
+## How It Works
+
+1. **Create Trust**: Set up a trust with beneficiary and release conditions
+2. **Configure Release**: Define time-based or condition-based release rules
+3. **Fund Trust**: Deposit assets that will be managed by the trust
+4. **Beneficiary Access**: Beneficiaries can claim according to release rules
+5. **Owner Control**: Trust owner can modify parameters or add funds
 ## Features
 
 - Lock NEO and/or GAS as principal with a monthly release schedule
@@ -51,6 +59,123 @@ Living trust DAO - lock NEO/GAS, earn rewards, and release monthly inheritances 
 - **Beneficiary**
   - Execute the trust after inactivity.
   - Claim monthly released NEO/GAS.
+
+## Usage
+
+### Getting Started
+
+1. **Launch the App**: Open Heritage Trust from your Neo MiniApp dashboard
+2. **Connect Wallet**: Connect your Neo N3 wallet
+3. **Create Trust**: Set up your living trust with beneficiary
+4. **Manage**: Send heartbeats and claim rewards
+
+### Creating a Trust
+
+1. **Set Principal**:
+   - Choose amount of NEO to lock
+   - Choose amount of GAS to lock (optional)
+   - Total principal determines monthly releases
+
+2. **Configure Release**:
+   | Mode | Principal Returns | Monthly Release |
+   |------|-------------------|-----------------|
+   | Fixed NEO + GAS | Both | Both (locked amount) |
+   | NEO + GAS Rewards | NEO only | NEO + accrued GAS |
+   | Rewards Only | Locked forever | GAS rewards only |
+
+3. **Set Beneficiary**:
+   - Enter beneficiary wallet address
+   - Set heartbeat interval (days between required activity)
+   - Define monthly release amounts
+
+4. **Create Trust**:
+   - Lock NEO/GAS in the contract
+   - Trust becomes active immediately
+   - Start earning GAS rewards on bNEO
+
+### Owner Responsibilities
+
+1. **Heartbeat**:
+   - Submit heartbeat before deadline
+   - Keeps trust from triggering
+   - Required interval set during creation
+
+2. **Claim Rewards**:
+   - Claim accrued GAS rewards anytime
+   - Does not affect locked principal
+   - Rewards accumulate on bNEO
+
+3. **Monitor**:
+   - Check trust status regularly
+   - Track release schedule
+   - Update heartbeat as needed
+
+### Beneficiary Actions
+
+1. **After Trigger**:
+   - Execute the trust after inactivity
+   - Trust becomes claimable
+   - Monthly releases begin
+
+2. **Monthly Claims**:
+   - Claim released NEO/GAS each month
+   - Use claim function to access funds
+   - Continue monthly until fully released
+
+### Release Schedule
+
+| Trust Type | Principal | Monthly | Duration |
+|------------|-----------|---------|----------|
+| Fixed | Full return | Full NEO + GAS | 12+ months |
+| Rewards | Locked forever | GAS only | Indefinite |
+| Hybrid | NEO only | NEO + rewards | 12+ months |
+
+### Best Practices
+
+- **Choose Reliable Heartbeat**: Set realistic intervals you can maintain
+- **Communicate**: Inform beneficiary about the trust
+- **Document**: Keep records of trust configuration
+- **Review Regularly**: Check trust status and rewards
+
+### FAQ
+
+**Can I change the beneficiary?**
+No, the beneficiary is set at creation and cannot be changed.
+
+**What happens if I forget a heartbeat?**
+The trust triggers and becomes executable by beneficiary.
+
+**Can I cancel the trust?**
+Only remaining funds can be cancelled before trigger.
+
+**How are rewards calculated?**
+Based on bNEO yield from NeoBurger integration.
+
+**Can the beneficiary claim early?**
+No, only after trigger and per monthly schedule.
+
+### Troubleshooting
+
+**Heartbeat missed:**
+- Trust triggers automatically
+- Cannot be reversed
+- Beneficiary can now claim
+
+**Transaction failed:**
+- Check GAS balance for fees
+- Verify amounts don't exceed balance
+- Try again with correct amounts
+
+**Rewards not accumulating:**
+- Check bNEO conversion is working
+- Wait for reward calculation period
+- Verify NeoBurger integration
+
+### Support
+
+For trust questions, review the contract documentation.
+
+For technical issues, contact the Neo MiniApp team.
 
 ## Permissions
 
