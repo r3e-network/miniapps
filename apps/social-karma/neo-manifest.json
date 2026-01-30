@@ -17,7 +17,14 @@
     "email": "dev@r3e.network",
     "website": "https://r3e.network"
   },
-  "contracts": {},
+  "contracts": {
+    "neo-n3-mainnet": {
+      "miniapp-social-karma": {
+        "hash": "0x0000000000000000000000000000000000000000",
+        "source": "contracts/MiniAppSocialKarma.cs"
+      }
+    }
+  },
   "supported_networks": [
     "neo-n3-mainnet"
   ],

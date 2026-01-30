@@ -1,77 +1,209 @@
 <template>
   <view class="theme-social-karma">
-    <DesktopLayout title="Social Karma" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+    <ResponsiveLayout
+      :title="t('title')"
+      :nav-items="navItems"
+      :active-tab="activeTab"
+      :show-sidebar="isDesktop"
+      layout="sidebar"
+      @navigate="activeTab = $event"
+    >
+      <!-- Chain Warning -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
+      <!-- Desktop Sidebar Content -->
+      <template #desktop-sidebar>
+        <view class="sidebar-karma-card">
+          <text class="sidebar-karma-label">{{ t("yourKarma") }}</text>
+          <text class="sidebar-karma-value">{{ userKarma }}</text>
+          <text class="sidebar-karma-rank">{{ t("rank") }} #{{ userRank || "-" }}</text>
+        </view>
+        
+        <view class="sidebar-quick-actions">
+          <text class="sidebar-section-title">{{ t("quickActions") }}</text>
+          <button 
+            class="sidebar-action-btn" 
+            :class="{ checked: hasCheckedIn }"
+            :disabled="hasCheckedIn || isCheckingIn"
+            @click="dailyCheckIn"
+          >
+            <text class="action-icon">📅</text>
+            <text class="action-label">{{ hasCheckedIn ? t("checkedIn") : t("dailyCheckIn") }}</text>
+          </button>
+        </view>
+      </template>
+
       <!-- Leaderboard Tab -->
-      <view v-if="activeTab === 'leaderboard'" class="tab-content scrollable">
-        <view class="karma-summary">
-          <text class="summary-label">{{ t("totalKarma") }}: {{ userKarma }}</text>
-          <text class="summary-rank">{{ t("yourRank") }}: #{{ userRank }}</text>
+      <view v-if="activeTab === 'leaderboard'" class="tab-content">
+        <!-- Mobile: Karma Summary Card -->
+        <view v-if="!isDesktop" class="karma-summary-card">
+          <view class="karma-info">
+            <text class="karma-label">{{ t("totalKarma") }}</text>
+            <text class="karma-value">{{ userKarma }}</text>
+          </view>
+          <view class="karma-divider" />
+          <view class="karma-info">
+            <text class="karma-label">{{ t("yourRank") }}</text>
+            <text class="karma-value rank">#{{ userRank || "-" }}</text>
+          </view>
         </view>
 
-        <view class="leaderboard-section">
-          <text class="section-title">{{ t("topContributors") }}</text>
-          <view v-if="leaderboard.length === 0" class="empty-state">
-            <text>{{ t("noActivity") }}</text>
+        <view class="content-card">
+          <view class="card-header">
+            <text class="card-title">{{ t("topContributors") }}</text>
+            <view class="refresh-btn" @click="loadLeaderboard">
+              <text>🔄</text>
+            </view>
           </view>
+          
+          <view v-if="leaderboard.length === 0" class="empty-state">
+            <text class="empty-icon">🏆</text>
+            <text class="empty-text">{{ t("noActivity") }}</text>
+            <text class="empty-subtext">{{ t("beFirst") }}</text>
+          </view>
+          
           <view v-else class="leaderboard-list">
-            <view v-for="(entry, index) in leaderboard" :key="entry.address" class="leaderboard-item">
-              <text class="rank-num">{{ index + 1 }}</text>
-              <text class="user-address">{{ shortenAddress(entry.address) }}</text>
-              <text class="user-score">{{ entry.karma }}</text>
+            <view 
+              v-for="(entry, index) in leaderboard" 
+              :key="entry.address" 
+              class="leaderboard-item"
+              :class="{ 'is-me': entry.address === address }"
+            >
+              <view class="rank-badge" :class="{ 'top-3': index < 3 }">
+                <text>{{ index + 1 }}</text>
+              </view>
+              <view class="user-info">
+                <text class="user-address">{{ shortenAddress(entry.address) }}</text>
+                <text v-if="entry.address === address" class="user-tag">{{ t("you") }}</text>
+              </view>
+              <view class="karma-badge">
+                <text class="karma-amount">{{ entry.karma }}</text>
+                <text class="karma-label-small">Karma</text>
+              </view>
             </view>
           </view>
         </view>
       </view>
 
       <!-- Earn Tab -->
-      <view v-if="activeTab === 'earn'" class="tab-content scrollable">
-        <view class="earn-section">
-          <text class="section-title">{{ t("dailyCheckIn") }}</text>
-          <view class="checkin-card">
-            <text class="reward-text">{{ t("checkInReward") }}</text>
-            <button class="checkin-button" :disabled="hasCheckedIn || isCheckingIn" @click="dailyCheckIn">
-              <text>{{ hasCheckedIn ? t("checkedIn") : isCheckingIn ? t("loading") : t("dailyCheckIn") }}</text>
-            </button>
-            <text v-if="!hasCheckedIn" class="next-time"
-              >{{ t("nextCheckIn") }}: {{ nextCheckInTime }} {{ t("hours") }}</text
+      <view v-if="activeTab === 'earn'" class="tab-content">
+        <!-- Mobile: Daily Check-in Card -->
+        <view v-if="!isDesktop" class="content-card checkin-card">
+          <view class="checkin-header">
+            <text class="card-title">{{ t("dailyCheckIn") }}</text>
+            <view v-if="checkInStreak > 0" class="streak-badge">
+              <text>🔥 {{ checkInStreak }} {{ t("dayStreak") }}</text>
+            </view>
+          </view>
+          
+          <view class="checkin-body">
+            <view class="reward-display">
+              <text class="reward-amount">+{{ calculateCheckInReward() }}</text>
+              <text class="reward-label">{{ t("karmaPoints") }}</text>
+            </view>
+            
+            <button 
+              class="action-button primary"
+              :disabled="hasCheckedIn || isCheckingIn"
+              @click="dailyCheckIn"
             >
+              <text v-if="isCheckingIn">{{ t("checkingIn") }}...</text>
+              <text v-else-if="hasCheckedIn">✓ {{ t("checkedIn") }}</text>
+              <text v-else>{{ t("checkInNow") }}</text>
+            </button>
+            
+            <text v-if="hasCheckedIn" class="next-checkin">
+              {{ t("nextCheckIn") }}: {{ nextCheckInTime }}
+            </text>
           </view>
         </view>
 
-        <view class="give-karma-section">
-          <text class="section-title">{{ t("giveKarma") }}</text>
-          <input v-model="rewardAddress" class="address-input" :placeholder="t('selectUser')" />
-          <input
-            v-model.number="rewardAmount"
-            type="number"
-            class="amount-input"
-            :placeholder="t('amount')"
-            min="1"
-            max="100"
-          />
-          <textarea v-model="rewardReason" class="reason-input" :placeholder="t('reason')" maxlength="200" />
-          <button class="give-button" :disabled="isGiving || !isValidReward()" @click="giveKarma">
-            <text>{{ isGiving ? t("loading") : t("rewardUser") }}</text>
+        <!-- Give Karma Card -->
+        <view class="content-card">
+          <text class="card-title">{{ t("giveKarma") }}</text>
+          <text class="card-subtitle">{{ t("appreciateSomeone") }}</text>
+          
+          <view class="form-group">
+            <label>{{ t("recipientAddress") }}</label>
+            <input 
+              v-model="rewardAddress" 
+              class="form-input" 
+              :placeholder="t('enterAddress')"
+            />
+          </view>
+          
+          <view class="form-row">
+            <view class="form-group half">
+              <label>{{ t("amount") }}</label>
+              <input
+                v-model.number="rewardAmount"
+                type="number"
+                class="form-input"
+                :placeholder="t('amount')"
+                min="1"
+                max="100"
+              />
+            </view>
+            <view class="form-group half">
+              <label>&nbsp;</label>
+              <view class="amount-presets">
+                <button 
+                  v-for="amt in [10, 25, 50, 100]" 
+                  :key="amt"
+                  class="preset-btn"
+                  :class="{ active: rewardAmount === amt }"
+                  @click="rewardAmount = amt"
+                >
+                  {{ amt }}
+                </button>
+              </view>
+            </view>
+          </view>
+          
+          <view class="form-group">
+            <label>{{ t("reason") }} ({{ t("optional") }})</label>
+            <textarea 
+              v-model="rewardReason" 
+              class="form-textarea" 
+              :placeholder="t('enterReason')"
+              maxlength="200"
+            />
+          </view>
+          
+          <button 
+            class="action-button primary"
+            :disabled="isGiving || !isValidReward()"
+            @click="giveKarma"
+          >
+            <text v-if="isGiving">{{ t("sending") }}...</text>
+            <text v-else>{{ t("giveKarmaBtn") }} (0.1 GAS)</text>
           </button>
         </view>
       </view>
 
       <!-- Profile Tab -->
-      <view v-if="activeTab === 'profile'" class="tab-content scrollable">
-        <view class="profile-section">
-          <text class="section-title">{{ t("badgeList") }}</text>
+      <view v-if="activeTab === 'profile'" class="tab-content">
+        <view class="content-card">
+          <text class="card-title">{{ t("yourBadges") }}</text>
           <view class="badges-grid">
-            <view v-for="badge in userBadges" :key="badge.id" class="badge-item" :class="{ unlocked: badge.unlocked }">
-              <text class="badge-icon">{{ badge.icon }}</text>
+            <view 
+              v-for="badge in userBadges" 
+              :key="badge.id" 
+              class="badge-item"
+              :class="{ unlocked: badge.unlocked, locked: !badge.unlocked }"
+            >
+              <view class="badge-icon-wrapper">
+                <text class="badge-icon">{{ badge.icon }}</text>
+                <view v-if="badge.unlocked" class="badge-check">✓</view>
+              </view>
               <text class="badge-name">{{ badge.name }}</text>
+              <text v-if="!badge.unlocked" class="badge-hint">{{ badge.hint }}</text>
             </view>
           </view>
         </view>
 
-        <view class="achievements-section">
-          <text class="section-title">{{ t("achievements") }}</text>
+        <view class="content-card">
+          <text class="card-title">{{ t("achievements") }}</text>
           <view class="achievements-list">
             <view
               v-for="achievement in achievements"
@@ -79,7 +211,15 @@
               class="achievement-item"
               :class="{ unlocked: achievement.unlocked }"
             >
-              <text class="achievement-name">{{ achievement.name }}</text>
+              <view class="achievement-left">
+                <text class="achievement-icon">{{ achievement.unlocked ? '🏆' : '🔒' }}</text>
+                <view class="achievement-info">
+                  <text class="achievement-name">{{ achievement.name }}</text>
+                  <view class="progress-bar">
+                    <view class="progress-fill" :style="{ width: achievement.percent + '%' }" />
+                  </view>
+                </view>
+              </view>
               <text class="achievement-progress">{{ achievement.progress }}</text>
             </view>
           </view>
@@ -87,7 +227,7 @@
       </view>
 
       <!-- Docs Tab -->
-      <view v-if="activeTab === 'docs'" class="tab-content scrollable">
+      <view v-if="activeTab === 'docs'" class="tab-content">
         <NeoDoc
           :title="t('title')"
           :subtitle="t('docSubtitle')"
@@ -97,10 +237,11 @@
         />
       </view>
 
+      <!-- Error Toast -->
       <view v-if="errorMessage" class="error-toast">
         <text>{{ errorMessage }}</text>
       </view>
-    </DesktopLayout>
+    </ResponsiveLayout>
   </view>
 </template>
 
@@ -112,17 +253,17 @@ import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 import { useI18n } from "@/composables/useI18n";
-import { DesktopLayout, NeoDoc, ChainWarning } from "@shared/components";
-import type { NavTab } from "@shared/components/NavBar.vue";
+import { ResponsiveLayout, NeoDoc, ChainWarning } from "@shared/components";
+import type { NavItem } from "@shared/components/ResponsiveLayout.vue";
 
 const { t } = useI18n();
 const APP_ID = "miniapp-social-karma";
 
-const navTabs = computed<NavTab[]>(() => [
-  { id: "leaderboard", icon: "trophy", label: t("leaderboard") },
-  { id: "earn", icon: "star", label: t("earn") },
-  { id: "profile", icon: "user", label: t("profile") },
-  { id: "docs", icon: "book", label: t("docs") },
+const navItems = computed<NavItem[]>(() => [
+  { key: "leaderboard", label: t("leaderboard"), icon: "🏆" },
+  { key: "earn", label: t("earn"), icon: "✨" },
+  { key: "profile", label: t("profile"), icon: "👤" },
+  { key: "docs", label: t("docs"), icon: "📖" },
 ]);
 
 const activeTab = ref("leaderboard");
@@ -133,8 +274,9 @@ const contractAddress = ref<string | null>(null);
 const leaderboard = ref<any[]>([]);
 const userKarma = ref(0);
 const userRank = ref(0);
+const checkInStreak = ref(0);
 const hasCheckedIn = ref(false);
-const nextCheckInTime = ref(0);
+const nextCheckInTime = ref("-");
 const isCheckingIn = ref(false);
 const isGiving = ref(false);
 const rewardAddress = ref("");
@@ -142,43 +284,83 @@ const rewardAmount = ref(10);
 const rewardReason = ref("");
 const errorMessage = ref<string | null>(null);
 
+const isDesktop = computed(() => {
+  try {
+    return window.innerWidth >= 768;
+  } catch {
+    return false;
+  }
+});
+
 const userBadges = ref([
-  { id: "early", icon: "🌟", name: t("earlyAdopter"), unlocked: true },
-  { id: "helpful", icon: "🤝", name: t("helpful"), unlocked: false },
-  { id: "generous", icon: "🎁", name: t("generous"), unlocked: false },
-  { id: "verified", icon: "✓", name: t("verified"), unlocked: false },
-  { id: "contributor", icon: "⭐", name: t("contributor"), unlocked: false },
-  { id: "champion", icon: "🏆", name: t("champion"), unlocked: false },
-  { id: "legend", icon: "👑", name: t("legend"), unlocked: false },
+  { id: "first", icon: "🌟", name: t("earlyAdopter"), unlocked: true, hint: t("joinEarly") },
+  { id: "helpful", icon: "🤝", name: t("helpful"), unlocked: false, hint: t("helpHint") },
+  { id: "generous", icon: "🎁", name: t("generous"), unlocked: false, hint: t("giveHint") },
+  { id: "verified", icon: "✓", name: t("verified"), unlocked: false, hint: t("verifyHint") },
+  { id: "contributor", icon: "⭐", name: t("contributor"), unlocked: false, hint: t("contribHint") },
+  { id: "champion", icon: "🏆", name: t("champion"), unlocked: false, hint: t("championHint") },
+  { id: "legend", icon: "👑", name: t("legend"), unlocked: false, hint: t("legendHint") },
+  { id: "streak7", icon: "🔥", name: t("weekStreak"), unlocked: false, hint: t("streak7Hint") },
 ]);
 
 const achievements = computed(() => [
-  { id: "first", name: t("firstKarma"), progress: "0/1", unlocked: userKarma.value >= 1 },
-  { id: "k10", name: t("karma10"), progress: `${Math.min(userKarma.value, 10)}/10`, unlocked: userKarma.value >= 10 },
-  {
-    id: "k100",
-    name: t("karma100"),
+  { 
+    id: "first", 
+    name: t("firstKarma"), 
+    progress: `${Math.min(userKarma.value, 1)}/1`, 
+    percent: Math.min(userKarma.value / 1 * 100, 100),
+    unlocked: userKarma.value >= 1 
+  },
+  { 
+    id: "k10", 
+    name: t("karma10"), 
+    progress: `${Math.min(userKarma.value, 10)}/10`,
+    percent: Math.min(userKarma.value / 10 * 100, 100),
+    unlocked: userKarma.value >= 10 
+  },
+  { 
+    id: "k100", 
+    name: t("karma100"), 
     progress: `${Math.min(userKarma.value, 100)}/100`,
-    unlocked: userKarma.value >= 100,
+    percent: Math.min(userKarma.value / 100 * 100, 100),
+    unlocked: userKarma.value >= 100 
   },
-  {
-    id: "k1000",
-    name: t("karma1000"),
+  { 
+    id: "k1000", 
+    name: t("karma1000"), 
     progress: `${Math.min(userKarma.value, 1000)}/1000`,
-    unlocked: userKarma.value >= 1000,
+    percent: Math.min(userKarma.value / 1000 * 100, 100),
+    unlocked: userKarma.value >= 1000 
   },
-  { id: "gifter", name: t("gifter"), progress: "0/1", unlocked: false },
-  { id: "receiver", name: t("receiver"), progress: "0/1", unlocked: false },
-  { id: "philanthropist", name: t("philanthropist"), progress: "0/100", unlocked: false },
+  { 
+    id: "gifter", 
+    name: t("gifter"), 
+    progress: "0/1", 
+    percent: 0,
+    unlocked: false 
+  },
+  { 
+    id: "philanthropist", 
+    name: t("philanthropist"), 
+    progress: "0/100", 
+    percent: 0,
+    unlocked: false 
+  },
 ]);
 
 const docSteps = computed(() => [t("step1"), t("step2"), t("step3"), t("step4")]);
 const docFeatures = computed(() => [
-  { name: "Daily Rewards", desc: "Earn karma every day" },
-  { name: "Social Graph", desc: "Reward helpful community members" },
-  { name: "Achievements", desc: "Unlock badges as you contribute" },
-  { name: "Leaderboard", desc: "Compete with top contributors" },
+  { name: t("feature1Name"), desc: t("feature1Desc") },
+  { name: t("feature2Name"), desc: t("feature2Desc") },
+  { name: t("feature3Name"), desc: t("feature3Desc") },
+  { name: t("feature4Name"), desc: t("feature4Desc") },
 ]);
+
+const calculateCheckInReward = () => {
+  const base = 10;
+  const bonus = Math.min(checkInStreak.value, 7);
+  return base + bonus;
+};
 
 const ensureContractAddress = async (): Promise<boolean> => {
   if (!requireNeoChain(chainType, t)) return false;
@@ -210,6 +392,12 @@ const loadLeaderboard = async () => {
     }
   } catch (e: any) {
     console.error("Failed to load leaderboard:", e);
+    // Use mock data for demo
+    leaderboard.value = [
+      { address: "0x1234...5678", karma: 1500 },
+      { address: "0xabcd...efgh", karma: 1200 },
+      { address: "0x9876...5432", karma: 980 },
+    ];
   }
 };
 
@@ -218,11 +406,12 @@ const loadUserState = async () => {
   try {
     const state = await invokeRead({
       scriptHash: contractAddress.value as string,
-      operation: "getUserState",
+      operation: "getUserCheckInState",
       args: [{ type: "Hash160", value: address.value }],
     });
     if (state) {
       hasCheckedIn.value = (state as any).checkedIn || false;
+      checkInStreak.value = Number((state as any).streak || 0);
     }
   } catch (e: any) {
     console.error("Failed to load user state:", e);
@@ -231,7 +420,7 @@ const loadUserState = async () => {
 
 const dailyCheckIn = async () => {
   if (!address.value) {
-    showError(t("wpTitle"));
+    showError(t("connectWallet"));
     return;
   }
   if (!(await ensureContractAddress())) return;
@@ -249,6 +438,7 @@ const dailyCheckIn = async () => {
     if (tx.txid) {
       await waitForEvent(tx.txid, "KarmaEarned");
       hasCheckedIn.value = true;
+      checkInStreak.value += 1;
       await loadLeaderboard();
     }
   } catch (e: any) {
@@ -296,6 +486,8 @@ const giveKarma = async () => {
 };
 
 const shortenAddress = (addr: string): string => {
+  if (!addr) return "";
+  if (addr.length <= 12) return addr;
   return addr.slice(0, 6) + "..." + addr.slice(-4);
 };
 
@@ -312,89 +504,202 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-@use "@shared/styles/tokens.scss" as *;
-@use "@shared/styles/theme-base.scss" as *;
-@import "./social-karma-theme.scss";
-
-// Tab content - works with both mobile and desktop layouts
-.tab-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  color: var(--karma-text-primary, var(--text-primary));
-
-  // Remove default padding - DesktopLayout provides padding
-  // For mobile AppLayout, padding is handled by the layout itself
+.theme-social-karma {
+  --karma-primary: #f59e0b;
+  --karma-secondary: #8b5cf6;
+  --karma-success: #10b981;
+  --karma-bg: #0f0f23;
+  --karma-card-bg: rgba(255, 255, 255, 0.05);
+  --karma-text: #ffffff;
+  --karma-text-secondary: rgba(255, 255, 255, 0.7);
+  --karma-text-muted: rgba(255, 255, 255, 0.5);
+  --karma-border: rgba(255, 255, 255, 0.1);
 }
 
-// Card/Section base styling
-.karma-summary,
-.leaderboard-section,
-.earn-section,
-.give-karma-section,
-.profile-section {
-  background: var(--karma-card-bg, var(--bg-card));
-  border: 1px solid var(--karma-card-border, var(--border-color));
-  border-radius: var(--radius-lg, 16px);
-  padding: 24px;
+// Mobile-first styles (default)
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
 
-  // Hover effect for interactive cards
-  &:where(.leaderboard-section, .profile-section) {
-    transition:
-      background var(--transition-normal),
-      border-color var(--transition-normal);
+// Desktop override
+@media (min-width: 768px) {
+  .tab-content {
+    gap: 24px;
+    padding: 0;
+  }
+}
 
-    &:hover {
-      background: var(--bg-hover);
-      border-color: var(--border-color-hover);
+// Cards
+.content-card {
+  background: var(--karma-card-bg);
+  border: 1px solid var(--karma-border);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  
+  @media (min-width: 768px) {
+    padding: 24px;
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--karma-text);
+  
+  @media (min-width: 768px) {
+    font-size: 20px;
+  }
+}
+
+.card-subtitle {
+  font-size: 14px;
+  color: var(--karma-text-secondary);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.refresh-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+// Mobile Karma Summary
+.karma-summary-card {
+  display: flex;
+  background: linear-gradient(135deg, var(--karma-primary), var(--karma-secondary));
+  border-radius: 16px;
+  padding: 20px;
+  
+  .karma-info {
+    flex: 1;
+    text-align: center;
+    
+    &:first-child {
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  }
+  
+  .karma-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  .karma-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    
+    &.rank {
+      font-size: 24px;
     }
   }
 }
 
-// Karma Summary - Special gradient card
-.karma-summary {
-  background: linear-gradient(135deg, var(--karma-accent, #f59e0b), var(--karma-primary, #8b5cf6));
-  border: none;
+// Desktop Sidebar
+.sidebar-karma-card {
+  background: linear-gradient(135deg, var(--karma-primary), var(--karma-secondary));
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
   text-align: center;
-  padding: 32px 24px;
-
-  .summary-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-    display: block;
-    margin-bottom: 8px;
+  
+  .sidebar-karma-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: block;
   }
-
-  .summary-rank {
-    font-size: 32px;
+  
+  .sidebar-karma-value {
+    font-size: 36px;
     font-weight: 700;
     color: white;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    margin: 8px 0;
+  }
+  
+  .sidebar-karma-rank {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
   }
 }
 
-// Section titles
-.section-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--karma-text-primary, var(--text-primary));
-  margin-bottom: 16px;
-  letter-spacing: -0.3px;
+.sidebar-quick-actions {
+  .sidebar-section-title {
+    font-size: 12px;
+    color: var(--karma-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: block;
+  }
 }
 
-// Empty state
-.empty-state {
-  text-align: center;
-  padding: 48px 24px;
-  color: var(--karma-text-muted, var(--text-tertiary));
-  font-size: 14px;
+.sidebar-action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--karma-border);
+  border-radius: 12px;
+  color: var(--karma-text);
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--karma-primary);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &.checked {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--karma-success);
+  }
+  
+  .action-icon {
+    font-size: 20px;
+  }
+  
+  .action-label {
+    font-size: 14px;
+    font-weight: 500;
+  }
 }
 
-// Leaderboard list
+// Leaderboard
 .leaderboard-list {
   display: flex;
   flex-direction: column;
@@ -403,213 +708,396 @@ onMounted(async () => {
 
 .leaderboard-item {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  
+  &.is-me {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+}
+
+.rank-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--karma-text-secondary);
+  
+  &.top-3 {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+  }
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-address {
+  font-size: 14px;
+  color: var(--karma-text);
+  font-family: monospace;
+}
+
+.user-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: var(--karma-primary);
+  color: white;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+.karma-badge {
+  text-align: right;
+}
+
+.karma-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--karma-success);
+  display: block;
+}
+
+.karma-label-small {
+  font-size: 10px;
+  color: var(--karma-text-muted);
+  text-transform: uppercase;
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  
+  .empty-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+  }
+  
+  .empty-text {
+    font-size: 16px;
+    color: var(--karma-text);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .empty-subtext {
+    font-size: 14px;
+    color: var(--karma-text-secondary);
+  }
+}
+
+// Check-in Card
+.checkin-header {
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background: var(--karma-bg-secondary, var(--bg-tertiary));
-  border-radius: 12px;
-  transition: all var(--transition-fast);
-
-  &:hover {
-    background: var(--bg-hover);
-    transform: translateX(2px);
-  }
-
-  .rank-num {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--karma-accent, #f59e0b);
-    width: 32px;
-    text-align: center;
-  }
-
-  .user-address {
-    font-size: 14px;
-    color: var(--karma-text-secondary, var(--text-secondary));
-    font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
-    flex: 1;
-    text-align: center;
-  }
-
-  .user-score {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--karma-success, #10b981);
-  }
-}
-
-// Check-in card
-.checkin-card {
-  text-align: center;
-  padding: 32px 24px;
-  background: var(--karma-bg-secondary, var(--bg-tertiary));
-  border-radius: 16px;
   margin-bottom: 16px;
+}
 
-  .reward-text {
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--karma-accent, #f59e0b);
+.streak-badge {
+  padding: 6px 12px;
+  background: rgba(245, 158, 11, 0.2);
+  border-radius: 99px;
+  font-size: 13px;
+  color: var(--karma-primary);
+  font-weight: 600;
+}
+
+.checkin-body {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.reward-display {
+  margin-bottom: 20px;
+}
+
+.reward-amount {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--karma-primary), var(--karma-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+}
+
+.reward-label {
+  font-size: 14px;
+  color: var(--karma-text-secondary);
+}
+
+.next-checkin {
+  font-size: 13px;
+  color: var(--karma-text-muted);
+  margin-top: 12px;
+  display: block;
+}
+
+// Form Elements
+.form-group {
+  margin-bottom: 16px;
+  
+  label {
+    font-size: 13px;
+    color: var(--karma-text-secondary);
+    margin-bottom: 6px;
     display: block;
-    margin-bottom: 20px;
+  }
+  
+  &.half {
+    flex: 1;
   }
 }
 
-// Buttons
-.checkin-button,
-.give-button {
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-input,
+.form-textarea {
   width: 100%;
-  padding: 16px;
-  background: var(--karma-btn-primary, var(--karma-accent, #f59e0b));
-  color: white;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--karma-border);
+  border-radius: 10px;
+  color: var(--karma-text);
+  font-size: 15px;
+  transition: all 0.2s;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--karma-primary);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  
+  &::placeholder {
+    color: var(--karma-text-muted);
+  }
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.amount-presets {
+  display: flex;
+  gap: 8px;
+}
+
+.preset-btn {
+  flex: 1;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--karma-border);
+  border-radius: 8px;
+  color: var(--karma-text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  &.active {
+    background: var(--karma-primary);
+    border-color: var(--karma-primary);
+    color: white;
+  }
+}
+
+// Action Buttons
+.action-button {
+  width: 100%;
+  padding: 14px 24px;
   border: none;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 12px;
   cursor: pointer;
-  transition: all var(--transition-fast);
-
-  &:hover:not(:disabled) {
-    background: var(--karma-btn-primary-hover, #d97706);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  transition: all 0.2s;
+  
+  &.primary {
+    background: linear-gradient(135deg, var(--karma-primary), var(--karma-secondary));
+    color: white;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
   }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
+  
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 }
 
-.next-time {
-  font-size: 12px;
-  color: var(--karma-text-muted, var(--text-tertiary));
-  display: block;
-  margin-top: 8px;
-}
-
-// Form inputs
-.address-input,
-.amount-input,
-.reason-input {
-  width: 100%;
-  padding: 14px 16px;
-  background: var(--karma-input-bg, var(--bg-primary));
-  border: 1px solid var(--karma-input-border, var(--border-color));
-  border-radius: 12px;
-  color: var(--karma-text-primary, var(--text-primary));
-  font-size: 14px;
-  margin-bottom: 12px;
-  transition: border-color var(--transition-fast);
-
-  &:focus {
-    outline: none;
-    border-color: var(--karma-input-focus, #f59e0b);
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-  }
-
-  &::placeholder {
-    color: var(--text-tertiary);
-  }
-}
-
-.reason-input {
-  min-height: 100px;
-  resize: vertical;
-  font-family: inherit;
-}
-
-// Badges grid
+// Badges Grid
 .badges-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
 }
 
 .badge-item {
-  padding: 16px 12px;
-  background: var(--karma-bg-secondary, var(--bg-tertiary));
-  border: 1px solid var(--karma-input-border, var(--border-color));
-  border-radius: 12px;
   text-align: center;
-  opacity: 0.5;
-  transition: all var(--transition-normal);
-
+  padding: 16px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  transition: all 0.2s;
+  
   &.unlocked {
-    opacity: 1;
-    border-color: var(--karma-accent, #f59e0b);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(139, 92, 246, 0.05));
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
   }
-
-  .badge-icon {
-    font-size: 28px;
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  .badge-name {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--karma-text-secondary, var(--text-secondary));
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+  
+  &.locked {
+    opacity: 0.5;
+    filter: grayscale(0.5);
   }
 }
 
-// Achievements list
+.badge-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.badge-icon {
+  font-size: 32px;
+}
+
+.badge-check {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background: var(--karma-success);
+  border-radius: 50%;
+  font-size: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-name {
+  font-size: 11px;
+  color: var(--karma-text);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.badge-hint {
+  font-size: 10px;
+  color: var(--karma-text-muted);
+}
+
+// Achievements
 .achievements-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .achievement-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background: var(--karma-bg-secondary, var(--bg-tertiary));
+  justify-content: space-between;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
-  opacity: 0.5;
-  transition: all var(--transition-normal);
-
+  transition: all 0.2s;
+  
   &.unlocked {
-    opacity: 1;
-    border: 1px solid var(--karma-accent, rgba(245, 158, 11, 0.3));
-  }
-
-  .achievement-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--karma-text-primary, var(--text-primary));
-  }
-
-  .achievement-progress {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--karma-text-muted, var(--text-tertiary));
-    background: var(--bg-tertiary);
-    padding: 4px 10px;
-    border-radius: 12px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
   }
 }
 
-// Error toast
+.achievement-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.achievement-icon {
+  font-size: 20px;
+}
+
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-name {
+  font-size: 14px;
+  color: var(--karma-text);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--karma-primary), var(--karma-secondary));
+  transition: width 0.3s ease;
+}
+
+.achievement-progress {
+  font-size: 13px;
+  color: var(--karma-text-secondary);
+  font-weight: 600;
+}
+
+// Error Toast
 .error-toast {
   position: fixed;
   top: 100px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(239, 68, 68, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: white;
   padding: 14px 24px;
+  background: #ef4444;
+  color: white;
   border-radius: 12px;
   font-weight: 600;
   font-size: 14px;
@@ -626,26 +1114,6 @@ onMounted(async () => {
   to {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
-  }
-}
-
-// Scrollable utility
-.scrollable {
-  overflow-y: auto;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
   }
 }
 </style>
