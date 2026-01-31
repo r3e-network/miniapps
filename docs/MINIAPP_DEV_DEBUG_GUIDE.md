@@ -671,4 +671,4 @@ Before deploying to production:
 - [Platform Integration Guide](./PLATFORM_MINIAPP_GUIDE.md)
 - [Deployment Workflow](../DEPLOYMENT_WORKFLOW.md)
 - [Development Workflow](../DEVELOPMENT_WORKFLOW.md)
-- [Coding Standards](../STANDARDS.md)
+- [Coding Standards](./STANDARDS.md)

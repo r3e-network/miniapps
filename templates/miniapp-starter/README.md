@@ -115,7 +115,7 @@ This template follows all standards defined in `/STANDARDS.md`:
 
 ## Resources
 
-- [Development Standards](../../STANDARDS.md)
+- [Development Standards](../../docs/STANDARDS.md)
 - [Framework Guide](../../docs/FRAMEWORK_SUMMARY.md)
 - [Miniapp Guide](../../docs/MINIAPP_GUIDE.md)
 - [Migration Guide](../../docs/MIGRATION_GUIDE.md)
