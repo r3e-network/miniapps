@@ -43,6 +43,19 @@ miniapps/
 └── shared/                  # Cross-app shared resources
 ```
 
+## 📚 Documentation
+
+All project documentation is organized in the `docs/` folder:
+
+| Document | Purpose |
+|----------|---------|
+| [docs/QUICK_START.md](docs/QUICK_START.md) | Developer onboarding guide |
+| [docs/STANDARDS.md](docs/STANDARDS.md) | Coding standards and best practices |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Development workflow and guides |
+| [docs/DEPLOYMENT_CHECKLIST.md](docs/DEPLOYMENT_CHECKLIST.md) | Production deployment steps |
+| [docs/SECURITY_FIXES_APPLIED.md](docs/SECURITY_FIXES_APPLIED.md) | Security hardening summary |
+| [docs/FINAL_160_ROUND_PERFECT_REVIEW.md](docs/FINAL_160_ROUND_PERFECT_REVIEW.md) | Complete optimization report |
+
 ## Quick Start
 
 ```bash
