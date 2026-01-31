@@ -15,3 +15,5 @@ obj/
 
 # Worktrees
 /.worktrees/
+# Serena memories
+.serena/memories/
