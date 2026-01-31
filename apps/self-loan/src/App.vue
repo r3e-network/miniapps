@@ -30,12 +30,9 @@ const updateDimensions = () => {
   }
 };
 
-onLaunch(() => {
-  console.log("Self Loan launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Self Loan shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     updateDimensions();
@@ -43,7 +40,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Self Loan hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
   }

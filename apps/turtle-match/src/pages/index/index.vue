@@ -12,24 +12,11 @@
         </view>
       </template>
 >
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
       <view class="game-container">
         <!-- Header Stats -->
         <view class="game-header">
-          <view class="header-glass">
-            <view class="game-header__stat">
-              <view class="stat-icon">📅</view>
-              <text class="game-header__label">{{ t("totalSessions") }}</text>
-              <text class="game-header__value">{{ stats?.totalSessions || 0 }}</text>
-            </view>
-            <view class="divider" />
-            <view class="game-header__stat">
-              <view class="stat-icon">💎</view>
-              <text class="game-header__label">{{ t("totalRewards") }}</text>
-              <text class="game-header__value gold-text">{{ formatGas(stats?.totalPaid || 0n, 3) }} GAS</text>
-            </view>
-          </view>
+          <PlayerStats :stats="stats" :t="t" />
         </view>
 
         <view v-if="error" class="error-banner">
@@ -75,7 +62,7 @@
                   <text class="total-value">{{ totalCost }} GAS</text>
                 </view>
 
-                <NeoButton variant="primary" size="lg" block @click="startGame" :loading="loading">{{
+                <NeoButton variant="primary" size="lg" block @click="handleStartGame" :loading="loading">{{
                   t("startGame")
                 }}</NeoButton>
               </view>
@@ -85,65 +72,35 @@
 
         <!-- Active Game -->
         <view v-else class="game-area">
-          <view class="game-stats-row">
-            <view class="stat-bubble">
-              <text class="bubble-label">{{ t("remainingBoxes") }}</text>
-              <text class="bubble-value">{{ remainingBoxes }}</text>
-            </view>
-            <view class="stat-bubble">
-              <text class="bubble-label">{{ t("matches") }}</text>
-              <text class="bubble-value">{{ currentMatches }}</text>
-            </view>
-            <view class="stat-bubble highlight">
-              <text class="bubble-label">{{ t("won") }}</text>
-              <text class="bubble-value gold">{{ formatGas(currentReward || 0n, 3) }} GAS</text>
-            </view>
-          </view>
-
-          <view class="grid-container">
-            <TurtleGrid :gridTurtles="gridTurtles" :matchedPair="matchedPairRef" />
-          </view>
-
-          <view class="game-actions">
-            <view v-if="gamePhase === 'playing'" class="auto-play-status">
-              <view class="auto-play-waves">
-                <view class="p-wave" />
-                <view class="p-wave" />
-              </view>
-              <text class="auto-play-text">{{ t("autoOpening") }}</text>
-            </view>
-
-            <NeoButton
-              v-else-if="gamePhase === 'settling'"
-              variant="primary"
-              size="lg"
-              block
-              @click="finishGame"
-              :loading="loading"
-              >{{ t("settleRewards") }}</NeoButton
-            >
-
-            <NeoButton v-else-if="gamePhase === 'complete'" variant="secondary" block @click="newGame">{{
-              t("newGame")
-            }}</NeoButton>
-          </view>
+          <GameBoard
+            :remainingBoxes="remainingBoxes"
+            :currentMatches="currentMatches"
+            :currentReward="currentReward"
+            :gridTurtles="gridTurtles"
+            :matchedPair="matchedPairRef"
+            :gamePhase="gamePhase"
+            :loading="loading"
+            :t="t"
+            @settle="handleSettle"
+            @newGame="handleNewGame"
+          />
         </view>
       </view>
 
       <!-- Animations -->
-      <BlindboxOpening :visible="showBlindbox" :turtleColor="currentTurtleColor" @complete="onBlindboxComplete" />
+      <BlindboxOpening :visible="showBlindbox" :turtleColor="currentTurtleColor" @complete="showBlindbox = false" />
       <MatchCelebration
         :visible="showCelebration"
         :turtleColor="matchColor"
         :reward="matchReward"
-        @complete="onCelebrationComplete"
+        @complete="showCelebration = false"
       />
       <GameResult
         :visible="showResult"
         :matches="currentMatches"
         :reward="currentReward"
         :boxCount="Number(session?.boxCount || 0)"
-        @close="onResultClose"
+        @close="showResult = false"
       />
       <GameSplash :visible="showSplash" @complete="showSplash = false" />
     </ResponsiveLayout>
@@ -153,38 +110,23 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { ResponsiveLayout, GradientCard, NeoButton, ChainWarning } from "@shared/components";
-import { formatGas } from "@shared/utils/format";
-import { useTurtleMatch, TurtleColor } from "@/shared/composables/useTurtleMatch";
 import { useI18n } from "@/composables/useI18n";
-import TurtleGrid from "./components/TurtleGrid.vue";
+import { useTurtleGame, TurtleColor } from "@/composables/useTurtleGame";
+import { useTurtleMatching } from "@/composables/useTurtleMatching";
+import PlayerStats from "./components/PlayerStats.vue";
+import GameBoard from "./components/GameBoard.vue";
+import TurtleSprite from "./components/TurtleSprite.vue";
 import BlindboxOpening from "./components/BlindboxOpening.vue";
 import MatchCelebration from "./components/MatchCelebration.vue";
 import GameResult from "./components/GameResult.vue";
 import GameSplash from "./components/GameSplash.vue";
-import TurtleSprite from "./components/TurtleSprite.vue";
 
-// Composables
 const { t } = useI18n();
-const {
-  loading,
-  error,
-  session,
-  localGame,
-  stats,
-  isConnected,
-  hasActiveSession,
-  gridTurtles,
-  connect,
-  startGame: contractStartGame,
-  settleGame,
-  processGameStep,
-  resetLocalGame,
-} = useTurtleMatch();
+const APP_ID = "miniapp-turtle-match";
 
-// Animation state
-const matchedPairRef = ref<number[]>([]);
+const { loading, error, session, stats, isConnected, hasActiveSession, gamePhase, connect, loadStats, startGame, settleGame } = useTurtleGame(APP_ID);
+const { localGame, matchedPairRef, remainingBoxes, currentReward, currentMatches, gridTurtles, initGame, processGameStep, resetLocalGame } = useTurtleMatching();
 
-// Local state
 const boxCount = ref(5);
 const showSplash = ref(true);
 const showBlindbox = ref(false);
@@ -194,30 +136,12 @@ const currentTurtleColor = ref<TurtleColor>(TurtleColor.Green);
 const matchColor = ref<TurtleColor>(TurtleColor.Green);
 const matchReward = ref<bigint>(BigInt(0));
 const isAutoPlaying = ref(false);
-const gamePhase = ref<"idle" | "playing" | "settling" | "complete">("idle");
 
-// Computed
 const totalCost = computed(() => {
   const price = 0.1;
   return (price * boxCount.value).toFixed(1);
 });
 
-const remainingBoxes = computed(() => {
-  if (!localGame.value || !session.value) return 0;
-  return Number(session.value.boxCount) - localGame.value.currentBoxIndex;
-});
-
-const currentReward = computed(() => {
-  if (!localGame.value) return 0n;
-  return localGame.value.totalReward;
-});
-
-const currentMatches = computed(() => {
-  if (!localGame.value) return 0;
-  return localGame.value.totalMatches;
-});
-
-// Methods
 function increaseCount() {
   if (boxCount.value < 20) boxCount.value++;
 }
@@ -226,10 +150,11 @@ function decreaseCount() {
   if (boxCount.value > 3) boxCount.value--;
 }
 
-async function startGame() {
+async function handleStartGame() {
   gamePhase.value = "playing";
-  const sessionId = await contractStartGame(boxCount.value);
-  if (sessionId) {
+  const sessionId = await startGame(boxCount.value);
+  if (sessionId && session.value) {
+    initGame(session.value);
     setTimeout(() => autoPlay(), 500);
   } else {
     gamePhase.value = "idle";
@@ -238,7 +163,6 @@ async function startGame() {
 
 async function autoPlay() {
   if (!localGame.value || isAutoPlaying.value) return;
-
   isAutoPlaying.value = true;
 
   while (!localGame.value.isComplete) {
@@ -268,38 +192,21 @@ async function autoPlay() {
   showResult.value = true;
 }
 
-async function finishGame() {
+async function handleSettle() {
   const success = await settleGame();
   if (success) {
     gamePhase.value = "complete";
   }
 }
 
-function onResultClose() {
-  showResult.value = false;
-}
-
-function newGame() {
+function handleNewGame() {
   resetLocalGame();
   gamePhase.value = "idle";
 }
 
-function onBlindboxComplete() {
-  showBlindbox.value = false;
-}
-
-function onCelebrationComplete() {
-  showCelebration.value = false;
-}
-
-// Responsive layout
-const windowWidth = ref(window.innerWidth);
-const isMobile = computed(() => windowWidth.value < 768);
-const isDesktop = computed(() => windowWidth.value >= 1024);
-
-const handleResize = () => { windowWidth.value = window.innerWidth; };
-onMounted(() => window.addEventListener('resize', handleResize));
-onUnmounted(() => window.removeEventListener('resize', handleResize));
+onMounted(() => {
+  loadStats();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -318,54 +225,16 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
   overflow: hidden;
 }
 
-.header-glass {
-  background: var(--turtle-glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--turtle-border);
-  border-radius: 20px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 16px;
+.game-header {
   margin: 0 20px 30px;
 }
 
-.divider {
-  width: 1px;
-  height: 30px;
-  background: var(--turtle-border);
-}
-
-.game-header__stat {
-  text-align: center;
+.connect-prompt__content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-}
-
-.stat-icon {
-  font-size: 16px;
-  margin-bottom: 2px;
-  filter: drop-shadow(0 0 5px var(--turtle-icon-glow));
-}
-
-.game-header__label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--turtle-text-muted);
-  display: block;
-}
-
-.game-header__value {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--turtle-primary);
-
-  &.gold-text {
-    color: var(--turtle-accent);
-  }
+  gap: 16px;
+  padding: 40px 20px;
 }
 
 .hero-turtle {
@@ -377,21 +246,8 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
 }
 
 @keyframes hero-float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0);
-  }
-  50% {
-    transform: translateY(-20px) rotate(5deg);
-  }
-}
-
-.connect-prompt__content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 40px 20px;
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-20px) rotate(5deg); }
 }
 
 .connect-prompt__title {
@@ -460,9 +316,7 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
   justify-content: center;
   box-shadow: 0 4px 12px var(--turtle-primary-glow-strong);
 
-  &:active {
-    transform: scale(0.95);
-  }
+  &:active { transform: scale(0.95); }
 }
 
 .btn-icon {
@@ -497,101 +351,15 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
   color: var(--turtle-accent);
 }
 
-.game-stats-row {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.stat-bubble {
-  flex: 1;
-  background: var(--turtle-glass);
-  backdrop-filter: blur(5px);
-  border: 1px solid var(--turtle-panel-border);
-  padding: 12px;
-  border-radius: 16px;
-  text-align: center;
-
-  &.highlight {
-    background: var(--turtle-accent-soft);
-    border-color: var(--turtle-accent-border);
-  }
-}
-
-.bubble-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  color: var(--turtle-text-muted);
-  margin-bottom: 4px;
-  display: block;
-}
-
-.bubble-value {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--turtle-text);
-  &.gold {
-    color: var(--turtle-accent);
-  }
-}
-
-.grid-container {
-  margin-bottom: 30px;
-}
-
-.auto-play-status {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 40px;
-  background: var(--turtle-primary-soft);
-  border: 1px solid var(--turtle-primary-border);
-  border-radius: 40px;
-  overflow: hidden;
-}
-
-.auto-play-text {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--turtle-primary);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.auto-play-waves {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.p-wave {
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--turtle-primary-border);
-  border-radius: 40px;
-  animation: pulse-wave 2s infinite;
-  &:last-child {
-    animation-delay: 1s;
-  }
-}
-
-@keyframes pulse-wave {
-  0% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(1.5, 2);
-    opacity: 0;
-  }
+.game-area {
+  padding: 0 20px;
 }
 
 .error-banner {
   background: var(--turtle-danger-soft);
   border: 1px solid var(--turtle-danger-border);
   padding: 12px;
-  margin-bottom: 20px;
+  margin: 0 20px 20px;
   border-radius: 12px;
   text-align: center;
 }
@@ -602,58 +370,6 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
   font-weight: 600;
 }
 
-// Responsive styles
-@media (max-width: 767px) {
-  .game-container { padding-top: 12px; }
-  .header-glass {
-    margin: 0 12px 20px;
-    padding: 12px;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .divider { display: none; }
-  .game-header__value {
-    font-size: 16px;
-  }
-  .purchase-grid {
-    padding: 0 12px;
-  }
-  .purchase-section__counter {
-    gap: 20px;
-  }
-  .counter-value {
-    font-size: 32px;
-    min-width: 60px;
-  }
-  .counter-btn {
-    width: 40px;
-    height: 40px;
-  }
-  .game-stats-row {
-    padding: 0 12px;
-    gap: 8px;
-  }
-  .stat-bubble {
-    padding: 8px;
-  }
-  .bubble-value {
-    font-size: 14px;
-  }
-  .hero-turtle {
-    width: 120px;
-    height: 120px;
-  }
-}
-@media (min-width: 1024px) {
-  .game-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
-  .purchase-section__content {
-    max-width: 500px;
-    margin: 0 auto;
-  }
-}
-
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;
@@ -666,5 +382,21 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
   color: var(--text-secondary, rgba(248, 250, 252, 0.7));
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+@media (max-width: 767px) {
+  .game-container { padding-top: 12px; }
+  .game-header { margin: 0 12px 20px; }
+  .purchase-grid { padding: 0 12px; }
+  .purchase-section__counter { gap: 20px; }
+  .counter-value { font-size: 32px; min-width: 60px; }
+  .counter-btn { width: 40px; height: 40px; }
+  .game-area { padding: 0 12px; }
+  .hero-turtle { width: 120px; height: 120px; }
+}
+
+@media (min-width: 1024px) {
+  .game-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .purchase-section__content { max-width: 500px; margin: 0 auto; }
 }
 </style>

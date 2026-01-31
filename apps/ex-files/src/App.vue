@@ -30,12 +30,9 @@ const updateDimensions = () => {
   }
 };
 
-onLaunch(() => {
-  console.log("Ex Files launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Ex Files shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     updateDimensions();
@@ -43,7 +40,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Ex Files hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
   }

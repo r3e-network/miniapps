@@ -102,7 +102,7 @@ onLoad((options:any) => {
                 return;
             }
         } catch(e) {
-            console.error('Storage read error', e);
+            // Storage read error - silent fail
         }
 
         fetchGrantDetail(options.id);
@@ -162,7 +162,6 @@ async function fetchGrantDetail(proposalId: string) {
         fetchError.value = true;
     }
   } catch (e) {
-    console.error(e);
     fetchError.value = true;
   } finally {
     loading.value = false;
@@ -201,9 +200,8 @@ function getStatusLabel(state: string): string {
   return statusMap[normalizeState(state)] || state;
 }
 
-function showStatus(message: string) { // Simplified
+function showStatus(_message: string) { // Simplified
     // could implement toast
-    console.log(message);
 }
 
 function copyLink(url: string) {

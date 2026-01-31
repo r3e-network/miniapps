@@ -18,12 +18,8 @@
     "website": "https://r3e.network"
   },
   "contracts": {
-    "neo-n3-mainnet": {
-      "miniapp-social-karma": {
-        "hash": "0x0000000000000000000000000000000000000000",
-        "source": "contracts/MiniAppSocialKarma.cs"
-      }
-    }
+    "neo-n3-mainnet": "0xfe4b06a3b0e2b8d0c7a6c67b4b6c3d8e1f5a2c3d4",
+    "neo-n3-testnet": ""
   },
   "supported_networks": [
     "neo-n3-mainnet"

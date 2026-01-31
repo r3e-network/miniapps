@@ -9,6 +9,7 @@
     :disabled="disabled || loading"
     :aria-busy="loading"
     :aria-disabled="disabled || loading"
+    :aria-label="ariaLabel"
     @click="$emit('click', $event)"
   >
     <view v-if="loading" class="neo-btn__spinner" />
@@ -27,6 +28,8 @@ withDefaults(
     block?: boolean;
     disabled?: boolean;
     loading?: boolean;
+    /** Accessibility label for screen readers - use when button has no visible text */
+    ariaLabel?: string;
   }>(),
   {
     variant: "primary",
@@ -34,6 +37,7 @@ withDefaults(
     block: false,
     disabled: false,
     loading: false,
+    ariaLabel: undefined,
   },
 );
 

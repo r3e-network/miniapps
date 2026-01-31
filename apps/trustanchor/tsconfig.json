@@ -23,7 +23,8 @@
       ]
     },
     "types": [
-      "@dcloudio/types"
+      "@dcloudio/types",
+      "vite/client"
     ]
   },
   "include": [

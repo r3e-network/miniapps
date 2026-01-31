@@ -6,17 +6,14 @@
     :desktop-breakpoint="1024"
     show-top-nav
     @tab-change="onTabChange"
-  
+  >
+    <template #desktop-sidebar>
+      <view class="desktop-sidebar">
+        <text class="sidebar-title">{{ t('overview') }}</text>
+      </view>
+    </template>
 
-      <!-- Desktop Sidebar -->
-      <template #desktop-sidebar>
-        <view class="desktop-sidebar">
-          <text class="sidebar-title">{{ t('overview') }}</text>
-        </view>
-      </template>
->
     <view class="album-container">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <view class="header">
@@ -34,102 +31,54 @@
         </view>
       </NeoCard>
 
-      <NeoCard variant="erobo" class="gallery-card">
-        <view v-if="loadingPhotos" class="loading-state">
-          <text>{{ t("loading") }}</text>
-        </view>
-        <view v-else class="gallery-grid">
-          <view v-for="photo in photos" :key="photo.id" class="photo-item" @click="viewPhoto(photo)">
-            <image v-if="!photo.encrypted" :src="photo.data" mode="aspectFill" class="photo-img" />
-            <view v-else class="photo-locked">
-              <text class="lock-label">{{ t("encrypted") }}</text>
-            </view>
-            <view v-if="photo.encrypted" class="lock-icon">{{ t("encrypted") }}</view>
-          </view>
-
-          <view class="photo-item placeholder" @click="openUpload">
-            <text class="plus-icon">+</text>
-            <text class="add-label">{{ t("addPhoto") }}</text>
-          </view>
-        </view>
-
-        <view v-if="!loadingPhotos && photos.length === 0" class="empty-state">
-          <text class="empty-title">{{ t("emptyTitle") }}</text>
-          <text class="empty-desc">{{ t("emptyDesc") }}</text>
-        </view>
-      </NeoCard>
+      <AlbumGrid
+        :t="t"
+        :photos="photos"
+        :loading="loadingPhotos"
+        @view="viewPhoto"
+        @upload="openUpload"
+      />
 
       <view class="helper-note">
         <text>{{ t("tapToSelect") }}</text>
       </view>
     </view>
 
-    <NeoModal :visible="showUpload" :title="t('uploadPhoto')" closeable @close="closeUpload">
-      <view class="upload-body">
-        <view class="upload-grid">
-          <view v-for="item in selectedImages" :key="item.id" class="upload-item">
-            <image :src="item.dataUrl" mode="aspectFill" class="upload-img" />
-            <view class="remove-btn" @click.stop="removeImage(item.id)">×</view>
-          </view>
-          <view
-            v-if="selectedImages.length < MAX_PHOTOS_PER_UPLOAD"
-            class="upload-item upload-placeholder"
-            @click="chooseImages"
-          >
-            <text class="upload-plus">+</text>
-            <text class="upload-tip">{{ t("selectMore") }}</text>
-          </view>
-        </view>
+    <PhotoUpload
+      :t="t"
+      :visible="showUpload"
+      :images="selectedImages"
+      :max-photos="MAX_PHOTOS_PER_UPLOAD"
+      :max-bytes="MAX_TOTAL_BYTES"
+      :total-size="totalPayloadSize"
+      :encrypted="isEncrypted"
+      :password="password"
+      :uploading="uploading"
+      @close="closeUpload"
+      @remove="removeImage"
+      @choose="chooseImages"
+      @confirm="uploadPhotos"
+      @update:encrypted="isEncrypted = $event"
+      @update:password="password = $event"
+    />
 
-        <view class="upload-meta">
-          <text>{{ t("uploadHint", { count: selectedImages.length, max: MAX_PHOTOS_PER_UPLOAD }) }}</text>
-          <text class="upload-meta__size">
-            {{ t("sizeHint", { size: formatBytes(totalPayloadSize), max: formatBytes(MAX_TOTAL_BYTES) }) }}
-          </text>
-        </view>
+    <AlbumViewer
+      :t="t"
+      :visible="showViewer"
+      :photo="viewingPhoto"
+      @close="closeViewer"
+      @decrypt="openDecrypt"
+    />
 
-        <view class="form-group">
-          <text class="label">{{ t("encryptPhoto") }}</text>
-          <switch :checked="isEncrypted" @change="isEncrypted = $event.detail.value" />
-        </view>
-
-        <view v-if="isEncrypted" class="form-group column">
-          <NeoInput v-model="password" type="password" :placeholder="t('enterPassword')" />
-          <text class="hint">{{ t("encryptionNote") }}</text>
-        </view>
-      </view>
-
-      <template #footer>
-        <NeoButton variant="ghost" size="sm" @click="closeUpload">
-          {{ t("cancel") }}
-        </NeoButton>
-        <NeoButton
-          variant="primary"
-          size="sm"
-          :disabled="selectedImages.length === 0 || uploading"
-          :loading="uploading"
-          @click="uploadPhotos"
-        >
-          {{ uploading ? t("uploading") : t("confirm") }}
-        </NeoButton>
-      </template>
-    </NeoModal>
-
-    <NeoModal :visible="showDecrypt" :title="t('decryptTitle')" closeable @close="closeDecrypt">
-      <view class="decrypt-body">
-        <NeoInput v-model="decryptPassword" type="password" :placeholder="t('enterPassword')" />
-        <NeoButton variant="secondary" size="sm" class="decrypt-btn" :loading="decrypting" @click="decryptPhoto">
-          {{ decrypting ? t("decrypting") : t("decryptConfirm") }}
-        </NeoButton>
-
-        <view v-if="decryptedPreview" class="decrypt-preview">
-          <image :src="decryptedPreview" mode="aspectFit" class="decrypt-img" />
-          <NeoButton size="sm" variant="ghost" @click="previewDecrypted">
-            {{ t("openPreview") }}
-          </NeoButton>
-        </view>
-      </view>
-    </NeoModal>
+    <DecryptModal
+      :t="t"
+      :visible="showDecrypt"
+      :decrypting="decrypting"
+      :preview="decryptedPreview"
+      @close="closeDecrypt"
+      @decrypt="handleDecrypt"
+      @preview="previewDecrypted"
+    />
 
     <WalletPrompt :visible="showWalletPrompt" @close="closeWalletPrompt" @connect="handleConnect" />
   </ResponsiveLayout>
@@ -139,13 +88,19 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
-import { ResponsiveLayout, NeoCard, NeoButton, NeoModal, NeoInput, WalletPrompt, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, WalletPrompt, ChainWarning } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
+import { useCrypto } from "@shared/composables";
 import { parseInvokeResult } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
+import AlbumGrid from "./components/AlbumGrid.vue";
+import PhotoUpload from "./components/PhotoUpload.vue";
+import AlbumViewer from "./components/AlbumViewer.vue";
+import DecryptModal from "./components/DecryptModal.vue";
 
 const { t } = useI18n();
 const { address, connect, invokeRead, invokeContract, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { encryptPayload, decryptPayload } = useCrypto();
 
 const MAX_PHOTOS_PER_UPLOAD = 5;
 const MAX_PHOTO_BYTES = 45000;
@@ -188,9 +143,10 @@ const isEncrypted = ref(false);
 const password = ref("");
 const uploading = ref(false);
 
+const showViewer = ref(false);
+const viewingPhoto = ref<PhotoItem | null>(null);
 const showDecrypt = ref(false);
 const decryptTarget = ref<PhotoItem | null>(null);
-const decryptPassword = ref("");
 const decrypting = ref(false);
 const decryptedPreview = ref("");
 
@@ -198,13 +154,8 @@ const showWalletPrompt = ref(false);
 
 const totalPayloadSize = computed(() => selectedImages.value.reduce((sum, item) => sum + item.size, 0));
 
-const openWalletPrompt = () => {
-  showWalletPrompt.value = true;
-};
-
-const closeWalletPrompt = () => {
-  showWalletPrompt.value = false;
-};
+const openWalletPrompt = () => showWalletPrompt.value = true;
+const closeWalletPrompt = () => showWalletPrompt.value = false;
 
 const handleConnect = async () => {
   try {
@@ -216,15 +167,9 @@ const handleConnect = async () => {
 };
 
 const ensureContractAddress = async () => {
-  if (!requireNeoChain(chainType, t)) {
-    throw new Error(t("wrongChain"));
-  }
-  if (!contractAddress.value) {
-    contractAddress.value = await getContractAddress();
-  }
-  if (!contractAddress.value) {
-    throw new Error(t("missingContract"));
-  }
+  if (!requireNeoChain(chainType, t)) throw new Error(t("wrongChain"));
+  if (!contractAddress.value) contractAddress.value = await getContractAddress();
+  if (!contractAddress.value) throw new Error(t("missingContract"));
   return contractAddress.value;
 };
 
@@ -277,9 +222,8 @@ const loadPhotos = async () => {
           operation: "getPhoto",
           args: [{ type: "ByteArray", value: id }],
         });
-        const parsed = parseInvokeResult(detailRes);
-        return parsePhotoInfo(parsed);
-      }),
+        return parsePhotoInfo(parseInvokeResult(detailRes));
+      })
     );
     photos.value = entries.filter((entry): entry is PhotoItem => !!entry).sort((a, b) => b.createdAt - a.createdAt);
   } catch (e: any) {
@@ -300,9 +244,7 @@ const openUpload = async () => {
   password.value = "";
 };
 
-const closeUpload = () => {
-  showUpload.value = false;
-};
+const closeUpload = () => showUpload.value = false;
 
 const chooseImages = () => {
   const remaining = MAX_PHOTOS_PER_UPLOAD - selectedImages.value.length;
@@ -351,9 +293,7 @@ const readImageAsDataUrl = (path: string): Promise<string> =>
         uni.getFileSystemManager().readFile({
           filePath: path,
           encoding: "base64",
-          success: (res) => {
-            resolve(`data:${mime};base64,${res.data}`);
-          },
+          success: (res) => resolve(`data:${mime};base64,${res.data}`),
           fail: reject,
         });
       },
@@ -367,80 +307,6 @@ const resolveMimeType = (type: string | undefined, path: string) => {
   if (ext === "gif") return "image/gif";
   if (ext === "webp") return "image/webp";
   return "image/jpeg";
-};
-
-const formatBytes = (bytes: number) => {
-  if (bytes < 1024) return `${bytes}B`;
-  return `${(bytes / 1024).toFixed(1)}KB`;
-};
-
-const ensureCrypto = () => {
-  if (typeof window === "undefined" || !window.crypto?.subtle) {
-    throw new Error(t("cryptoUnavailable"));
-  }
-};
-
-const bytesToBase64 = (bytes: Uint8Array) => {
-  let binary = "";
-  bytes.forEach((b) => {
-    binary += String.fromCharCode(b);
-  });
-  return btoa(binary);
-};
-
-const base64ToBytes = (value: string) => {
-  const binary = atob(value);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i += 1) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-};
-
-const deriveKey = async (passwordValue: string, salt: Uint8Array) => {
-  ensureCrypto();
-  const encoder = new TextEncoder();
-  const keyMaterial = await window.crypto.subtle.importKey("raw", encoder.encode(passwordValue), "PBKDF2", false, [
-    "deriveKey",
-  ]);
-  return window.crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
-    keyMaterial,
-    { name: "AES-GCM", length: 256 },
-    false,
-    ["encrypt", "decrypt"],
-  );
-};
-
-const encryptPayload = async (payload: string, passwordValue: string) => {
-  ensureCrypto();
-  const encoder = new TextEncoder();
-  const salt = window.crypto.getRandomValues(new Uint8Array(16));
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveKey(passwordValue, salt);
-  const cipher = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoder.encode(payload));
-  return JSON.stringify({
-    v: 1,
-    alg: "AES-GCM",
-    salt: bytesToBase64(salt),
-    iv: bytesToBase64(iv),
-    data: bytesToBase64(new Uint8Array(cipher)),
-  });
-};
-
-const decryptPayload = async (payload: string, passwordValue: string) => {
-  ensureCrypto();
-  const parsed = JSON.parse(payload);
-  if (!parsed || parsed.v !== 1 || parsed.alg !== "AES-GCM") {
-    throw new Error(t("invalidPayload"));
-  }
-  const salt = base64ToBytes(parsed.salt || "");
-  const iv = base64ToBytes(parsed.iv || "");
-  const data = base64ToBytes(parsed.data || "");
-  const key = await deriveKey(passwordValue, salt);
-  const plain = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
-  const decoder = new TextDecoder();
-  return decoder.decode(plain);
 };
 
 const uploadPhotos = async () => {
@@ -461,13 +327,9 @@ const uploadPhotos = async () => {
     let totalSize = 0;
     for (const item of selectedImages.value) {
       const payload = isEncrypted.value ? await encryptPayload(item.dataUrl, password.value) : item.dataUrl;
-      if (payload.length > MAX_PHOTO_BYTES) {
-        throw new Error(t("encryptedTooLarge"));
-      }
+      if (payload.length > MAX_PHOTO_BYTES) throw new Error(t("encryptedTooLarge"));
       totalSize += payload.length;
-      if (totalSize > MAX_TOTAL_BYTES) {
-        throw new Error(t("totalTooLarge"));
-      }
+      if (totalSize > MAX_TOTAL_BYTES) throw new Error(t("totalTooLarge"));
       payloads.push(payload);
     }
 
@@ -475,14 +337,8 @@ const uploadPhotos = async () => {
       contractAddress: contract,
       operation: "uploadPhotos",
       args: [
-        {
-          type: "Array",
-          value: payloads.map((payload) => ({ type: "String", value: payload })),
-        },
-        {
-          type: "Array",
-          value: payloads.map(() => ({ type: "Boolean", value: isEncrypted.value })),
-        },
+        { type: "Array", value: payloads.map((p) => ({ type: "String", value: p })) },
+        { type: "Array", value: payloads.map(() => ({ type: "Boolean", value: isEncrypted.value })) },
       ],
     });
 
@@ -500,33 +356,39 @@ const uploadPhotos = async () => {
 const viewPhoto = (photo: PhotoItem) => {
   if (photo.encrypted) {
     decryptTarget.value = photo;
-    decryptPassword.value = "";
     decryptedPreview.value = "";
     showDecrypt.value = true;
     return;
   }
-  uni.previewImage({ urls: [photo.data] });
+  viewingPhoto.value = photo;
+  showViewer.value = true;
+};
+
+const closeViewer = () => {
+  showViewer.value = false;
+  viewingPhoto.value = null;
+};
+
+const openDecrypt = () => {
+  showViewer.value = false;
+  showDecrypt.value = true;
 };
 
 const closeDecrypt = () => {
   showDecrypt.value = false;
   decryptTarget.value = null;
   decryptedPreview.value = "";
-  decryptPassword.value = "";
 };
 
-const decryptPhoto = async () => {
-  if (!decryptTarget.value) return;
-  if (!decryptPassword.value) {
+const handleDecrypt = async (pwd: string) => {
+  if (!decryptTarget.value || !pwd) {
     uni.showToast({ title: t("passwordRequired"), icon: "none" });
     return;
   }
   decrypting.value = true;
   try {
-    const result = await decryptPayload(decryptTarget.value.data, decryptPassword.value);
-    if (!result.startsWith("data:image")) {
-      throw new Error(t("invalidPayload"));
-    }
+    const result = await decryptPayload(decryptTarget.value.data, pwd);
+    if (!result.startsWith("data:image")) throw new Error(t("invalidPayload"));
     decryptedPreview.value = result;
   } catch (e: any) {
     uni.showToast({ title: e?.message || t("decryptFailed"), icon: "none" });
@@ -541,14 +403,10 @@ const previewDecrypted = () => {
 };
 
 onMounted(() => {
-  if (address.value) {
-    loadPhotos();
-  }
+  if (address.value) loadPhotos();
 });
 
-watch(address, () => {
-  loadPhotos();
-});
+watch(address, () => loadPhotos());
 </script>
 
 <style scoped lang="scss">
@@ -565,7 +423,6 @@ watch(address, () => {
   flex-direction: column;
   gap: 16px;
   
-  // Responsive padding
   @include responsive.tablet-up {
     padding: 24px;
     gap: 20px;
@@ -577,25 +434,6 @@ watch(address, () => {
     margin: 0 auto;
     width: 100%;
   }
-}
-
-.chain-warning__content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 0;
-  text-align: center;
-}
-
-.chain-warning__title {
-  font-weight: 700;
-  color: var(--album-error);
-}
-
-.chain-warning__desc {
-  font-size: 12px;
-  color: var(--text-secondary);
 }
 
 .header {
@@ -643,246 +481,11 @@ watch(address, () => {
   color: var(--text-secondary);
 }
 
-.gallery-card {
-  padding: 16px;
-}
-
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  
-  @include responsive.tablet-up {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-  
-  @include responsive.desktop {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-  }
-  
-  @include responsive.desktop-lg {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 24px;
-  }
-}
-
-.photo-item {
-  aspect-ratio: 1 / 1;
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-}
-
-.photo-img {
-  width: 100%;
-  height: 100%;
-}
-
-.photo-locked {
-  width: 100%;
-  height: 100%;
-  background: var(--album-locked-gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lock-label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--album-lock-text);
-}
-
-.lock-icon {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: var(--album-lock-bg);
-  padding: 2px 6px;
-  border-radius: 8px;
-  font-size: 9px;
-  color: var(--album-lock-text);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.placeholder {
-  border: 1px dashed var(--border-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  gap: 6px;
-}
-
-.plus-icon {
-  font-size: 32px;
-  color: var(--text-secondary);
-  font-weight: 300;
-}
-
-.add-label {
-  font-size: 10px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-
-.empty-state {
-  margin-top: 14px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.empty-title {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.empty-desc {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.loading-state {
-  text-align: center;
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
 .helper-note {
   font-size: 11px;
   color: var(--text-muted);
 }
 
-.upload-body {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.upload-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 10px;
-}
-
-.upload-item {
-  position: relative;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  background: var(--bg-card);
-  aspect-ratio: 1 / 1;
-}
-
-.upload-img {
-  width: 100%;
-  height: 100%;
-}
-
-.upload-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  border: 1px dashed var(--border-color);
-  background: transparent;
-}
-
-.upload-plus {
-  font-size: 22px;
-  color: var(--text-secondary);
-}
-
-.upload-tip {
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.remove-btn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--album-remove-bg);
-  color: var(--album-remove-text);
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.upload-meta {
-  font-size: 11px;
-  color: var(--text-secondary);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.upload-meta__size {
-  color: var(--text-muted);
-}
-
-.form-group {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.form-group.column {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-}
-
-.label {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.hint {
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.decrypt-body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.decrypt-btn {
-  align-self: flex-end;
-}
-
-.decrypt-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.decrypt-img {
-  width: 100%;
-  height: 200px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-}
-
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;

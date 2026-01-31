@@ -9,28 +9,16 @@
 
     <!-- Main Swap Card -->
     <view class="swap-card">
-      <!-- From Token Section -->
-      <view class="token-section">
-        <view class="section-header">
-          <text class="section-label">{{ t("from") }}</text>
-          <text class="balance-label">{{ t("balance") }}: {{ formatBalance(fromToken.balance) }}</text>
-        </view>
-        <view class="token-row">
-          <view class="token-selector" @click="openFromSelector">
-            <image :src="getTokenIcon(fromToken.symbol)" class="token-icon" mode="aspectFit" />
-            <text class="token-symbol">{{ fromToken.symbol }}</text>
-            <view class="chevron">›</view>
-          </view>
-          <input 
-            type="digit"
-            v-model="fromAmount"
-            :placeholder="t('enterAmount')"
-            class="amount-input"
-            @input="onFromAmountChange"
-          />
-        </view>
-        <view class="max-btn" @click="setMaxAmount">{{ t("max") }}</view>
-      </view>
+      <SwapForm
+        :t="t"
+        :token="fromToken"
+        v-model="fromAmount"
+        :label="t('from')"
+        :placeholder="t('enterAmount')"
+        show-max
+        @select="openFromSelector"
+        @max="setMaxAmount"
+      />
 
       <!-- Swap Direction Button -->
       <view class="swap-direction">
@@ -39,58 +27,31 @@
         </view>
       </view>
 
-      <!-- To Token Section -->
-      <view class="token-section">
-        <view class="section-header">
-          <text class="section-label">{{ t("to") }}</text>
-          <text class="balance-label">{{ t("balance") }}: {{ formatBalance(toToken.balance) }}</text>
-        </view>
-        <view class="token-row">
-          <view class="token-selector" @click="openToSelector">
-            <image :src="getTokenIcon(toToken.symbol)" class="token-icon" mode="aspectFit" />
-            <text class="token-symbol">{{ toToken.symbol }}</text>
-            <view class="chevron">›</view>
-          </view>
-          <input 
-            type="digit"
-            :value="toAmount"
-            :placeholder="t('enterAmount')"
-            class="amount-input"
-            disabled
-          />
-        </view>
-      </view>
+      <SwapForm
+        :t="t"
+        :token="toToken"
+        v-model="toAmount"
+        :label="t('to')"
+        :placeholder="t('enterAmount')"
+        disabled
+        @select="openToSelector"
+      />
     </view>
 
     <!-- Rate Info Card -->
-    <view class="rate-card" v-if="exchangeRate && !rateLoading">
-      <view class="rate-row">
-        <text class="rate-label">{{ t("exchangeRate") }}</text>
-        <text class="rate-value">1 {{ fromToken.symbol }} = {{ exchangeRate }} {{ toToken.symbol }}</text>
-      </view>
-      <view class="rate-row">
-        <text class="rate-label">{{ t("slippage") }}</text>
-        <text class="rate-value slippage">{{ slippage }}</text>
-      </view>
-      <view class="rate-row">
-        <text class="rate-label">{{ t("minReceived") }}</text>
-        <text class="rate-value">{{ minReceived }} {{ toToken.symbol }}</text>
-      </view>
-      <view class="refresh-btn" @click="fetchExchangeRate">
-        <text class="refresh-icon">↻</text>
-        {{ t("refreshRate") }}
-      </view>
-    </view>
-    <view class="rate-card loading" v-else>
-      <text class="rate-loading-text">{{ rateLoading ? t('loadingRate') : t('rateUnavailable') }}</text>
-      <view class="refresh-btn" @click="fetchExchangeRate">
-        <text class="refresh-icon">↻</text>
-        {{ t("refreshRate") }}
-      </view>
-    </view>
+    <PriceChart
+      :t="t"
+      :exchange-rate="exchangeRate"
+      :from-symbol="fromToken.symbol"
+      :to-symbol="toToken.symbol"
+      :slippage="slippage"
+      :min-received="minReceived"
+      :loading="rateLoading"
+      @refresh="fetchExchangeRate"
+    />
 
     <!-- Swap Action Button -->
-    <view 
+    <view
       :class="['action-btn', { disabled: !canSwap || loading, loading: loading }]"
       @click="executeSwap"
     >
@@ -104,28 +65,14 @@
     </view>
 
     <!-- Token Selector Modal -->
-    <view v-if="showSelector" class="modal-overlay" @click="closeSelector">
-      <view class="modal-content" @click.stop>
-        <view class="modal-header">
-          <text class="modal-title">{{ t("selectToken") }}</text>
-          <view class="modal-close" @click="closeSelector">×</view>
-        </view>
-        <view class="token-list">
-          <view 
-            v-for="token in availableTokens" 
-            :key="token.symbol"
-            :class="['token-item', { selected: isCurrentToken(token) }]"
-            @click="selectToken(token)"
-          >
-            <image :src="getTokenIcon(token.symbol)" class="token-list-icon" mode="aspectFit" />
-            <view class="token-item-info">
-              <text class="token-item-symbol">{{ token.symbol }}</text>
-              <text class="token-item-balance">{{ formatBalance(token.balance) }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
+    <TransactionHistory
+      :t="t"
+      :show="showSelector"
+      :tokens="availableTokens"
+      :current-symbol="selectorTarget === 'from' ? fromToken.symbol : toToken.symbol"
+      @close="closeSelector"
+      @select="selectToken"
+    />
   </view>
 </template>
 
@@ -134,6 +81,9 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import { toFixedDecimals } from "@shared/utils/format";
 import { requireNeoChain } from "@shared/utils/chain";
+import SwapForm from "./SwapForm.vue";
+import PriceChart from "./PriceChart.vue";
+import TransactionHistory from "./TransactionHistory.vue";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -205,18 +155,6 @@ const minReceived = computed(() => {
   const amount = parseFloat(toAmount.value) || 0;
   return (amount * 0.995).toFixed(4);
 });
-
-// Methods
-function getTokenIcon(symbol: string): string {
-  // Use relative paths that work within the MiniApp's context
-  if (symbol === "NEO") return "/neo-token.png";
-  if (symbol === "GAS") return "/gas-token.png";
-  return "/logo.png";
-}
-
-function formatBalance(balance: number): string {
-  return balance.toFixed(4);
-}
 
 function showStatus(msg: string, type: "success" | "error") {
   status.value = { msg, type };
@@ -291,11 +229,6 @@ function openToSelector() {
 
 function closeSelector() {
   showSelector.value = false;
-}
-
-function isCurrentToken(token: Token): boolean {
-  if (selectorTarget.value === "from") return token.symbol === fromToken.value.symbol;
-  return token.symbol === toToken.value.symbol;
 }
 
 function selectToken(token: Token) {
@@ -406,7 +339,7 @@ onMounted(() => {
 .grid-lines {
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(var(--swap-grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--swap-grid-line) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -425,124 +358,9 @@ onMounted(() => {
   border-radius: 24px;
   padding: 24px;
   backdrop-filter: blur(20px);
-  box-shadow: 
+  box-shadow:
     0 0 40px var(--swap-card-glow),
     inset 0 1px 0 var(--swap-card-inset);
-}
-
-// Token Section
-.token-section {
-  position: relative;
-  background: var(--swap-panel-bg);
-  border: 1px solid var(--swap-panel-border);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 8px;
-  transition: all 0.3s ease;
-  
-  &:focus-within {
-    border-color: var(--swap-panel-focus-border);
-    box-shadow: 0 0 20px var(--swap-panel-focus-glow);
-  }
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: var(--swap-text-muted);
-}
-
-.balance-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--swap-text-subtle);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.token-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.token-selector {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--swap-chip-bg);
-  padding: 10px 16px;
-  border-radius: 16px;
-  border: 1px solid var(--swap-chip-border);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background: var(--swap-chip-hover-bg);
-    border-color: var(--swap-chip-hover-border);
-  }
-}
-
-.token-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-}
-
-.token-symbol {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--swap-text);
-  letter-spacing: 0.05em;
-}
-
-.chevron {
-  font-size: 20px;
-  color: var(--swap-text-subtle);
-  margin-left: 4px;
-}
-
-.amount-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--swap-text);
-  text-align: right;
-  font-family: 'Inter', sans-serif;
-  
-  &::placeholder {
-    color: var(--swap-text-dim);
-  }
-  
-  &:disabled {
-    color: var(--swap-text-disabled);
-  }
-}
-
-.max-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--swap-accent);
-  background: var(--swap-accent-soft);
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  letter-spacing: 0.1em;
-  
-  &:hover {
-    background: var(--swap-accent-soft-strong);
-  }
 }
 
 // Swap Direction Button
@@ -565,12 +383,12 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 4px 20px var(--swap-accent-glow);
-  
+
   &:hover {
     transform: scale(1.1) rotate(180deg);
     box-shadow: 0 6px 30px var(--swap-accent-glow-strong);
   }
-  
+
   &.rotating {
     transform: rotate(180deg);
   }
@@ -580,77 +398,6 @@ onMounted(() => {
   font-size: 20px;
   font-weight: 800;
   color: var(--swap-action-text);
-}
-
-// Rate Card
-.rate-card {
-  background: var(--swap-card-soft);
-  border: 1px solid var(--swap-panel-border);
-  border-radius: 16px;
-  padding: 16px;
-  margin-top: 16px;
-  
-  &.loading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-
-.rate-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--swap-rate-border);
-  
-  &:last-of-type {
-    border-bottom: none;
-  }
-}
-
-.rate-label {
-  font-size: 12px;
-  color: var(--swap-text-muted);
-}
-
-.rate-value {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--swap-text);
-  font-family: 'JetBrains Mono', monospace;
-  
-  &.slippage {
-    color: var(--swap-accent);
-  }
-}
-
-.rate-loading-text {
-  font-size: 12px;
-  color: var(--swap-text-subtle);
-}
-
-.refresh-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--swap-text-muted);
-  padding: 8px 12px;
-  border: 1px solid var(--swap-panel-border-strong);
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 12px;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    color: var(--swap-accent);
-    border-color: var(--swap-chip-hover-border);
-  }
-}
-
-.refresh-icon {
-  font-size: 14px;
 }
 
 // Action Button
@@ -665,22 +412,22 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px var(--swap-accent-glow);
-  
+
   &:hover:not(.disabled) {
     transform: translateY(-2px);
     box-shadow: 0 8px 30px var(--swap-accent-glow-strong);
   }
-  
+
   &.disabled {
     background: var(--swap-action-disabled-bg);
     box-shadow: none;
     cursor: not-allowed;
-    
+
     .btn-text {
       color: var(--swap-action-disabled-text);
     }
   }
-  
+
   &.loading {
     background: var(--swap-action-loading-bg);
   }
@@ -713,12 +460,12 @@ onMounted(() => {
   padding: 16px;
   border-radius: 12px;
   text-align: center;
-  
+
   &.success {
     background: var(--swap-status-success-bg);
     border: 1px solid var(--swap-status-success-border);
   }
-  
+
   &.error {
     background: var(--swap-status-error-bg);
     border: 1px solid var(--swap-status-error-border);
@@ -729,101 +476,5 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 600;
   color: var(--swap-text);
-}
-
-// Modal
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--swap-modal-overlay);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  width: 90%;
-  max-width: 360px;
-  background: var(--swap-modal-bg);
-  border: 1px solid var(--swap-modal-border);
-  border-radius: 24px;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid var(--swap-modal-header-border);
-}
-
-.modal-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--swap-modal-text);
-}
-
-.modal-close {
-  font-size: 28px;
-  color: var(--swap-modal-text-muted);
-  cursor: pointer;
-  line-height: 1;
-  
-  &:hover {
-    color: var(--swap-modal-text);
-  }
-}
-
-.token-list {
-  padding: 12px;
-}
-
-.token-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background: var(--swap-chip-hover-bg);
-  }
-  
-  &.selected {
-    background: var(--swap-accent-soft);
-    border: 1px solid var(--swap-chip-hover-border);
-  }
-}
-
-.token-list-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-}
-
-.token-item-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.token-item-symbol {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--swap-modal-text);
-}
-
-.token-item-balance {
-  font-size: 13px;
-  color: var(--swap-modal-text-muted);
-  font-family: 'JetBrains Mono', monospace;
 }
 </style>

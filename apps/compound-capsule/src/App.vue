@@ -30,12 +30,9 @@ const updateDimensions = () => {
   }
 };
 
-onLaunch(() => {
-  console.log("Compound Capsule launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Compound Capsule shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     updateDimensions();
@@ -43,7 +40,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Compound Capsule hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
   }

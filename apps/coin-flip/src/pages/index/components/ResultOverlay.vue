@@ -3,7 +3,7 @@
     <view class="overlay-backdrop" />
     
     <view class="overlay-content" :class="{ 'is-win': Number(winAmount) > 0 }">
-       <image v-if="Number(winAmount) > 0" src="@/static/holo_winner.png" class="winner-title-img" mode="aspectFit" />
+       <image v-if="Number(winAmount) > 0" src="@/static/holo_winner.png" class="winner-title-img" mode="aspectFit" :alt="t('winnerTitle')" />
        <view v-else class="congrats-text">{{ t("overlayUnlucky") }}</view>
        
        <view class="reward-circle">

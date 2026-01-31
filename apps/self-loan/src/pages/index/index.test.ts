@@ -355,11 +355,27 @@ describe("Collateral Utilization", () => {
 // ============================================================
 
 describe("Contract Interactions", () => {
-  let wallet: ReturnType<typeof mockWallet>;
+  let wallet: {
+    address: { value: string | null };
+    chainType: { value: string };
+    invokeContract: any;
+    invokeRead: any;
+    __mocks: { invokeContract: any; invokeRead: any };
+  };
 
-  beforeEach(async () => {
-    const { useWallet } = await import("@neo/uniapp-sdk");
-    wallet = useWallet();
+  beforeEach(() => {
+    const mockInvokeContract = vi.fn().mockResolvedValue({ txid: "0x" + "1".repeat(64) });
+    const mockInvokeRead = vi.fn().mockResolvedValue(null);
+    wallet = {
+      address: { value: "NTestWalletAddress1234567890" },
+      chainType: { value: "neo" },
+      invokeContract: mockInvokeContract,
+      invokeRead: mockInvokeRead,
+      __mocks: {
+        invokeContract: mockInvokeContract,
+        invokeRead: mockInvokeRead,
+      },
+    };
   });
 
   describe("Create Loan", () => {
@@ -675,9 +691,10 @@ describe("Edge Cases", () => {
 
   it("should handle zero health factor edge case", () => {
     const collateralLocked = 0;
-    const borrowed = 10;
+    const borrowedValue = 10;
     const ltvPercent = 30;
-    const healthFactor = borrowed === 0 ? 999 : (collateralLocked * (ltvPercent / 100)) / borrowed;
+    const isZeroBorrowed = (val: number) => val === 0;
+    const healthFactor = isZeroBorrowed(borrowedValue) ? 999 : (collateralLocked * (ltvPercent / 100)) / borrowedValue;
 
     expect(healthFactor).toBe(0);
   });
@@ -700,12 +717,13 @@ describe("Performance", () => {
   it("should calculate health factor efficiently", () => {
     const iterations = 10000;
     const start = performance.now();
+    const borrowedValue = 30;
+    const isZeroBorrowed = (val: number) => val === 0;
 
     for (let i = 0; i < iterations; i++) {
       const collateralLocked = 100;
-      const borrowed = 30;
       const ltvPercent = 30;
-      const healthFactor = borrowed === 0 ? 999 : (collateralLocked * (ltvPercent / 100)) / borrowed;
+      const healthFactor = isZeroBorrowed(borrowedValue) ? 999 : (collateralLocked * (ltvPercent / 100)) / borrowedValue;
     }
 
     const elapsed = performance.now() - start;

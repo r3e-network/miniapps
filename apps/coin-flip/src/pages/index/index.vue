@@ -30,63 +30,88 @@
       </template>
 >
       <!-- Chain Warning - Framework Component -->
-      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" /><view
-        v-if="activeTab === 'game'"
-        class="tab-content"
+      <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
+      
+      <ErrorBoundary 
+        @error="handleBoundaryError" 
+        @retry="resetGame"
+        :fallback-message="t('gameErrorFallback')"
       >
-        <!-- Coin Arena -->
-        <view class="arena-container">
-          <CoinArena
-            :display-outcome="displayOutcome"
-            :is-flipping="isFlipping"
-            :result="result"
+        <!-- Game Tab -->
+        <view
+          v-if="activeTab === 'game'"
+          class="tab-content"
+        >
+          <!-- Wallet Connection Warning -->
+          <view v-if="!address" class="wallet-warning">
+            <NeoCard variant="warning" class="text-center">
+              <text class="font-bold">{{ t('connectWalletToPlay') }}</text>
+              <NeoButton variant="primary" size="sm" class="mt-2" @click="connectWallet">
+                {{ t('connectWallet') }}
+              </NeoButton>
+            </NeoCard>
+          </view>
+
+          <!-- Coin Arena -->
+          <view class="arena-container">
+            <CoinArena
+              :display-outcome="displayOutcome"
+              :is-flipping="isFlipping"
+              :result="result"
+              :t="t as (key: string) => string"
+            />
+          </view>
+
+          <!-- Bet Controls -->
+          <view class="controls-container">
+            <BetControls
+              v-model:choice="choice"
+              v-model:betAmount="betAmount"
+              :is-flipping="isFlipping"
+              :can-bet="canBet"
+              :validation-error="validationError"
+              :t="t as (key: string) => string"
+              @flip="handleFlip"
+            />
+          </view>
+
+          <!-- Error Message Overlay -->
+          <view v-if="errorMessage" class="error-toast" :class="{ 'error-retryable': canRetryError }">
+            <text>{{ errorMessage }}</text>
+            <view v-if="canRetryError" class="retry-actions">
+              <NeoButton variant="secondary" size="sm" @click="retryOperation">
+                {{ t('retry') }}
+              </NeoButton>
+            </view>
+          </view>
+
+          <!-- Result Modal -->
+          <ResultOverlay
+            :visible="showWinOverlay"
+            :win-amount="winAmount"
             :t="t as (key: string) => string"
+            @close="showWinOverlay = false"
           />
         </view>
 
-        <!-- Bet Controls -->
-        <view class="controls-container">
-          <BetControls
-            v-model:choice="choice"
-            v-model:betAmount="betAmount"
-            :is-flipping="isFlipping"
-            :can-bet="canBet"
-            :t="t as (key: string) => string"
-            @flip="flip"
+        <!-- Stats Tab -->
+        <view v-if="activeTab === 'stats'" class="tab-content scrollable">
+          <NeoCard variant="erobo" class="mb-6">
+            <NeoStats :stats="gameStats" />
+          </NeoCard>
+        </view>
+
+        <!-- Docs Tab -->
+        <view v-if="activeTab === 'docs'" class="tab-content scrollable">
+          <NeoDoc
+            :title="t('title')"
+            :subtitle="t('docSubtitle')"
+            :description="t('docDescription')"
+            :steps="docSteps"
+            :features="docFeatures"
           />
         </view>
-
-        <!-- Error Message Overlay -->
-        <view v-if="errorMessage" class="error-toast">
-          <text>{{ errorMessage }}</text>
-        </view>
-
-        <!-- Result Modal -->
-        <ResultOverlay
-          :visible="showWinOverlay"
-          :win-amount="winAmount"
-          :t="t as (key: string) => string"
-          @close="showWinOverlay = false"
-        />
-      </view>
-
-      <!-- Stats Tab -->
-      <view v-if="activeTab === 'stats'" class="tab-content scrollable">
-        <NeoCard variant="erobo" class="mb-6">
-          <NeoStats :stats="gameStats" />
-        </NeoCard>
-      </view>
-
-      <!-- Docs Tab -->
-      <view v-if="activeTab === 'docs'" class="tab-content scrollable">
-        <NeoDoc
-          :title="t('title')"
-          :subtitle="t('docSubtitle')"
-          :description="t('docDescription')"
-          :steps="docSteps"
-          :features="docFeatures"
-        />
-      </view>
+      </ErrorBoundary>
     </ResponsiveLayout>
   </view>
 </template>
@@ -101,17 +126,19 @@ import { requireNeoChain } from "@shared/utils/chain";
 import { sha256Hex, sha256HexFromHex } from "@shared/utils/hash";
 import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
 import { useI18n } from "@/composables/useI18n";
-import { ResponsiveLayout, NeoCard, NeoStats, NeoDoc, NeoButton, type StatItem, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoStats, NeoDoc, NeoButton, type StatItem, ChainWarning, ErrorBoundary } from "@shared/components";
 import { audioManager } from "../../utils/audio";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 import { useGameState } from "@shared/composables/useGameState";
+import { useErrorHandler } from "@shared/composables/useErrorHandler";
 
 import CoinArena, { type GameResult } from "./components/CoinArena.vue";
 import BetControls from "./components/BetControls.vue";
 import ResultOverlay from "./components/ResultOverlay.vue";
 
 const { t } = useI18n();
+const { handleError, getUserMessage, canRetry, clearError, lastCategory } = useErrorHandler();
 
 const navTabs = computed<NavTab[]>(() => [
   { id: "game", icon: "game", label: t("game") },
@@ -143,6 +170,9 @@ const winAmount = ref("0");
 const contractAddress = ref<string | null>(null);
 const flipScriptHash = ref<string | null>(null);
 const errorMessage = ref<string | null>(null);
+const validationError = ref<string | null>(null);
+const canRetryError = ref(false);
+const lastOperation = ref<string | null>(null);
 
 // Timer tracking for cleanup
 let errorClearTimer: ReturnType<typeof setTimeout> | null = null;
@@ -150,6 +180,7 @@ let errorClearTimer: ReturnType<typeof setTimeout> | null = null;
 const formatNum = (n: number) => formatNumber(n, 2);
 
 const MAX_BET = 100;
+const MIN_BET = 0.05;
 
 const hexToBigInt = (hex: string): bigint => {
   const cleanHex = hex.startsWith("0x") ? hex.slice(2) : hex;
@@ -175,9 +206,27 @@ const simulateCoinFlip = async (
   return { won, outcome };
 };
 
+// Enhanced input validation
+const validateBetAmount = (amount: string): string | null => {
+  const num = parseFloat(amount);
+  if (isNaN(num)) {
+    return t("invalidAmountNumber");
+  }
+  if (num < MIN_BET) {
+    return t("minBetError").replace("{min}", String(MIN_BET));
+  }
+  if (num > MAX_BET) {
+    return t("maxBetError").replace("{max}", String(MAX_BET));
+  }
+  if (!/^\d+(\.\d{1,8})?$/.test(amount)) {
+    return t("invalidAmountDecimals");
+  }
+  return null;
+};
+
 const canBet = computed(() => {
   const n = parseFloat(betAmount.value);
-  return n >= 0.05 && n <= MAX_BET;
+  return n >= MIN_BET && n <= MAX_BET && !validationError.value;
 });
 
 const gameStats = computed<StatItem[]>(() => [
@@ -186,6 +235,17 @@ const gameStats = computed<StatItem[]>(() => [
   { label: t("losses"), value: losses.value, variant: "danger" },
   { label: t("totalWon"), value: `${formatNum(totalWon.value)} GAS`, variant: "accent" },
 ]);
+
+const showError = (msg: string, retryable = false) => {
+  errorMessage.value = msg;
+  canRetryError.value = retryable;
+  if (errorClearTimer) clearTimeout(errorClearTimer);
+  errorClearTimer = setTimeout(() => {
+    errorMessage.value = null;
+    canRetryError.value = false;
+    errorClearTimer = null;
+  }, 5000);
+};
 
 const ensureContractAddress = async () => {
   if (!requireNeoChain(chainType, t)) {
@@ -203,35 +263,95 @@ const ensureContractAddress = async () => {
 const ensureScriptHash = async () => {
   if (flipScriptHash.value) return flipScriptHash.value;
   const contract = await ensureContractAddress();
-  const info = await invokeRead({ scriptHash: contract, operation: "getFlipScriptInfo" });
-  const parsed = parseInvokeResult(info);
-  let hash = "";
-  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-    hash = String((parsed as Record<string, unknown>).hash ?? "");
+  
+  try {
+    const info = await invokeRead({ scriptHash: contract, operation: "getFlipScriptInfo" });
+    const parsed = parseInvokeResult(info);
+    let hash = "";
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      hash = String((parsed as Record<string, unknown>).hash ?? "");
+    }
+    if (!hash) {
+      const direct = await invokeRead({
+        scriptHash: contract,
+        operation: "getScriptHash",
+        args: [{ type: "String", value: SCRIPT_NAME }],
+      });
+      const parsedDirect = parseInvokeResult(direct);
+      hash = Array.isArray(parsedDirect) ? String(parsedDirect[0] ?? "") : String(parsedDirect ?? "");
+    }
+    if (!hash) {
+      throw new Error(t("scriptHashMissing"));
+    }
+    flipScriptHash.value = hash.replace(/^0x/i, "");
+    return flipScriptHash.value;
+  } catch (e) {
+    handleError(e, { operation: "ensureScriptHash", metadata: { contract } });
+    throw e;
   }
-  if (!hash) {
-    const direct = await invokeRead({
-      scriptHash: contract,
-      operation: "getScriptHash",
-      args: [{ type: "String", value: SCRIPT_NAME }],
-    });
-    const parsedDirect = parseInvokeResult(direct);
-    hash = Array.isArray(parsedDirect) ? String(parsedDirect[0] ?? "") : String(parsedDirect ?? "");
-  }
-  if (!hash) {
-    throw new Error(t("scriptHashMissing"));
-  }
-  flipScriptHash.value = hash.replace(/^0x/i, "");
-  return flipScriptHash.value;
 };
 
-const flip = async () => {
+const connectWallet = async () => {
+  try {
+    await connect();
+  } catch (e) {
+    handleError(e, { operation: "connectWallet" });
+    showError(getUserMessage(e));
+  }
+};
+
+const resetGame = () => {
+  isFlipping.value = false;
+  result.value = null;
+  displayOutcome.value = null;
+  showWinOverlay.value = false;
+  clearError();
+};
+
+const handleBoundaryError = (error: Error) => {
+  handleError(error, { operation: "boundaryError" });
+  showError(t("gameErrorFallback"));
+};
+
+const retryOperation = () => {
+  if (lastOperation.value === "flip") {
+    handleFlip();
+  }
+};
+
+const handleFlip = async () => {
+  // Validate inputs
+  const validation = validateBetAmount(betAmount.value);
+  if (validation) {
+    validationError.value = validation;
+    showError(validation);
+    return;
+  }
+  validationError.value = null;
+
+  // Check wallet connection
+  if (!address.value) {
+    try {
+      await connect();
+    } catch (e) {
+      handleError(e, { operation: "connectBeforeFlip" });
+      showError(t("connectWalletToPlay"));
+      return;
+    }
+  }
+
+  if (!address.value) {
+    showError(t("connectWalletToPlay"));
+    return;
+  }
+
   if (isFlipping.value || !canBet.value) return;
 
   isFlipping.value = true;
   result.value = null;
   displayOutcome.value = null;
   showWinOverlay.value = false;
+  lastOperation.value = "flip";
 
   try {
     const contract = await ensureContractAddress();
@@ -283,45 +403,54 @@ const flip = async () => {
     else audioManager.play("lose");
 
     const scriptHash = await ensureScriptHash();
-    const settleTx = await invokeContract({
-      scriptHash: contract,
-      operation: "settleBet",
-      args: [
-        { type: "Hash160", value: address.value as string },
-        { type: "Integer", value: betId },
-        { type: "Boolean", value: simulated.won },
-        { type: "ByteArray", value: scriptHash },
-      ],
-    });
+    
+    try {
+      const settleTx = await invokeContract({
+        scriptHash: contract,
+        operation: "settleBet",
+        args: [
+          { type: "Hash160", value: address.value as string },
+          { type: "Integer", value: betId },
+          { type: "Boolean", value: simulated.won },
+          { type: "ByteArray", value: scriptHash },
+        ],
+      });
 
-    const settleTxid = String((settleTx as any)?.txid || (settleTx as any)?.txHash || "");
-    if (settleTxid) {
-      const resolvedEvent = await waitForEvent(settleTxid, "BetResolved");
-      if (resolvedEvent) {
-        const values = Array.isArray((resolvedEvent as any)?.state)
-          ? (resolvedEvent as any).state.map(parseStackItem)
-          : [];
-        const payoutRaw = values[3];
-        const payoutValue = Number(payoutRaw || 0) / 1e8;
+      const settleTxid = String((settleTx as any)?.txid || (settleTx as any)?.txHash || "");
+      if (settleTxid) {
+        const resolvedEvent = await waitForEvent(settleTxid, "BetResolved");
+        if (resolvedEvent) {
+          const values = Array.isArray((resolvedEvent as any)?.state)
+            ? (resolvedEvent as any).state.map(parseStackItem)
+            : [];
+          const payoutRaw = values[3];
+          const payoutValue = Number(payoutRaw || 0) / 1e8;
 
-        if (simulated.won) {
-          recordWin(payoutValue);
-          totalWon.value += payoutValue;
-          winAmount.value = payoutValue.toFixed(2);
-          showWinOverlay.value = true;
-        } else {
-          recordLoss();
+          if (simulated.won) {
+            recordWin(payoutValue);
+            totalWon.value += payoutValue;
+            winAmount.value = payoutValue.toFixed(2);
+            showWinOverlay.value = true;
+          } else {
+            recordLoss();
+          }
         }
+      }
+    } catch (settleError) {
+      // Log settlement error but don't block user - bet was already placed
+      handleError(settleError, { operation: "settleBet", metadata: { betId, won: simulated.won } });
+      if (simulated.won) {
+        recordWin(0);
+      } else {
+        recordLoss();
       }
     }
   } catch (e: unknown) {
-    errorMessage.value = e?.message || t("error");
+    handleError(e, { operation: "flip", metadata: { betAmount: betAmount.value, choice: choice.value } });
+    const userMsg = getUserMessage(e);
+    const retryable = canRetry(e);
+    showError(userMsg, retryable);
     isFlipping.value = false;
-    if (errorClearTimer) clearTimeout(errorClearTimer);
-    errorClearTimer = setTimeout(() => {
-      errorMessage.value = null;
-      errorClearTimer = null;
-    }, 5000);
   }
 };
 
@@ -361,6 +490,10 @@ onUnmounted(() => {
   width: 100%;
 }
 
+.wallet-warning {
+  margin-bottom: 16px;
+}
+
 .error-toast {
   position: fixed;
   top: 100px;
@@ -376,6 +509,19 @@ onUnmounted(() => {
   z-index: 3000;
   box-shadow: var(--coin-error-shadow);
   animation: toast-in 0.3s ease-out;
+  max-width: 90%;
+  text-align: center;
+}
+
+.error-toast.error-retryable {
+  padding-bottom: 48px;
+}
+
+.retry-actions {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 @keyframes toast-in {

@@ -223,7 +223,11 @@ export interface PaymentResult {
   /** Invoke contract function */
   invoke: <T = unknown>(operation: string, args: unknown[]) => Promise<T>;
   /** Wait for event after transaction */
-  waitForEvent: (txid: string, eventName: string, timeoutMs?: number) => Promise<unknown>;
+  waitForEvent: (
+    txid: string,
+    eventName: string,
+    timeoutMs?: number,
+  ) => Promise<unknown>;
 }
 
 /**
@@ -325,7 +329,9 @@ export interface AsyncOperationState<T = unknown> {
 /**
  * Async operation result
  */
-export type AsyncOperationResult<T> = { success: true; data: T } | { success: false; error: Error };
+export type AsyncOperationResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: Error };
 
 // ============================================================
 // PAGE STATE TYPES
@@ -466,12 +472,15 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 /**
  * Make specific properties required
  */
-export type RequiredBy<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+export type RequiredBy<T, K extends keyof T> = Omit<T, K> &
+  Required<Pick<T, K>>;
 
 /**
  * Deep partial type
  */
-export type DeepPartial<T> = T extends object ? { [P in keyof T]?: DeepPartial<T[P]> } : T;
+export type DeepPartial<T> = T extends object
+  ? { [P in keyof T]?: DeepPartial<T[P]> }
+  : T;
 
 /**
  * Async function type

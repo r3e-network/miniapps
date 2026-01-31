@@ -143,6 +143,13 @@ const ariaHidden = computed(() => {
 });
 
 /**
+ * Accessibility: Role for decorative icons
+ */
+const presentation = computed(() => {
+  return props.decorative ? "presentation" : undefined;
+});
+
+/**
  * Accessibility: Generate aria-label for screen readers
  */
 const ariaLabel = computed(() => {

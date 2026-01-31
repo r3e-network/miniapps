@@ -25,7 +25,7 @@
 import { usePageState as useBasePageState } from "@shared/composables";
 
 export function usePageState(defaultTab = "main") {
-  const base = useBasePageState(defaultTab);
+  const base = useBasePageState({ defaultTab });
 
   // Add your app-specific state and methods here
 

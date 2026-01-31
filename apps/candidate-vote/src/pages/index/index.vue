@@ -45,6 +45,7 @@
                   class="candidate-logo-sm"
                   :src="selectedCandidate.logo"
                   mode="aspectFit"
+                  :alt="selectedCandidate.name || t('candidateLogo')"
                 />
                 <text class="candidate-name">{{ selectedCandidate.name || selectedCandidate.address }}</text>
               </view>

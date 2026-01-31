@@ -30,7 +30,15 @@ export const TransactionResultSchema = z.object({
 
 // Contract schemas
 export const ContractArgSchema = z.object({
-  type: z.enum(["String", "Integer", "Boolean", "Hash160", "Hash256", "ByteArray", "Array"]),
+  type: z.enum([
+    "String",
+    "Integer",
+    "Boolean",
+    "Hash160",
+    "Hash256",
+    "ByteArray",
+    "Array",
+  ]),
   value: z.unknown(),
 });
 
@@ -60,5 +68,9 @@ export const ContractInvokeResultSchema = z.object({
 // Infer types from schemas
 export type WalletStateFromSchema = z.infer<typeof WalletStateSchema>;
 export type WalletBalanceFromSchema = z.infer<typeof WalletBalanceSchema>;
-export type TransactionResultFromSchema = z.infer<typeof TransactionResultSchema>;
-export type ContractInvokeResultFromSchema = z.infer<typeof ContractInvokeResultSchema>;
+export type TransactionResultFromSchema = z.infer<
+  typeof TransactionResultSchema
+>;
+export type ContractInvokeResultFromSchema = z.infer<
+  typeof ContractInvokeResultSchema
+>;

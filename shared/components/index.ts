@@ -17,13 +17,18 @@
  */
 
 // ============================================================================
-// React Components (Legacy - for reference only)
+// React Components (DEPRECATED - Will be removed in v3.0)
 // ============================================================================
-export { Card } from "./Card";
-export { StatBox } from "./StatBox";
-export { StatsGrid } from "./StatsGrid";
-export { Button } from "./Button";
-export { Input } from "./Input";
+// These React components are kept for backward compatibility only.
+// All new development should use Vue components below.
+// Migration guide: Replace <Card /> with <NeoCard />, <Button /> with <NeoButton />, etc.
+//
+// TODO: Remove in v3.0 - See https://github.com/anomalyco/miniapps/issues/XXX
+// export { Card } from "./Card";
+// export { StatBox } from "./StatBox";
+// export { StatsGrid } from "./StatsGrid";
+// export { Button } from "./Button";
+// export { Input } from "./Input";
 
 // ============================================================================
 // Vue Components - Layout
@@ -58,7 +63,14 @@ export { default as TopNavBar } from "./TopNavBar.vue";
 // ============================================================================
 export { default as WalletPrompt } from "./WalletPrompt.vue";
 export { default as ChainWarning } from "./ChainWarning.vue";
+
+// ============================================================================
+// Vue Components - Specialized
+// ============================================================================
+export { default as WalletPrompt } from "./WalletPrompt.vue";
+export { default as ChainWarning } from "./ChainWarning.vue";
 export { default as Fireworks } from "./Fireworks.vue";
+export { default as ErrorBoundary } from "./ErrorBoundary.vue";
 
 // ============================================================================
 // Type Exports

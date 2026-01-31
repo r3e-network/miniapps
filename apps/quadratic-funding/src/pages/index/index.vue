@@ -1,202 +1,58 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-quadratic-funding" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange"
+  <ResponsiveLayout
+    :desktop-breakpoint="1024"
+    class="theme-quadratic-funding"
+    :tabs="navTabs"
+    :active-tab="activeTab"
+    @tab-change="onTabChange"
+  >
+    <template #desktop-sidebar>
+      <view class="desktop-sidebar">
+        <text class="sidebar-title">{{ t('overview') }}</text>
+      </view>
+    </template>
 
-      <!-- Desktop Sidebar -->
-      <template #desktop-sidebar>
-        <view class="desktop-sidebar">
-          <text class="sidebar-title">{{ t('overview') }}</text>
-        </view>
-      </template>
->
     <view v-if="activeTab === 'rounds'" class="tab-content">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
-      <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
-        <text class="font-bold">{{ status.msg }}</text>
+      <NeoCard v-if="roundsStatus" :variant="roundsStatus.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
+        <text class="font-bold">{{ roundsStatus.msg }}</text>
       </NeoCard>
 
-      <NeoCard variant="erobo-neo">
-        <view class="form-group">
-          <NeoInput v-model="roundForm.title" :label="t('roundTitle')" :placeholder="t('roundTitlePlaceholder')" />
-          <NeoInput
-            v-model="roundForm.description"
-            type="textarea"
-            :label="t('roundDescription')"
-            :placeholder="t('roundDescriptionPlaceholder')"
-          />
+      <RoundForm ref="roundFormRef" @create="handleCreateRound" />
 
-          <view class="input-group">
-            <text class="input-label">{{ t("assetType") }}</text>
-            <view class="asset-toggle">
-              <NeoButton size="sm" variant="primary" disabled>
-                {{ t("assetGas") }}
-              </NeoButton>
-            </view>
-          </view>
+      <RoundList
+        :rounds="rounds"
+        :selected-round-id="selectedRoundId"
+        :is-refreshing="isRefreshingRounds"
+        :round-status-label="roundStatusLabel"
+        :format-amount="formatAmount"
+        :format-schedule="formatSchedule"
+        :format-address="formatAddress"
+        @refresh="refreshRounds"
+        @select="selectRound"
+      />
 
-          <NeoInput
-            v-model="roundForm.matchingPool"
-            type="number"
-            :label="t('matchingPool')"
-            placeholder="50"
-            :suffix="roundForm.asset"
-            :hint="t('matchingPoolHint')"
-          />
-
-          <NeoInput v-model="roundForm.startTime" :label="t('roundStart')" :placeholder="t('roundStartPlaceholder')" />
-          <NeoInput v-model="roundForm.endTime" :label="t('roundEnd')" :placeholder="t('roundEndPlaceholder')" />
-
-          <NeoButton
-            variant="primary"
-            size="lg"
-            block
-            :loading="isCreatingRound"
-            :disabled="isCreatingRound"
-            @click="createRound"
-          >
-            {{ isCreatingRound ? t("creatingRound") : t("createRound") }}
-          </NeoButton>
-        </view>
-      </NeoCard>
-
-      <NeoCard variant="erobo" class="round-list">
-        <view class="rounds-header">
-          <text class="section-title">{{ t("roundsTitle") }}</text>
-          <NeoButton size="sm" variant="secondary" :loading="isRefreshingRounds" @click="refreshRounds">
-            {{ t("refresh") }}
-          </NeoButton>
-        </view>
-
-        <view v-if="rounds.length === 0" class="empty-state">
-          <NeoCard variant="erobo" class="p-6 text-center opacity-70">
-            <text class="text-xs">{{ t("emptyRounds") }}</text>
-          </NeoCard>
-        </view>
-
-        <view v-else class="round-cards">
-          <view v-for="round in rounds" :key="`round-${round.id}`" class="round-card">
-            <view class="round-card__header">
-              <view>
-                <text class="round-title">{{ round.title || `#${round.id}` }}</text>
-                <text class="round-subtitle">#{{ round.id }} · {{ round.assetSymbol }}</text>
-              </view>
-              <text :class="['status-pill', round.status]">{{ roundStatusLabel(round.status) }}</text>
-            </view>
-
-            <text class="round-desc">{{ round.description || "--" }}</text>
-
-            <view class="round-metrics">
-              <view>
-                <text class="metric-label">{{ t("matchingPool") }}</text>
-                <text class="metric-value"
-                  >{{ formatAmount(round.assetSymbol, round.matchingPool) }} {{ round.assetSymbol }}</text
-                >
-              </view>
-              <view>
-                <text class="metric-label">{{ t("matchingRemaining") }}</text>
-                <text class="metric-value"
-                  >{{ formatAmount(round.assetSymbol, round.matchingRemaining) }} {{ round.assetSymbol }}</text
-                >
-              </view>
-              <view>
-                <text class="metric-label">{{ t("totalContributed") }}</text>
-                <text class="metric-value"
-                  >{{ formatAmount(round.assetSymbol, round.totalContributed) }} {{ round.assetSymbol }}</text
-                >
-              </view>
-              <view>
-                <text class="metric-label">{{ t("projectCount") }}</text>
-                <text class="metric-value">{{ round.projectCount.toString() }}</text>
-              </view>
-            </view>
-
-            <view class="round-meta">
-              <text class="meta-item"
-                >{{ t("roundSchedule") }}: {{ formatSchedule(round.startTime, round.endTime) }}</text
-              >
-              <text class="meta-item">{{ t("roundCreator") }}: {{ formatAddress(round.creator) }}</text>
-            </view>
-
-            <view class="round-actions">
-              <NeoButton size="sm" variant="secondary" @click="selectRound(round)">
-                {{ selectedRoundId === round.id ? t("selectedRound") : t("selectRound") }}
-              </NeoButton>
-            </view>
-          </view>
-        </view>
-      </NeoCard>
-
-      <NeoCard v-if="selectedRound" variant="erobo-neo" class="admin-card">
-        <view class="admin-header">
-          <text class="section-title">{{ t("adminTools") }}</text>
-          <text class="admin-subtitle">#{{ selectedRound.id }} · {{ selectedRound.assetSymbol }}</text>
-        </view>
-
-        <view class="form-group">
-          <NeoInput
-            v-model="matchingForm.amount"
-            type="number"
-            :label="t('addMatching')"
-            :placeholder="t('addMatchingPlaceholder')"
-            :suffix="selectedRound.assetSymbol"
-          />
-          <NeoButton
-            size="sm"
-            variant="secondary"
-            :loading="isAddingMatching"
-            :disabled="!canManageSelectedRound"
-            @click="addMatchingPool"
-          >
-            {{ isAddingMatching ? t("addingMatching") : t("addMatching") }}
-          </NeoButton>
-        </view>
-
-        <view class="admin-divider" />
-
-        <view class="form-group">
-          <NeoInput
-            v-model="finalizeForm.projectIds"
-            :label="t('finalizeProjectsJson')"
-            :placeholder="t('finalizeProjectsPlaceholder')"
-          />
-          <NeoInput
-            v-model="finalizeForm.matchedAmounts"
-            :label="t('finalizeMatchesJson')"
-            :placeholder="t('finalizeMatchesPlaceholder')"
-          />
-          <text class="hint-text">{{ t("finalizeHint") }}</text>
-          <NeoButton
-            size="sm"
-            variant="primary"
-            :loading="isFinalizing"
-            :disabled="!canFinalizeSelectedRound"
-            @click="finalizeRound"
-          >
-            {{ isFinalizing ? t("finalizing") : t("finalizeRound") }}
-          </NeoButton>
-        </view>
-
-        <view class="admin-divider" />
-
-        <NeoButton
-          size="sm"
-          variant="secondary"
-          :loading="isClaimingUnused"
-          :disabled="!canClaimUnused"
-          @click="claimUnusedMatching"
-        >
-          {{ isClaimingUnused ? t("claimingUnused") : t("claimUnused") }}
-        </NeoButton>
-      </NeoCard>
+      <RoundAdminPanel
+        v-if="selectedRound"
+        :round="selectedRound"
+        :can-manage="canManageSelectedRound"
+        :can-finalize="canFinalizeSelectedRound"
+        :can-claim-unused="canClaimUnused"
+        :is-adding-matching="isAddingMatching"
+        :is-finalizing="isFinalizing"
+        :is-claiming-unused="isClaimingUnused"
+        @add-matching="handleAddMatching"
+        @finalize="handleFinalize"
+        @claim-unused="handleClaimUnused"
+      />
     </view>
 
     <view v-if="activeTab === 'projects'" class="tab-content">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
-      <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
-        <text class="font-bold">{{ status.msg }}</text>
+      <NeoCard v-if="projectsStatus" :variant="projectsStatus.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
+        <text class="font-bold">{{ projectsStatus.msg }}</text>
       </NeoCard>
 
       <view v-if="!selectedRound" class="empty-state">
@@ -206,104 +62,30 @@
       </view>
 
       <template v-else>
-        <NeoCard variant="erobo-neo">
-          <view class="form-group">
-            <NeoInput v-model="projectForm.name" :label="t('projectName')" :placeholder="t('projectNamePlaceholder')" />
-            <NeoInput
-              v-model="projectForm.description"
-              type="textarea"
-              :label="t('projectDescription')"
-              :placeholder="t('projectDescriptionPlaceholder')"
-            />
-            <NeoInput v-model="projectForm.link" :label="t('projectLink')" :placeholder="t('projectLinkPlaceholder')" />
+        <ProjectForm ref="projectFormRef" @register="handleRegisterProject" />
 
-            <NeoButton
-              variant="primary"
-              size="lg"
-              block
-              :loading="isRegisteringProject"
-              :disabled="isRegisteringProject"
-              @click="registerProject"
-            >
-              {{ isRegisteringProject ? t("registeringProject") : t("registerProject") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-
-        <NeoCard variant="erobo" class="project-list">
-          <view class="projects-header">
-            <text class="section-title">{{ t("tabProjects") }}</text>
-            <NeoButton size="sm" variant="secondary" :loading="isRefreshingProjects" @click="refreshProjects">
-              {{ t("refresh") }}
-            </NeoButton>
-          </view>
-
-          <view v-if="projects.length === 0" class="empty-state">
-            <NeoCard variant="erobo" class="p-6 text-center opacity-70">
-              <text class="text-xs">{{ t("emptyProjects") }}</text>
-            </NeoCard>
-          </view>
-
-          <view v-else class="project-cards">
-            <view v-for="project in projects" :key="`project-${project.id}`" class="project-card">
-              <view class="project-card__header">
-                <view>
-                  <text class="project-title">{{ project.name || `#${project.id}` }}</text>
-                  <text class="project-subtitle">{{ formatAddress(project.owner) }}</text>
-                </view>
-                <text :class="['status-pill', projectStatusClass(project)]">{{ projectStatusLabel(project) }}</text>
-              </view>
-
-              <text class="project-desc">{{ project.description || "--" }}</text>
-              <text v-if="project.link" class="project-link">{{ project.link }}</text>
-
-              <view class="project-metrics">
-                <view>
-                  <text class="metric-label">{{ t("totalContributed") }}</text>
-                  <text class="metric-value"
-                    >{{ formatAmount(selectedRound.assetSymbol, project.totalContributed) }}
-                    {{ selectedRound.assetSymbol }}</text
-                  >
-                </view>
-                <view>
-                  <text class="metric-label">{{ t("matchedAmount") }}</text>
-                  <text class="metric-value"
-                    >{{ formatAmount(selectedRound.assetSymbol, project.matchedAmount) }}
-                    {{ selectedRound.assetSymbol }}</text
-                  >
-                </view>
-                <view>
-                  <text class="metric-label">{{ t("donors") }}</text>
-                  <text class="metric-value">{{ project.contributorCount.toString() }}</text>
-                </view>
-              </view>
-
-              <view class="project-actions">
-                <NeoButton size="sm" variant="secondary" @click="goToContribute(project)">
-                  {{ t("contributeNow") }}
-                </NeoButton>
-                <NeoButton
-                  size="sm"
-                  variant="primary"
-                  :loading="claimingProjectId === project.id"
-                  :disabled="!canClaimProject(project)"
-                  @click="claimProject(project)"
-                >
-                  {{ claimingProjectId === project.id ? t("claimingProject") : t("claimProject") }}
-                </NeoButton>
-              </view>
-            </view>
-          </view>
-        </NeoCard>
+        <ProjectList
+          :projects="projects"
+          :asset-symbol="selectedRound.assetSymbol"
+          :is-refreshing="isRefreshingProjects"
+          :claiming-project-id="claimingProjectId"
+          :can-claim-project="canClaimProject"
+          :format-address="formatAddress"
+          :format-amount="formatAmount"
+          :project-status-label="projectStatusLabel"
+          :project-status-class="projectStatusClass"
+          @refresh="refreshProjects"
+          @contribute="goToContribute"
+          @claim="handleClaimProject"
+        />
       </template>
     </view>
 
     <view v-if="activeTab === 'contribute'" class="tab-content">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
-      <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
-        <text class="font-bold">{{ status.msg }}</text>
+      <NeoCard v-if="contributionStatus" :variant="contributionStatus.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
+        <text class="font-bold">{{ contributionStatus.msg }}</text>
       </NeoCard>
 
       <view v-if="!selectedRound" class="empty-state">
@@ -331,40 +113,12 @@
           </view>
         </NeoCard>
 
-        <NeoCard variant="erobo-neo">
-          <view class="form-group">
-            <NeoInput v-model="contributeForm.roundId" :label="t('contributionRoundId')" disabled />
-            <NeoInput
-              v-model="contributeForm.projectId"
-              :label="t('contributionProjectId')"
-              :placeholder="t('selectProjectHint')"
-            />
-            <NeoInput
-              v-model="contributeForm.amount"
-              type="number"
-              :label="t('contributionAmount')"
-              :placeholder="t('contributionAmountPlaceholder')"
-              :suffix="selectedRound.assetSymbol"
-            />
-            <NeoInput
-              v-model="contributeForm.memo"
-              type="textarea"
-              :label="t('contributionMemo')"
-              :placeholder="t('contributionMemoPlaceholder')"
-            />
-
-            <NeoButton
-              variant="primary"
-              size="lg"
-              block
-              :loading="isContributing"
-              :disabled="isContributing"
-              @click="contribute"
-            >
-              {{ isContributing ? t("contributing") : t("contribute") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
+        <ContributionForm
+          ref="contributeFormRef"
+          :round-id="selectedRoundId"
+          :asset-symbol="selectedRound.assetSymbol"
+          @contribute="handleContribute"
+        />
       </template>
     </view>
 
@@ -385,23 +139,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted, watch } from "vue";
-import { useWallet } from "@neo/uniapp-sdk";
-import type { WalletSDK } from "@neo/types";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useI18n } from "@/composables/useI18n";
-import { ResponsiveLayout, NeoCard, NeoButton, NeoInput, NeoDoc, ChainWarning } from "@shared/components";
+import { useQuadraticRounds } from "@/composables/useQuadraticRounds";
+import { useQuadraticProjects } from "@/composables/useQuadraticProjects";
+import { useQuadraticContributions } from "@/composables/useQuadraticContributions";
+import { ResponsiveLayout, NeoCard, NeoButton, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
-import { requireNeoChain } from "@shared/utils/chain";
-import { formatAddress, formatFixed8, toFixedDecimals } from "@shared/utils/format";
-import { parseInvokeResult } from "@shared/utils/neo";
+import { formatAddress } from "@shared/utils/format";
+import RoundForm from "./components/RoundForm.vue";
+import RoundList from "./components/RoundList.vue";
+import RoundAdminPanel from "./components/RoundAdminPanel.vue";
+import ProjectForm from "./components/ProjectForm.vue";
+import ProjectList from "./components/ProjectList.vue";
+import ContributionForm from "./components/ContributionForm.vue";
 
 const { t } = useI18n();
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
-
-const NEO_HASH = "0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5";
-const GAS_HASH = "0xd2a4cff31913016155e38e474a2c06d08be276cf";
-
 const activeTab = ref("rounds");
+
 const navTabs = computed<NavTab[]>(() => [
   { id: "rounds", icon: "target", label: t("tabRounds") },
   { id: "projects", icon: "file", label: t("tabProjects") },
@@ -409,719 +164,110 @@ const navTabs = computed<NavTab[]>(() => [
   { id: "docs", icon: "book", label: t("docs") },
 ]);
 
-const contractAddress = ref<string | null>(null);
-const status = ref<{ msg: string; type: "success" | "error" } | null>(null);
+const {
+  rounds,
+  selectedRoundId,
+  selectedRound,
+  isRefreshingRounds,
+  isCreatingRound,
+  isAddingMatching,
+  isFinalizing,
+  isClaimingUnused,
+  canManageSelectedRound,
+  canFinalizeSelectedRound,
+  canClaimUnused,
+  status: roundsStatus,
+  refreshRounds,
+  selectRound,
+  createRound,
+  addMatching,
+  finalizeRound,
+  claimUnused,
+  roundStatusLabel,
+  formatSchedule,
+  formatAmount,
+  setStatus,
+  ensureContractAddress,
+} = useQuadraticRounds();
 
-const roundForm = reactive({
-  title: "",
-  description: "",
-  asset: "GAS",
-  matchingPool: "",
-  startTime: "",
-  endTime: "",
+const {
+  projects,
+  isRefreshingProjects,
+  isRegisteringProject,
+  claimingProjectId,
+  refreshProjects,
+  registerProject,
+  canClaimProject,
+  claimProject,
+  projectStatusLabel,
+  projectStatusClass,
+} = useQuadraticProjects(selectedRound, ensureContractAddress, setStatus);
+
+const {
+  isContributing,
+  contributeForm,
+  selectProject,
+  contribute,
+  goToContribute,
+} = useQuadraticContributions(selectedRound, ensureContractAddress, setStatus, refreshProjects, refreshRounds);
+
+const projectsStatus = ref<{ msg: string; type: "success" | "error" } | null>(null);
+const contributionStatus = ref<{ msg: string; type: "success" | "error" } | null>(null);
+
+watch(roundsStatus, (val) => {
+  if (activeTab.value === "rounds") roundsStatus.value = val;
 });
 
-const projectForm = reactive({
-  name: "",
-  description: "",
-  link: "",
-});
+const roundFormRef = ref<InstanceType<typeof RoundForm> | null>(null);
+const projectFormRef = ref<InstanceType<typeof ProjectForm> | null>(null);
+const contributeFormRef = ref<InstanceType<typeof ContributionForm> | null>(null);
 
-const contributeForm = reactive({
-  roundId: "",
-  projectId: "",
-  amount: "",
-  memo: "",
-});
-
-const matchingForm = reactive({
-  amount: "",
-});
-
-const finalizeForm = reactive({
-  projectIds: "",
-  matchedAmounts: "",
-});
-
-const rounds = ref<RoundItem[]>([]);
-const projects = ref<ProjectItem[]>([]);
-const selectedRoundId = ref<string>("");
-
-const isCreatingRound = ref(false);
-const isRegisteringProject = ref(false);
-const isContributing = ref(false);
-const isRefreshingRounds = ref(false);
-const isRefreshingProjects = ref(false);
-const isAddingMatching = ref(false);
-const isFinalizing = ref(false);
-const isClaimingUnused = ref(false);
-const claimingProjectId = ref<string | null>(null);
-
-// Responsive layout
-const windowWidth = ref(window.innerWidth);
-const isMobile = computed(() => windowWidth.value < 768);
-const isDesktop = computed(() => windowWidth.value >= 1024);
-
-const handleResize = () => { windowWidth.value = window.innerWidth; };
-onMounted(() => window.addEventListener('resize', handleResize));
-onUnmounted(() => window.removeEventListener('resize', handleResize));
-
-interface RoundItem {
-  id: string;
-  creator: string;
-  asset: string;
-  assetSymbol: string;
-  matchingPool: bigint;
-  matchingAllocated: bigint;
-  matchingWithdrawn: bigint;
-  matchingRemaining: bigint;
-  totalContributed: bigint;
-  projectCount: bigint;
-  startTime: number;
-  endTime: number;
-  createdTime: number;
-  finalized: boolean;
-  cancelled: boolean;
-  status: string;
-  title: string;
-  description: string;
-}
-
-interface ProjectItem {
-  id: string;
-  roundId: string;
-  owner: string;
-  name: string;
-  description: string;
-  link: string;
-  createdTime: number;
-  totalContributed: bigint;
-  contributorCount: bigint;
-  matchedAmount: bigint;
-  active: boolean;
-  claimed: boolean;
-  status: string;
-}
-
-const selectedRound = computed(() => rounds.value.find((round) => round.id === selectedRoundId.value) || null);
-const canManageSelectedRound = computed(() => {
-  if (!selectedRound.value) return false;
-  if (!address.value) return false;
-  return (
-    selectedRound.value.creator === address.value && !selectedRound.value.cancelled && !selectedRound.value.finalized
-  );
-});
-const canFinalizeSelectedRound = computed(() => {
-  if (!selectedRound.value) return false;
-  if (!address.value) return false;
-  return (
-    selectedRound.value.creator === address.value && !selectedRound.value.cancelled && !selectedRound.value.finalized
-  );
-});
-const canClaimUnused = computed(() => {
-  if (!selectedRound.value) return false;
-  if (!address.value) return false;
-  return (
-    selectedRound.value.creator === address.value && selectedRound.value.finalized && !selectedRound.value.cancelled
-  );
-});
-
-const ensureContractAddress = async () => {
-  if (!requireNeoChain(chainType, t, undefined, { silent: true })) {
-    throw new Error(t("wrongChain"));
-  }
-  if (!contractAddress.value) {
-    contractAddress.value = await getContractAddress();
-  }
-  if (!contractAddress.value) {
-    throw new Error(t("contractMissing"));
-  }
-  return contractAddress.value;
+const handleCreateRound = async (data: Parameters<typeof createRound>[0]) => {
+  roundFormRef.value?.setLoading(true);
+  await createRound(data);
+  roundFormRef.value?.setLoading(false);
+  if (roundsStatus.value?.type === "success") roundFormRef.value?.reset();
 };
 
-const setStatus = (msg: string, type: "success" | "error") => {
-  status.value = { msg, type };
-  setTimeout(() => {
-    if (status.value?.msg === msg) status.value = null;
-  }, 4000);
+const handleRegisterProject = async (data: Parameters<typeof registerProject>[0]) => {
+  projectFormRef.value?.setLoading(true);
+  await registerProject(data);
+  projectFormRef.value?.setLoading(false);
+  if (!roundsStatus.value || roundsStatus.value.type === "success") projectFormRef.value?.reset();
 };
 
-const parseBigInt = (value: unknown) => {
-  try {
-    return BigInt(String(value ?? "0"));
-  } catch {
-    return 0n;
-  }
+const handleContribute = async (data: Parameters<typeof contribute>[0]) => {
+  contributeFormRef.value?.setLoading(true);
+  await contribute(data);
+  contributeFormRef.value?.setLoading(false);
+  if (!roundsStatus.value || roundsStatus.value.type === "success") contributeFormRef.value?.reset();
 };
 
-const parseBool = (value: unknown) => value === true || value === "true" || value === 1 || value === "1";
-
-const parseDateInput = (value: string) => {
-  const trimmed = value.trim();
-  if (!trimmed) return 0;
-  const normalized = trimmed.includes("T") ? trimmed : trimmed.replace(" ", "T");
-  const parsed = Date.parse(normalized);
-  if (Number.isNaN(parsed)) return 0;
-  return Math.floor(parsed / 1000);
-};
-
-const formatSchedule = (startTime: number, endTime: number) => {
-  if (!startTime || !endTime) return t("dateUnknown");
-  const start = new Date(startTime * 1000);
-  const end = new Date(endTime * 1000);
-  return `${start.toLocaleString()} - ${end.toLocaleString()}`;
-};
-
-const formatAmount = (assetSymbol: string, amount: bigint) => {
-  return assetSymbol === "NEO" ? amount.toString() : formatFixed8(amount, 4);
-};
-
-const roundStatusLabel = (statusValue: string) => {
-  switch (statusValue) {
-    case "upcoming":
-      return t("roundStatusUpcoming");
-    case "active":
-      return t("roundStatusActive");
-    case "ended":
-      return t("roundStatusEnded");
-    case "finalized":
-      return t("roundStatusFinalized");
-    case "cancelled":
-      return t("roundStatusCancelled");
-    default:
-      return statusValue || t("roundStatusActive");
-  }
-};
-
-const projectStatusLabel = (project: ProjectItem) => {
-  if (project.claimed) return t("projectStatusClaimed");
-  return project.active ? t("projectStatusActive") : t("projectStatusInactive");
-};
-
-const projectStatusClass = (project: ProjectItem) => {
-  if (project.claimed) return "claimed";
-  return project.active ? "active" : "inactive";
-};
-
-const selectRound = (round: RoundItem) => {
-  selectedRoundId.value = round.id;
-};
-
-const selectProject = (project: ProjectItem) => {
-  contributeForm.projectId = project.id;
-  contributeForm.roundId = project.roundId;
-};
-
-const goToContribute = (project: ProjectItem) => {
-  selectProject(project);
-  activeTab.value = "contribute";
-};
-
-const parseRound = (raw: any, id: string): RoundItem | null => {
-  if (!raw || typeof raw !== "object") return null;
-  const matchingPool = parseBigInt(raw.matchingPool);
-  const matchingAllocated = parseBigInt(raw.matchingAllocated);
-  const matchingWithdrawn = parseBigInt(raw.matchingWithdrawn);
-  const matchingRemaining =
-    raw.matchingRemaining !== undefined
-      ? parseBigInt(raw.matchingRemaining)
-      : matchingPool - matchingAllocated - matchingWithdrawn;
-
-  return {
-    id,
-    creator: String(raw.creator || ""),
-    asset: String(raw.asset || ""),
-    assetSymbol: String(raw.assetSymbol || ""),
-    matchingPool,
-    matchingAllocated,
-    matchingWithdrawn,
-    matchingRemaining,
-    totalContributed: parseBigInt(raw.totalContributed),
-    projectCount: parseBigInt(raw.projectCount),
-    startTime: Number.parseInt(String(raw.startTime || "0"), 10) || 0,
-    endTime: Number.parseInt(String(raw.endTime || "0"), 10) || 0,
-    createdTime: Number.parseInt(String(raw.createdTime || "0"), 10) || 0,
-    finalized: parseBool(raw.finalized),
-    cancelled: parseBool(raw.cancelled),
-    status: String(raw.status || ""),
-    title: String(raw.title || ""),
-    description: String(raw.description || ""),
-  };
-};
-
-const parseProject = (raw: any, id: string): ProjectItem | null => {
-  if (!raw || typeof raw !== "object") return null;
-  return {
-    id,
-    roundId: String(raw.roundId || ""),
-    owner: String(raw.owner || ""),
-    name: String(raw.name || ""),
-    description: String(raw.description || ""),
-    link: String(raw.link || ""),
-    createdTime: Number.parseInt(String(raw.createdTime || "0"), 10) || 0,
-    totalContributed: parseBigInt(raw.totalContributed),
-    contributorCount: parseBigInt(raw.contributorCount),
-    matchedAmount: parseBigInt(raw.matchedAmount),
-    active: parseBool(raw.active),
-    claimed: parseBool(raw.claimed),
-    status: String(raw.status || ""),
-  };
-};
-
-const fetchRoundIds = async () => {
-  const contract = await ensureContractAddress();
-  const result = await invokeRead({
-    contractAddress: contract,
-    operation: "getRounds",
-    args: [
-      { type: "Integer", value: "0" },
-      { type: "Integer", value: "30" },
-    ],
-  });
-  const parsed = parseInvokeResult(result);
-  if (!Array.isArray(parsed)) return [] as string[];
-  return parsed
-    .map((value) => Number.parseInt(String(value || "0"), 10))
-    .filter((value) => Number.isFinite(value) && value > 0)
-    .map((value) => String(value));
-};
-
-const fetchRoundDetails = async (roundId: string) => {
-  const contract = await ensureContractAddress();
-  const details = await invokeRead({
-    contractAddress: contract,
-    operation: "getRoundDetails",
-    args: [{ type: "Integer", value: roundId }],
-  });
-  const parsed = parseInvokeResult(details) as any;
-  return parseRound(parsed, roundId);
-};
-
-const refreshRounds = async () => {
-  if (isRefreshingRounds.value) return;
-  try {
-    isRefreshingRounds.value = true;
-    const ids = await fetchRoundIds();
-    const details = await Promise.all(ids.map(fetchRoundDetails));
-    rounds.value = details.filter(Boolean) as RoundItem[];
-
-    if (!selectedRoundId.value && rounds.value.length > 0) {
-      selectedRoundId.value = rounds.value[0].id;
-    }
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isRefreshingRounds.value = false;
-  }
-};
-
-const fetchProjectIds = async (roundId: string) => {
-  const contract = await ensureContractAddress();
-  const result = await invokeRead({
-    contractAddress: contract,
-    operation: "getRoundProjects",
-    args: [
-      { type: "Integer", value: roundId },
-      { type: "Integer", value: "0" },
-      { type: "Integer", value: "50" },
-    ],
-  });
-  const parsed = parseInvokeResult(result);
-  if (!Array.isArray(parsed)) return [] as string[];
-  return parsed
-    .map((value) => Number.parseInt(String(value || "0"), 10))
-    .filter((value) => Number.isFinite(value) && value > 0)
-    .map((value) => String(value));
-};
-
-const fetchProjectDetails = async (projectId: string) => {
-  const contract = await ensureContractAddress();
-  const details = await invokeRead({
-    contractAddress: contract,
-    operation: "getProjectDetails",
-    args: [{ type: "Integer", value: projectId }],
-  });
-  const parsed = parseInvokeResult(details) as any;
-  return parseProject(parsed, projectId);
-};
-
-const refreshProjects = async () => {
-  if (!selectedRoundId.value) return;
-  if (isRefreshingProjects.value) return;
-  try {
-    isRefreshingProjects.value = true;
-    const ids = await fetchProjectIds(selectedRoundId.value);
-    const details = await Promise.all(ids.map(fetchProjectDetails));
-    projects.value = details.filter(Boolean) as ProjectItem[];
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isRefreshingProjects.value = false;
-  }
-};
-
-const createRound = async () => {
-  if (!requireNeoChain(chainType, t)) return;
-  if (isCreatingRound.value) return;
-  const title = roundForm.title.trim().slice(0, 60);
-  if (!title) {
-    setStatus(t("invalidRound"), "error");
-    return;
-  }
-
-  const startTime = parseDateInput(roundForm.startTime);
-  const endTime = parseDateInput(roundForm.endTime);
-  if (!startTime || !endTime || startTime >= endTime) {
-    setStatus(t("invalidRound"), "error");
-    return;
-  }
-
-  const decimals = roundForm.asset === "NEO" ? 0 : 8;
-  const matchingPool = toFixedDecimals(roundForm.matchingPool, decimals);
-  if (!matchingPool || matchingPool === "0") {
-    setStatus(t("invalidMatchingPool"), "error");
-    return;
-  }
-
-  try {
-    isCreatingRound.value = true;
-    if (!address.value) await connect();
-    if (!address.value) throw new Error(t("walletNotConnected"));
-
-    const contract = await ensureContractAddress();
-    const assetHash = roundForm.asset === "NEO" ? NEO_HASH : GAS_HASH;
-    const description = roundForm.description.trim().slice(0, 240);
-
-    await invokeContract({
-      scriptHash: contract,
-      operation: "createRound",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Hash160", value: assetHash },
-        { type: "Integer", value: matchingPool },
-        { type: "Integer", value: startTime.toString() },
-        { type: "Integer", value: endTime.toString() },
-        { type: "String", value: title },
-        { type: "String", value: description },
-      ],
-    });
-
-    setStatus(t("roundCreated"), "success");
-    roundForm.title = "";
-    roundForm.description = "";
-    roundForm.matchingPool = "";
-    roundForm.startTime = "";
-    roundForm.endTime = "";
-
-    await refreshRounds();
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isCreatingRound.value = false;
-  }
-};
-
-const registerProject = async () => {
-  if (!requireNeoChain(chainType, t)) return;
-  if (isRegisteringProject.value) return;
-  if (!selectedRoundId.value) {
-    setStatus(t("noSelectedRound"), "error");
-    return;
-  }
-
-  const name = projectForm.name.trim().slice(0, 60);
-  if (!name) {
-    setStatus(t("invalidProject"), "error");
-    return;
-  }
-
-  try {
-    isRegisteringProject.value = true;
-    if (!address.value) await connect();
-    if (!address.value) throw new Error(t("walletNotConnected"));
-
-    const contract = await ensureContractAddress();
-    const description = projectForm.description.trim().slice(0, 300);
-    const link = projectForm.link.trim().slice(0, 200);
-
-    await invokeContract({
-      scriptHash: contract,
-      operation: "registerProject",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Integer", value: selectedRoundId.value },
-        { type: "String", value: name },
-        { type: "String", value: description },
-        { type: "String", value: link },
-      ],
-    });
-
-    setStatus(t("projectRegistered"), "success");
-    projectForm.name = "";
-    projectForm.description = "";
-    projectForm.link = "";
-
-    await refreshProjects();
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isRegisteringProject.value = false;
-  }
-};
-
-const contribute = async () => {
-  if (!requireNeoChain(chainType, t)) return;
-  if (isContributing.value) return;
-  if (!selectedRound.value) {
-    setStatus(t("noSelectedRound"), "error");
-    return;
-  }
-
-  const parsedProjectId = Number.parseInt(contributeForm.projectId.trim(), 10);
-  if (!Number.isFinite(parsedProjectId) || parsedProjectId <= 0) {
-    setStatus(t("invalidContribution"), "error");
-    return;
-  }
-
-  const decimals = selectedRound.value.assetSymbol === "NEO" ? 0 : 8;
-  const amount = toFixedDecimals(contributeForm.amount, decimals);
-  if (!amount || amount === "0") {
-    setStatus(t("invalidContribution"), "error");
-    return;
-  }
-
-  try {
-    isContributing.value = true;
-    if (!address.value) await connect();
-    if (!address.value) throw new Error(t("walletNotConnected"));
-
-    const contract = await ensureContractAddress();
-    const memo = contributeForm.memo.trim().slice(0, 160);
-
-    await invokeContract({
-      scriptHash: contract,
-      operation: "contribute",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Integer", value: selectedRoundId.value },
-        { type: "Integer", value: String(parsedProjectId) },
-        { type: "Integer", value: amount },
-        { type: "String", value: memo },
-      ],
-    });
-
-    setStatus(t("contributionSent"), "success");
-    contributeForm.amount = "";
-    contributeForm.memo = "";
-
-    await refreshProjects();
-    await refreshRounds();
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isContributing.value = false;
-  }
-};
-
-const addMatchingPool = async () => {
-  if (!requireNeoChain(chainType, t)) return;
-  if (!selectedRound.value) return;
-  if (isAddingMatching.value) return;
-
-  const decimals = selectedRound.value.assetSymbol === "NEO" ? 0 : 8;
-  const amount = toFixedDecimals(matchingForm.amount, decimals);
-  if (!amount || amount === "0") {
-    setStatus(t("invalidMatchingPool"), "error");
-    return;
-  }
-
-  try {
-    isAddingMatching.value = true;
-    if (!address.value) await connect();
-    if (!address.value) throw new Error(t("walletNotConnected"));
-
-    const contract = await ensureContractAddress();
-    await invokeContract({
-      scriptHash: contract,
-      operation: "addMatchingPool",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Integer", value: selectedRound.value.id },
-        { type: "Integer", value: amount },
-      ],
-    });
-
-    setStatus(t("matchingAdded"), "success");
-    matchingForm.amount = "";
-
-    await refreshRounds();
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isAddingMatching.value = false;
-  }
-};
-
-const parseJsonArray = (value: string) => {
-  try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-};
-
-const finalizeRound = async () => {
-  if (!requireNeoChain(chainType, t)) return;
-  if (!selectedRound.value) return;
-  if (isFinalizing.value) return;
-
-  const projectIdsRaw = parseJsonArray(finalizeForm.projectIds.trim());
-  const matchedRaw = parseJsonArray(finalizeForm.matchedAmounts.trim());
-  if (!projectIdsRaw || !matchedRaw || projectIdsRaw.length !== matchedRaw.length || projectIdsRaw.length === 0) {
-    setStatus(t("invalidRound"), "error");
-    return;
-  }
-
-  const projectIds = projectIdsRaw
-    .map((value) => Number.parseInt(String(value), 10))
-    .filter((value) => Number.isFinite(value) && value > 0)
-    .map((value) => String(value));
-
-  const decimals = selectedRound.value.assetSymbol === "NEO" ? 0 : 8;
-  const matchedAmounts = matchedRaw.map((value) => toFixedDecimals(String(value), decimals));
-
-  if (projectIds.length !== matchedAmounts.length || projectIds.length === 0) {
-    setStatus(t("invalidRound"), "error");
-    return;
-  }
-
-  try {
-    isFinalizing.value = true;
-    if (!address.value) await connect();
-    if (!address.value) throw new Error(t("walletNotConnected"));
-
-    const contract = await ensureContractAddress();
-    await invokeContract({
-      scriptHash: contract,
-      operation: "finalizeRound",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Integer", value: selectedRound.value.id },
-        {
-          type: "Array",
-          value: projectIds.map((value) => ({ type: "Integer", value })),
-        },
-        {
-          type: "Array",
-          value: matchedAmounts.map((value) => ({ type: "Integer", value })),
-        },
-      ],
-    });
-
-    setStatus(t("roundFinalized"), "success");
-    finalizeForm.projectIds = "";
-    finalizeForm.matchedAmounts = "";
-
-    await refreshRounds();
-    await refreshProjects();
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isFinalizing.value = false;
-  }
-};
-
-const claimProject = async (project: ProjectItem) => {
-  if (!requireNeoChain(chainType, t)) return;
-  if (claimingProjectId.value) return;
-  try {
-    claimingProjectId.value = project.id;
-    if (!address.value) await connect();
-    if (!address.value) throw new Error(t("walletNotConnected"));
-
-    const contract = await ensureContractAddress();
-    await invokeContract({
-      scriptHash: contract,
-      operation: "claimProject",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Integer", value: project.id },
-      ],
-    });
-
-    setStatus(t("projectClaimed"), "success");
-    await refreshProjects();
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    claimingProjectId.value = null;
-  }
-};
-
-const claimUnusedMatching = async () => {
-  if (!requireNeoChain(chainType, t)) return;
-  if (!selectedRound.value) return;
-  if (isClaimingUnused.value) return;
-  try {
-    isClaimingUnused.value = true;
-    if (!address.value) await connect();
-    if (!address.value) throw new Error(t("walletNotConnected"));
-
-    const contract = await ensureContractAddress();
-    await invokeContract({
-      scriptHash: contract,
-      operation: "claimUnusedMatching",
-      args: [
-        { type: "Hash160", value: address.value },
-        { type: "Integer", value: selectedRound.value.id },
-      ],
-    });
-
-    setStatus(t("unusedClaimed"), "success");
-    await refreshRounds();
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isClaimingUnused.value = false;
-  }
-};
-
-const canClaimProject = (project: ProjectItem) => {
-  if (!selectedRound.value) return false;
-  if (!address.value) return false;
-  return (
-    selectedRound.value.finalized &&
-    !selectedRound.value.cancelled &&
-    !project.claimed &&
-    project.owner === address.value
-  );
-};
+const handleAddMatching = async (amount: string) => await addMatching(amount);
+const handleFinalize = async (projectIdsRaw: string, matchedRaw: string) => await finalizeRound(projectIdsRaw, matchedRaw);
+const handleClaimProject = async (project: Parameters<typeof claimProject>[0]) => await claimProject(project);
+const handleClaimUnused = async () => await claimUnused();
 
 const onTabChange = async (tabId: string) => {
   activeTab.value = tabId;
-  if (tabId === "rounds") {
-    await refreshRounds();
-  }
-  if (tabId === "projects" || tabId === "contribute") {
-    await refreshProjects();
-  }
+  if (tabId === "rounds") await refreshRounds();
+  if (tabId === "projects" || tabId === "contribute") await refreshProjects();
 };
 
+const windowWidth = ref(window.innerWidth);
+const handleResize = () => { windowWidth.value = window.innerWidth; };
+
 onMounted(async () => {
+  window.addEventListener("resize", handleResize);
   await refreshRounds();
 });
+
+onUnmounted(() => window.removeEventListener("resize", handleResize));
 
 watch(selectedRoundId, async (roundId) => {
   if (!roundId) return;
   contributeForm.roundId = roundId;
   await refreshProjects();
-});
-
-watch(address, async (newAddr) => {
-  if (!newAddr) {
-    claimingProjectId.value = null;
-  }
 });
 </script>
 
@@ -1142,206 +288,13 @@ watch(address, async (newAddr) => {
   gap: 16px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .section-title {
   font-size: 18px;
   font-weight: 700;
 }
 
-.rounds-header,
-.projects-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.round-list,
-.project-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.round-cards,
-.project-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.round-card,
-.project-card,
-.admin-card,
-.project-quicklist {
-  background: var(--qf-card-bg);
-  border: 1px solid var(--qf-card-border);
-  border-radius: 18px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.round-card__header,
-.project-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.round-title,
-.project-title {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.round-subtitle,
-.project-subtitle {
-  display: block;
-  font-size: 11px;
-  color: var(--qf-muted);
-  margin-top: 2px;
-}
-
-.round-desc,
-.project-desc {
-  font-size: 12px;
-  color: var(--qf-muted);
-  line-height: 1.5;
-}
-
-.project-link {
-  font-size: 11px;
-  color: var(--qf-accent);
-  word-break: break-all;
-}
-
-.round-metrics,
-.project-metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
-}
-
-.metric-label {
-  font-size: 10px;
-  color: var(--qf-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.metric-value {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--qf-accent-strong);
-}
-
-.round-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.meta-item {
-  font-size: 11px;
-  color: var(--qf-muted);
-}
-
-.round-actions,
-.project-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background: rgba(20, 184, 166, 0.2);
-  color: var(--qf-accent);
-}
-
-.status-pill.upcoming {
-  background: rgba(59, 130, 246, 0.2);
-  color: #60a5fa;
-}
-
-.status-pill.ended {
-  background: rgba(251, 191, 36, 0.2);
-  color: var(--qf-warn);
-}
-
-.status-pill.finalized {
-  background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
-}
-
-.status-pill.cancelled {
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-}
-
-.status-pill.inactive {
-  background: rgba(148, 163, 184, 0.2);
-  color: #94a3b8;
-}
-
-.status-pill.claimed {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-}
-
-.admin-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.admin-subtitle {
-  font-size: 11px;
-  color: var(--qf-muted);
-}
-
-.admin-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  margin: 6px 0;
-}
-
-.hint-text {
-  font-size: 11px;
-  color: var(--qf-muted);
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.input-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--qf-muted);
-}
-
-.asset-toggle {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.empty-state {
+  margin-top: 10px;
 }
 
 .project-quicklist .chip-row {
@@ -1351,35 +304,6 @@ watch(address, async (newAddr) => {
   margin-top: 10px;
 }
 
-// Responsive styles
-@media (max-width: 767px) {
-  .tab-content { padding: 12px; }
-  .round-metrics,
-  .project-metrics {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .round-card__header,
-  .project-card__header {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .round-actions,
-  .project-actions {
-    flex-direction: column;
-  }
-}
-@media (min-width: 1024px) {
-  .tab-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
-  .round-cards,
-  .project-cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-}
-
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;
@@ -1392,5 +316,13 @@ watch(address, async (newAddr) => {
   color: var(--text-secondary, rgba(248, 250, 252, 0.7));
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+@media (max-width: 767px) {
+  .tab-content { padding: 12px; }
+}
+
+@media (min-width: 1024px) {
+  .tab-content { padding: 24px; max-width: 1200px; margin: 0 auto; }
 }
 </style>

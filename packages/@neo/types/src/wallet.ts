@@ -14,7 +14,10 @@ export interface WalletState {
 }
 
 /** Wallet balance - can be string, number, or object */
-export type WalletBalanceValue = string | number | { amount: string | number; symbol: string };
+export type WalletBalanceValue =
+  | string
+  | number
+  | { amount: string | number; symbol: string };
 
 /** Wallet balance */
 export interface WalletBalance {
@@ -200,7 +203,11 @@ export function isWalletSDK(value: unknown): value is WalletSDK {
 
 /** Type guard for InvokeResult */
 export function isInvokeResult(value: unknown): value is InvokeResult {
-  return typeof value === "object" && value !== null && ("txid" in value || "txHash" in value);
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    ("txid" in value || "txHash" in value)
+  );
 }
 
 /** Type guard for AppEvent */

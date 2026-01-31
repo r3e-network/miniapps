@@ -3,17 +3,11 @@ import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { onMounted } from "vue";
 import { initTheme, listenForThemeChanges } from "@shared/utils/theme";
 
-onLaunch(() => {
-  console.log("Graveyard launched");
-});
+onLaunch(() => {});
 
-onShow(() => {
-  console.log("Graveyard shown");
-});
+onShow(() => {});
 
-onHide(() => {
-  console.log("Graveyard hidden");
-});
+onHide(() => {});
 
 onMounted(() => {
   initTheme();

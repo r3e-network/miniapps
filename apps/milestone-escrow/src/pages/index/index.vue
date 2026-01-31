@@ -7,70 +7,15 @@
           <text class="sidebar-title">{{ t('overview') }}</text>
         </view>
       </template>
->
+  >
     <view v-if="activeTab === 'create'" class="tab-content">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
       </NeoCard>
 
-      <NeoCard variant="erobo-neo">
-        <view class="form-group">
-          <NeoInput v-model="form.name" :label="t('escrowName')" :placeholder="t('escrowNamePlaceholder')" />
-          <NeoInput v-model="form.beneficiary" :label="t('beneficiary')" :placeholder="t('beneficiaryPlaceholder')" />
-
-          <view class="input-group">
-            <text class="input-label">{{ t("assetType") }}</text>
-            <view class="asset-toggle">
-              <NeoButton size="sm" variant="primary" disabled>
-                {{ t("assetGas") }}
-              </NeoButton>
-            </view>
-          </view>
-
-          <view class="milestone-section">
-            <view class="milestone-header">
-              <text class="section-title">{{ t("milestones") }}</text>
-              <NeoButton size="sm" variant="secondary" :disabled="milestones.length >= 12" @click="addMilestone">
-                {{ t("addMilestone") }}
-              </NeoButton>
-            </view>
-
-            <view v-for="(milestone, index) in milestones" :key="`milestone-${index}`" class="milestone-row">
-              <NeoInput
-                v-model="milestone.amount"
-                type="number"
-                :label="`${t('milestoneAmount')} #${index + 1}`"
-                :suffix="form.asset"
-                placeholder="1.5"
-              />
-              <NeoButton
-                size="sm"
-                variant="secondary"
-                class="milestone-remove"
-                :disabled="milestones.length <= 1"
-                @click="removeMilestone(index)"
-              >
-                {{ t("remove") }}
-              </NeoButton>
-            </view>
-          </view>
-
-          <view class="total-row">
-            <text class="total-label">{{ t("totalAmount") }}</text>
-            <text class="total-value">{{ totalDisplay }} {{ form.asset }}</text>
-            <text class="total-hint">{{ t("totalHint") }}</text>
-          </view>
-
-          <NeoInput v-model="form.notes" type="textarea" :label="t('notes')" :placeholder="t('notesPlaceholder')" />
-
-          <NeoButton variant="primary" size="lg" block :loading="isLoading" :disabled="isLoading" @click="createEscrow">
-            {{ isLoading ? t("creating") : t("createEscrow") }}
-          </NeoButton>
-        </view>
-      </NeoCard>
+      <EscrowForm @create="handleCreateEscrow" ref="escrowFormRef" />
     </view>
 
     <view v-if="activeTab === 'escrows'" class="tab-content scrollable">
@@ -94,140 +39,20 @@
         </NeoCard>
       </view>
 
-      <view v-else class="escrow-list">
-        <view class="section-header">
-          <text class="section-label">{{ t("createdByYou") }}</text>
-          <text class="count-badge">{{ creatorEscrows.length }}</text>
-        </view>
-        <view v-if="creatorEscrows.length === 0" class="empty-state">
-          <NeoCard variant="erobo" class="p-6 text-center opacity-70">
-            <text class="text-xs">{{ t("emptyEscrows") }}</text>
-          </NeoCard>
-        </view>
-        <view v-for="escrow in creatorEscrows" :key="`creator-${escrow.id}`" class="escrow-card">
-          <view class="escrow-card__header">
-            <view>
-              <text class="escrow-title">{{ escrow.title || `#${escrow.id}` }}</text>
-              <text class="escrow-subtitle">{{ formatAddress(escrow.beneficiary) }}</text>
-            </view>
-            <text :class="['status-pill', escrow.status]">{{ statusLabel(escrow.status) }}</text>
-          </view>
-          <view class="escrow-metrics">
-            <view>
-              <text class="metric-label">{{ t("totalAmount") }}</text>
-              <text class="metric-value"
-                >{{ formatAmount(escrow.assetSymbol, escrow.totalAmount) }} {{ escrow.assetSymbol }}</text
-              >
-            </view>
-            <view>
-              <text class="metric-label">{{ t("claimed") }}</text>
-              <text class="metric-value"
-                >{{ formatAmount(escrow.assetSymbol, escrow.releasedAmount) }} {{ escrow.assetSymbol }}</text
-              >
-            </view>
-          </view>
-
-          <view class="milestone-list">
-            <view
-              v-for="(amount, index) in escrow.milestoneAmounts"
-              :key="`creator-${escrow.id}-${index}`"
-              class="milestone-item"
-            >
-              <view>
-                <text class="milestone-label">#{{ index + 1 }}</text>
-                <text class="milestone-amount"
-                  >{{ formatAmount(escrow.assetSymbol, amount) }} {{ escrow.assetSymbol }}</text
-                >
-              </view>
-              <view class="milestone-actions">
-                <text class="milestone-status">
-                  {{
-                    escrow.milestoneClaimed[index]
-                      ? t("claimed")
-                      : escrow.milestoneApproved[index]
-                        ? t("approved")
-                        : t("pending")
-                  }}
-                </text>
-                <NeoButton
-                  size="sm"
-                  variant="secondary"
-                  :loading="approvingId === `${escrow.id}-${index + 1}`"
-                  :disabled="!escrow.active || escrow.milestoneApproved[index] || escrow.milestoneClaimed[index]"
-                  @click="approveMilestone(escrow, index + 1)"
-                >
-                  {{ approvingId === `${escrow.id}-${index + 1}` ? t("approving") : t("approve") }}
-                </NeoButton>
-              </view>
-            </view>
-          </view>
-
-          <view class="escrow-actions">
-            <NeoButton
-              size="sm"
-              variant="secondary"
-              :loading="cancellingId === escrow.id"
-              :disabled="!escrow.active"
-              @click="cancelEscrow(escrow)"
-            >
-              {{ cancellingId === escrow.id ? t("cancelling") : t("cancel") }}
-            </NeoButton>
-          </view>
-        </view>
-
-        <view class="section-header mt-6">
-          <text class="section-label">{{ t("forYou") }}</text>
-          <text class="count-badge">{{ beneficiaryEscrows.length }}</text>
-        </view>
-        <view v-if="beneficiaryEscrows.length === 0" class="empty-state">
-          <NeoCard variant="erobo" class="p-6 text-center opacity-70">
-            <text class="text-xs">{{ t("emptyEscrows") }}</text>
-          </NeoCard>
-        </view>
-        <view v-for="escrow in beneficiaryEscrows" :key="`beneficiary-${escrow.id}`" class="escrow-card">
-          <view class="escrow-card__header">
-            <view>
-              <text class="escrow-title">{{ escrow.title || `#${escrow.id}` }}</text>
-              <text class="escrow-subtitle">{{ formatAddress(escrow.creator) }}</text>
-            </view>
-            <text :class="['status-pill', escrow.status]">{{ statusLabel(escrow.status) }}</text>
-          </view>
-          <view class="milestone-list">
-            <view
-              v-for="(amount, index) in escrow.milestoneAmounts"
-              :key="`beneficiary-${escrow.id}-${index}`"
-              class="milestone-item"
-            >
-              <view>
-                <text class="milestone-label">#{{ index + 1 }}</text>
-                <text class="milestone-amount"
-                  >{{ formatAmount(escrow.assetSymbol, amount) }} {{ escrow.assetSymbol }}</text
-                >
-              </view>
-              <view class="milestone-actions">
-                <text class="milestone-status">
-                  {{
-                    escrow.milestoneClaimed[index]
-                      ? t("claimed")
-                      : escrow.milestoneApproved[index]
-                        ? t("approved")
-                        : t("pending")
-                  }}
-                </text>
-                <NeoButton
-                  size="sm"
-                  variant="primary"
-                  :loading="claimingId === `${escrow.id}-${index + 1}`"
-                  :disabled="!escrow.active || !escrow.milestoneApproved[index] || escrow.milestoneClaimed[index]"
-                  @click="claimMilestone(escrow, index + 1)"
-                >
-                  {{ claimingId === `${escrow.id}-${index + 1}` ? t("claiming") : t("claim") }}
-                </NeoButton>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
+      <EscrowList
+        v-else
+        :creator-escrows="creatorEscrows"
+        :beneficiary-escrows="beneficiaryEscrows"
+        :approving-id="approvingId"
+        :cancelling-id="cancellingId"
+        :claiming-id="claimingId"
+        :status-label-func="statusLabel"
+        :format-amount-func="formatAmount"
+        :format-address-func="formatAddress"
+        @approve="approveMilestone"
+        @cancel="cancelEscrow"
+        @claim="claimMilestone"
+      />
     </view>
 
     <view v-if="activeTab === 'docs'" class="tab-content scrollable">
@@ -251,11 +76,13 @@ import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { ResponsiveLayout, NeoCard, NeoButton, NeoInput, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain } from "@shared/utils/chain";
 import { formatGas, formatAddress, toFixed8, toFixedDecimals } from "@shared/utils/format";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult } from "@shared/utils/neo";
+import EscrowForm from "./components/EscrowForm.vue";
+import EscrowList, { type EscrowItem } from "./components/EscrowList.vue";
 
 const { t } = useI18n();
 const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
@@ -271,38 +98,13 @@ const navTabs = computed<NavTab[]>(() => [
   { id: "docs", icon: "book", label: t("docs") },
 ]);
 
-const form = reactive({
-  name: "",
-  beneficiary: "",
-  asset: "GAS",
-  notes: "",
-});
-
-const milestones = ref<Array<{ amount: string }>>([{ amount: "1" }, { amount: "1" }, { amount: "1" }]);
-
 const status = ref<{ msg: string; type: string } | null>(null);
-const isLoading = ref(false);
 const isRefreshing = ref(false);
 const contractAddress = ref<string | null>(null);
 const approvingId = ref<string | null>(null);
 const claimingId = ref<string | null>(null);
 const cancellingId = ref<string | null>(null);
-
-interface EscrowItem {
-  id: string;
-  creator: string;
-  beneficiary: string;
-  assetSymbol: "NEO" | "GAS";
-  totalAmount: bigint;
-  releasedAmount: bigint;
-  status: "active" | "completed" | "cancelled";
-  milestoneAmounts: bigint[];
-  milestoneApproved: boolean[];
-  milestoneClaimed: boolean[];
-  title: string;
-  notes: string;
-  active: boolean;
-}
+const escrowFormRef = ref<InstanceType<typeof EscrowForm> | null>(null);
 
 const creatorEscrows = ref<EscrowItem[]>([]);
 const beneficiaryEscrows = ref<EscrowItem[]>([]);
@@ -446,51 +248,26 @@ const connectWallet = async () => {
   }
 };
 
-const addMilestone = () => {
-  if (milestones.value.length >= 12) return;
-  milestones.value.push({ amount: form.asset === "NEO" ? "1" : "1" });
-};
-
-const removeMilestone = (index: number) => {
-  if (milestones.value.length <= 1) return;
-  milestones.value.splice(index, 1);
-};
-
-const totalFixed = computed(() => {
-  const decimals = form.asset === "NEO" ? 0 : 8;
-  let total = 0n;
-  for (const milestone of milestones.value) {
-    const raw = String(milestone.amount || "").trim();
-    if (!raw) continue;
-    const fixed = decimals === 8 ? toFixed8(raw) : toFixedDecimals(raw, 0);
-    total += parseBigInt(fixed);
-  }
-  return total;
-});
-
-const totalDisplay = computed(() => {
-  if (form.asset === "NEO") return totalFixed.value.toString();
-  return formatGas(totalFixed.value, 4);
-});
-
-const createEscrow = async () => {
+const handleCreateEscrow = async (data: { name: string; beneficiary: string; asset: string; notes: string; milestones: Array<{ amount: string }> }) => {
   if (isLoading.value) return;
   if (!requireNeoChain(chainType, t)) return;
 
-  const beneficiary = form.beneficiary.trim();
+  const beneficiary = data.beneficiary.trim();
   if (!beneficiary || !addressToScriptHash(beneficiary)) {
     setStatus(t("invalidAddress"), "error");
     return;
   }
 
-  if (milestones.value.length < 1 || milestones.value.length > 12) {
+  if (data.milestones.length < 1 || data.milestones.length > 12) {
     setStatus(t("milestoneLimit"), "error");
     return;
   }
 
-  const decimals = form.asset === "NEO" ? 0 : 8;
+  const decimals = data.asset === "NEO" ? 0 : 8;
   const milestoneValues: string[] = [];
-  for (const milestone of milestones.value) {
+  let totalAmount = 0n;
+
+  for (const milestone of data.milestones) {
     const raw = String(milestone.amount || "").trim();
     if (!raw) {
       setStatus(t("invalidAmount"), "error");
@@ -507,9 +284,9 @@ const createEscrow = async () => {
       return;
     }
     milestoneValues.push(fixed);
+    totalAmount += amount;
   }
 
-  const totalAmount = totalFixed.value;
   if (totalAmount <= 0n) {
     setStatus(t("invalidAmount"), "error");
     return;
@@ -517,13 +294,14 @@ const createEscrow = async () => {
 
   try {
     isLoading.value = true;
+    escrowFormRef.value?.setLoading(true);
     if (!address.value) await connect();
     if (!address.value) throw new Error(t("walletNotConnected"));
 
     const contract = await ensureContractAddress();
-    const assetHash = form.asset === "NEO" ? NEO_HASH : GAS_HASH;
-    const title = form.name.trim().slice(0, 60);
-    const notes = form.notes.trim().slice(0, 240);
+    const assetHash = data.asset === "NEO" ? NEO_HASH : GAS_HASH;
+    const title = data.name.trim().slice(0, 60);
+    const notes = data.notes.trim().slice(0, 240);
 
     await invokeContract({
       scriptHash: contract,
@@ -543,18 +321,17 @@ const createEscrow = async () => {
     });
 
     setStatus(t("escrowCreated"), "success");
-    form.name = "";
-    form.beneficiary = "";
-    form.notes = "";
-    milestones.value = [{ amount: "1" }, { amount: "1" }, { amount: "1" }];
-
+    escrowFormRef.value?.reset();
     await refreshEscrows();
   } catch (e: any) {
     setStatus(e.message || t("contractMissing"), "error");
   } finally {
     isLoading.value = false;
+    escrowFormRef.value?.setLoading(false);
   }
 };
+
+const isLoading = ref(false);
 
 const approveMilestone = async (escrow: EscrowItem, milestoneIndex: number) => {
   if (approvingId.value) return;
@@ -657,29 +434,10 @@ watch(activeTab, (next) => {
   gap: 16px;
 }
 
-.form-group {
+.escrows-header {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.input-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--escrow-muted);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.asset-toggle {
-  display: flex;
-  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .section-title {
@@ -687,211 +445,10 @@ watch(activeTab, (next) => {
   font-weight: 700;
 }
 
-.milestone-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.milestone-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.milestone-row {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.milestone-remove {
-  align-self: flex-end;
-}
-
-.total-row {
-  background: rgba(251, 191, 36, 0.12);
-  border-radius: 16px;
-  padding: 12px 16px;
-}
-
-.total-label {
-  display: block;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--escrow-muted);
-}
-
-.total-value {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--escrow-accent-strong);
-}
-
-.total-hint {
-  display: block;
-  font-size: 11px;
-  margin-top: 4px;
-  color: var(--escrow-muted);
-}
-
-.escrows-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-}
-
-.section-label {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.count-badge {
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: rgba(245, 158, 11, 0.2);
-  color: var(--escrow-accent);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.escrow-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.escrow-card {
-  background: var(--escrow-card-bg);
-  border: 1px solid var(--escrow-card-border);
-  border-radius: 18px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.escrow-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.escrow-title {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.escrow-subtitle {
-  display: block;
-  font-size: 11px;
-  color: var(--escrow-muted);
-  margin-top: 2px;
-}
-
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background: rgba(245, 158, 11, 0.2);
-  color: var(--escrow-accent);
-}
-
-.status-pill.completed {
-  background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
-}
-
-.status-pill.cancelled {
-  background: rgba(248, 113, 113, 0.2);
-  color: #f87171;
-}
-
-.escrow-metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-}
-
-.metric-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--escrow-muted);
-}
-
-.metric-value {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.milestone-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.milestone-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(15, 23, 42, 0.2);
-  border-radius: 12px;
-  padding: 10px 12px;
-}
-
-.milestone-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--escrow-muted);
-}
-
-.milestone-amount {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.milestone-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.milestone-status {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--escrow-muted);
-}
-
-.escrow-actions {
-  display: flex;
-  gap: 10px;
-}
-
 .empty-state {
   margin-top: 10px;
 }
 
-.mt-6 {
-  margin-top: 24px;
-}
-
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;

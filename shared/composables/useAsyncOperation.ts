@@ -20,13 +20,20 @@
  */
 
 import { ref, type Ref } from "vue";
-import { handleAsync, withTimeout, type ErrorHandlerOptions } from "@shared/utils/errorHandling";
-import type { AsyncOperationOptions, AsyncOperationResult, AsyncOperationState } from "@neo/types";
+import { handleAsync, withTimeout } from "@shared/utils/errorHandling";
+import type {
+  AsyncOperationOptions,
+  AsyncOperationResult,
+  AsyncOperationState,
+} from "@neo/types";
 
 /**
  * Extended async operation options for Vue composable
  */
-export interface VueAsyncOperationOptions extends Omit<AsyncOperationOptions, "onSuccess"> {
+export interface VueAsyncOperationOptions extends Omit<
+  AsyncOperationOptions,
+  "onSuccess"
+> {
   /** Success callback with data */
   onSuccess?: (data: unknown) => void;
 }
@@ -42,14 +49,23 @@ export function useAsyncOperation() {
     operation: () => Promise<T>,
     options: VueAsyncOperationOptions = {},
   ): Promise<AsyncOperationResult<T>> => {
-    const { context = "Async operation", timeoutMs, onError, onSuccess, setLoading = true, rethrow = false } = options;
+    const {
+      context = "Async operation",
+      timeoutMs,
+      onError,
+      onSuccess,
+      setLoading = true,
+      rethrow = false,
+    } = options;
 
     if (setLoading) {
       isLoading.value = true;
     }
     error.value = null;
 
-    const op = timeoutMs ? () => withTimeout(operation(), timeoutMs, context) : operation;
+    const op = timeoutMs
+      ? () => withTimeout(operation(), timeoutMs, context)
+      : operation;
 
     const result = (await handleAsync(op, {
       context,
@@ -85,5 +101,5 @@ export function useAsyncOperation() {
     execute,
     /** Reset error state */
     reset,
-  } as AsyncOperationState & { execute: typeof execute; reset: typeof reset };
+  };
 }

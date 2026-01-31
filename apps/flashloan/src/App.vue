@@ -3,17 +3,11 @@ import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { onMounted } from "vue";
 import { initTheme, listenForThemeChanges } from "@shared/utils/theme";
 
-onLaunch(() => {
-  console.log("Flash Loan launched");
-});
+onLaunch(() => {});
 
-onShow(() => {
-  console.log("Flash Loan shown");
-});
+onShow(() => {});
 
-onHide(() => {
-  console.log("Flash Loan hidden");
-});
+onHide(() => {});
 
 onMounted(() => {
   initTheme();

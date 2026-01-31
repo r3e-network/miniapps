@@ -1,76 +1,20 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-stream-vault" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event"
+  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-stream-vault" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
 
-      <!-- Desktop Sidebar -->
       <template #desktop-sidebar>
         <view class="desktop-sidebar">
           <text class="sidebar-title">{{ t('overview') }}</text>
         </view>
       </template>
->
+    >
     <view v-if="activeTab === 'create'" class="tab-content">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
       </NeoCard>
 
-      <view class="app-container">
-        <NeoCard variant="erobo-neo">
-          <view class="form-group">
-            <NeoInput v-model="form.name" :label="t('vaultName')" :placeholder="t('vaultNamePlaceholder')" />
-            <NeoInput v-model="form.beneficiary" :label="t('beneficiary')" :placeholder="t('beneficiaryPlaceholder')" />
-
-            <view class="input-group">
-              <text class="input-label">{{ t("assetType") }}</text>
-              <view class="asset-toggle">
-                <NeoButton size="sm" variant="primary" disabled>
-                  {{ t("assetGas") }}
-                </NeoButton>
-              </view>
-            </view>
-
-            <NeoInput
-              v-model="form.total"
-              type="number"
-              :label="t('totalAmount')"
-              placeholder="20"
-              :suffix="form.asset"
-              :hint="t('totalAmountHint')"
-            />
-
-            <NeoInput
-              v-model="form.rate"
-              type="number"
-              :label="t('rateAmount')"
-              placeholder="1.5"
-              :suffix="form.asset"
-            />
-
-            <NeoInput
-              v-model="form.intervalDays"
-              type="number"
-              :label="t('intervalDays')"
-              placeholder="30"
-              :hint="t('intervalHint')"
-            />
-
-            <NeoInput v-model="form.notes" type="textarea" :label="t('notes')" :placeholder="t('notesPlaceholder')" />
-
-            <NeoButton
-              variant="primary"
-              size="lg"
-              block
-              :loading="isLoading"
-              :disabled="isLoading"
-              @click="createVault"
-            >
-              {{ isLoading ? t("creating") : t("createVault") }}
-            </NeoButton>
-          </view>
-        </NeoCard>
-      </view>
+      <StreamCreateForm :loading="isLoading" @create="handleCreateVault" />
     </view>
 
     <view v-if="activeTab === 'vaults'" class="tab-content scrollable">
@@ -94,114 +38,44 @@
         </NeoCard>
       </view>
 
-      <view v-else class="vaults-list">
-        <view class="section-header">
-          <text class="section-label">{{ t("myCreated") }}</text>
-          <text class="count-badge">{{ createdStreams.length }}</text>
-        </view>
-        <view v-if="createdStreams.length === 0" class="empty-state">
-          <NeoCard variant="erobo" class="p-6 text-center opacity-70">
-            <text class="text-xs">{{ t("emptyVaults") }}</text>
-          </NeoCard>
-        </view>
-        <view v-for="stream in createdStreams" :key="`created-${stream.id}`" class="vault-card">
-          <view class="vault-card__header">
-            <view>
-              <text class="vault-title">{{ stream.title || `#${stream.id}` }}</text>
-              <text class="vault-subtitle">{{ formatAddress(stream.beneficiary) }}</text>
-            </view>
-            <text :class="['status-pill', stream.status]">{{ statusLabel(stream.status) }}</text>
-          </view>
-          <view class="vault-metrics">
-            <view>
-              <text class="metric-label">{{ t("totalLocked") }}</text>
-              <text class="metric-value"
-                >{{ formatAmount(stream.assetSymbol, stream.totalAmount) }} {{ stream.assetSymbol }}</text
-              >
-            </view>
-            <view>
-              <text class="metric-label">{{ t("released") }}</text>
-              <text class="metric-value"
-                >{{ formatAmount(stream.assetSymbol, stream.releasedAmount) }} {{ stream.assetSymbol }}</text
-              >
-            </view>
-            <view>
-              <text class="metric-label">{{ t("remaining") }}</text>
-              <text class="metric-value"
-                >{{ formatAmount(stream.assetSymbol, stream.remainingAmount) }} {{ stream.assetSymbol }}</text
-              >
-            </view>
-          </view>
-          <view class="vault-meta">
-            <text class="meta-item">{{ t("intervalLabel") }}: {{ stream.intervalDays }}d</text>
-            <text class="meta-item"
-              >{{ t("rateLabel") }}: {{ formatAmount(stream.assetSymbol, stream.rateAmount) }}
-              {{ stream.assetSymbol }}</text
-            >
-          </view>
-          <view class="vault-actions">
+      <view v-else class="streams-container">
+        <StreamList
+          :streams="createdStreams"
+          :label="t('myCreated')"
+          :empty-text="t('emptyVaults')"
+          type="created"
+        >
+          <template #actions="{ stream: s }">
             <NeoButton
               size="sm"
               variant="secondary"
-              :loading="cancellingId === stream.id"
-              :disabled="stream.status !== 'active'"
-              @click="cancelStream(stream)"
+              :loading="cancellingId === s.id"
+              :disabled="s.status !== 'active'"
+              @click="cancelStream(s)"
             >
-              {{ cancellingId === stream.id ? t("cancelling") : t("cancel") }}
+              {{ cancellingId === s.id ? t("cancelling") : t("cancel") }}
             </NeoButton>
-          </view>
-        </view>
+          </template>
+        </StreamList>
 
-        <view class="section-header mt-6">
-          <text class="section-label">{{ t("beneficiaryVaults") }}</text>
-          <text class="count-badge">{{ beneficiaryStreams.length }}</text>
-        </view>
-        <view v-if="beneficiaryStreams.length === 0" class="empty-state">
-          <NeoCard variant="erobo" class="p-6 text-center opacity-70">
-            <text class="text-xs">{{ t("emptyVaults") }}</text>
-          </NeoCard>
-        </view>
-        <view v-for="stream in beneficiaryStreams" :key="`beneficiary-${stream.id}`" class="vault-card">
-          <view class="vault-card__header">
-            <view>
-              <text class="vault-title">{{ stream.title || `#${stream.id}` }}</text>
-              <text class="vault-subtitle">{{ formatAddress(stream.creator) }}</text>
-            </view>
-            <text :class="['status-pill', stream.status]">{{ statusLabel(stream.status) }}</text>
-          </view>
-          <view class="vault-metrics">
-            <view>
-              <text class="metric-label">{{ t("claimable") }}</text>
-              <text class="metric-value"
-                >{{ formatAmount(stream.assetSymbol, stream.claimable) }} {{ stream.assetSymbol }}</text
-              >
-            </view>
-            <view>
-              <text class="metric-label">{{ t("remaining") }}</text>
-              <text class="metric-value"
-                >{{ formatAmount(stream.assetSymbol, stream.remainingAmount) }} {{ stream.assetSymbol }}</text
-              >
-            </view>
-          </view>
-          <view class="vault-meta">
-            <text class="meta-item">{{ t("intervalLabel") }}: {{ stream.intervalDays }}d</text>
-            <text class="meta-item"
-              >{{ t("rateLabel") }}: {{ formatAmount(stream.assetSymbol, stream.rateAmount) }}
-              {{ stream.assetSymbol }}</text
-            >
-          </view>
-          <view class="vault-actions">
+        <StreamList
+          :streams="beneficiaryStreams"
+          :label="t('beneficiaryVaults')"
+          :empty-text="t('emptyVaults')"
+          type="beneficiary"
+        >
+          <template #actions="{ stream: s }">
             <NeoButton
               size="sm"
               variant="primary"
-              :loading="claimingId === stream.id"
-              :disabled="stream.status !== 'active' || stream.claimable === 0n"
-              @click="claimStream(stream)"
+              :loading="claimingId === s.id"
+              :disabled="s.status !== 'active' || s.claimable === 0n"
+              @click="claimStream(s)"
             >
-              {{ claimingId === stream.id ? t("claiming") : t("claim") }}
+              {{ claimingId === s.id ? t("claiming") : t("claim") }}
             </NeoButton>
-          </view>
-        </view>
+          </template>
+        </StreamList>
       </view>
     </view>
 
@@ -226,11 +100,13 @@ import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { ResponsiveLayout, NeoCard, NeoButton, NeoInput, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoButton, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 import { requireNeoChain } from "@shared/utils/chain";
 import { formatGas, formatAddress, toFixed8, toFixedDecimals } from "@shared/utils/format";
 import { addressToScriptHash, normalizeScriptHash, parseInvokeResult } from "@shared/utils/neo";
+import StreamCreateForm from "@/components/StreamCreateForm.vue";
+import StreamList from "@/components/StreamList.vue";
 
 const { t } = useI18n();
 const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
@@ -307,17 +183,6 @@ const setStatus = (msg: string, type: string) => {
   }, 4000);
 };
 
-const formatAmount = (assetSymbol: "NEO" | "GAS", amount: bigint) => {
-  if (assetSymbol === "NEO") return amount.toString();
-  return formatGas(amount, 4);
-};
-
-const statusLabel = (statusValue: StreamStatus) => {
-  if (statusValue === "completed") return t("statusCompleted");
-  if (statusValue === "cancelled") return t("statusCancelled");
-  return t("statusActive");
-};
-
 const parseBigInt = (value: unknown) => {
   try {
     return BigInt(String(value ?? "0"));
@@ -363,7 +228,7 @@ const fetchStreamDetails = async (streamId: string) => {
   const contract = await ensureContractAddress();
   const details = await invokeRead({
     contractAddress: contract,
-      operation: "GetStreamDetails",
+    operation: "GetStreamDetails",
     args: [{ type: "Integer", value: streamId }],
   });
   const parsed = parseInvokeResult(details) as any;
@@ -421,25 +286,25 @@ const connectWallet = async () => {
   }
 };
 
-const createVault = async () => {
+const handleCreateVault = async (formData: typeof form) => {
   if (isLoading.value) return;
   if (!requireNeoChain(chainType, t)) return;
 
-  const beneficiary = form.beneficiary.trim();
+  const beneficiary = formData.beneficiary.trim();
   if (!beneficiary || !addressToScriptHash(beneficiary)) {
     setStatus(t("invalidAddress"), "error");
     return;
   }
 
-  const intervalDays = Number.parseInt(form.intervalDays, 10);
+  const intervalDays = Number.parseInt(formData.intervalDays, 10);
   if (!Number.isFinite(intervalDays) || intervalDays < 1 || intervalDays > 365) {
     setStatus(t("intervalInvalid"), "error");
     return;
   }
 
-  const decimals = form.asset === "NEO" ? 0 : 8;
-  const totalFixed = decimals === 8 ? toFixed8(form.total) : toFixedDecimals(form.total, 0);
-  const rateFixed = decimals === 8 ? toFixed8(form.rate) : toFixedDecimals(form.rate, 0);
+  const decimals = formData.asset === "NEO" ? 0 : 8;
+  const totalFixed = decimals === 8 ? toFixed8(formData.total) : toFixedDecimals(formData.total, 0);
+  const rateFixed = decimals === 8 ? toFixed8(formData.rate) : toFixedDecimals(formData.rate, 0);
 
   const totalAmount = parseBigInt(totalFixed);
   const rateAmount = parseBigInt(rateFixed);
@@ -459,9 +324,9 @@ const createVault = async () => {
     if (!address.value) throw new Error(t("walletNotConnected"));
 
     const contract = await ensureContractAddress();
-    const assetHash = form.asset === "NEO" ? NEO_HASH : GAS_HASH;
-    const title = form.name.trim().slice(0, 60);
-    const notes = form.notes.trim().slice(0, 240);
+    const assetHash = formData.asset === "NEO" ? NEO_HASH : GAS_HASH;
+    const title = formData.name.trim().slice(0, 60);
+    const notes = formData.notes.trim().slice(0, 240);
 
     await invokeContract({
       scriptHash: contract,
@@ -479,12 +344,14 @@ const createVault = async () => {
     });
 
     setStatus(t("vaultCreated"), "success");
-    form.name = "";
-    form.beneficiary = "";
-    form.total = form.asset === "NEO" ? "10" : "20";
-    form.rate = "1";
-    form.intervalDays = "30";
-    form.notes = "";
+    Object.assign(form, {
+      name: "",
+      beneficiary: "",
+      total: form.asset === "NEO" ? "10" : "20",
+      rate: "1",
+      intervalDays: "30",
+      notes: "",
+    });
 
     await refreshStreams();
   } catch (e: any) {
@@ -563,37 +430,6 @@ watch(activeTab, (next) => {
   color: var(--stream-text);
 }
 
-.app-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.input-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--stream-muted);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.asset-toggle {
-  display: flex;
-  gap: 10px;
-}
-
 .tab-content {
   padding: 20px;
   display: flex;
@@ -612,127 +448,16 @@ watch(activeTab, (next) => {
   font-weight: 700;
 }
 
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-}
-
-.section-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--stream-text);
-}
-
-.count-badge {
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: rgba(56, 189, 248, 0.18);
-  color: var(--stream-accent);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.vaults-list {
+.streams-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.vault-card {
-  background: var(--stream-card-bg);
-  border: 1px solid var(--stream-card-border);
-  border-radius: 18px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.vault-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.vault-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--stream-text);
-}
-
-.vault-subtitle {
-  display: block;
-  font-size: 11px;
-  color: var(--stream-muted);
-  margin-top: 2px;
-}
-
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background: rgba(56, 189, 248, 0.2);
-  color: var(--stream-accent);
-}
-
-.status-pill.completed {
-  background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
-}
-
-.status-pill.cancelled {
-  background: rgba(248, 113, 113, 0.2);
-  color: #f87171;
-}
-
-.vault-metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-}
-
-.metric-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--stream-muted);
-}
-
-.metric-value {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--stream-text);
-}
-
-.vault-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: 11px;
-  color: var(--stream-muted);
-}
-
-.vault-actions {
-  display: flex;
-  gap: 10px;
 }
 
 .empty-state {
   margin-top: 10px;
 }
 
-.mt-6 {
-  margin-top: 24px;
-}
-
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;

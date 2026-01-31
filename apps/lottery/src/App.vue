@@ -3,17 +3,11 @@ import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { onMounted } from "vue";
 import { initTheme, listenForThemeChanges } from "@shared/utils/theme";
 
-onLaunch(() => {
-  console.log("Neo Lottery launched");
-});
+onLaunch(() => {});
 
-onShow(() => {
-  console.log("Neo Lottery shown");
-});
+onShow(() => {});
 
-onHide(() => {
-  console.log("Neo Lottery hidden");
-});
+onHide(() => {});
 
 onMounted(() => {
   initTheme();

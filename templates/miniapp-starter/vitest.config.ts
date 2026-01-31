@@ -25,7 +25,10 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "src"),
       "@shared": resolve(__dirname, "../../shared"),
-      "@neo/uniapp-sdk": resolve(__dirname, "../../sdk/packages/@neo/uniapp-sdk/src"),
+      "@neo/uniapp-sdk": resolve(
+        __dirname,
+        "../../sdk/packages/@neo/uniapp-sdk/src",
+      ),
       "@neo/types": resolve(__dirname, "../../sdk/packages/@neo/types/src"),
     },
   },

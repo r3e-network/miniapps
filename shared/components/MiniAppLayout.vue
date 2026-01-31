@@ -35,40 +35,18 @@
  * - Consistent structure
  *
  * @example
- * ```vue
- * <script setup lang="ts">
- * import { MiniAppLayout } from "@shared/components";
- * import { useI18n } from "@/composables/useI18n";
- *
- * const { t } = useI18n();
+ * ```ts
+ * // Usage: <MiniAppLayout theme-class="theme-myapp" :tabs="navTabs" />
  * const navTabs = [
- *   { id: "game", icon: "game", label: t("game") },
- *   { id: "stats", icon: "chart", label: t("stats") },
- *   { id: "docs", icon: "book", label: t("docs") }
+ *   { id: "game", icon: "game", label: "Game" },
+ *   { id: "stats", icon: "chart", label: "Stats" }
  * ];
- * </script>
- *
- * <template>
- *   <MiniAppLayout
- *     theme-class="theme-myapp"
- *     :tabs="navTabs"
- *     :chain-warning-title="t('wrongChain')"
- *     :chain-warning-message="t('wrongChainMessage')"
- *     :chain-warning-button-text="t('switchToNeo')"
- *   >
- *     <template #game>
- *       <MyGameContent />
- *     </template>
- *     <template #stats>
- *       <MyStatsContent />
- *     </template>
- *   </MiniAppLayout>
- * </template>
  * ```
  */
 
 import { ref, computed, type PropType } from "vue";
-import AppLayout, { type NavTab } from "./AppLayout.vue";
+import AppLayout from "./AppLayout.vue";
+import { type NavTab } from "./NavBar.vue";
 import ChainWarning from "./ChainWarning.vue";
 
 interface Props {

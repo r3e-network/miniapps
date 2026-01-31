@@ -3,17 +3,11 @@ import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { onMounted } from "vue";
 import { initTheme, listenForThemeChanges } from "@shared/utils/theme";
 
-onLaunch(() => {
-  console.log("Breakup Contract launched");
-});
+onLaunch(() => {});
 
-onShow(() => {
-  console.log("Breakup Contract shown");
-});
+onShow(() => {});
 
-onHide(() => {
-  console.log("Breakup Contract hidden");
-});
+onHide(() => {});
 
 onMounted(() => {
   initTheme();

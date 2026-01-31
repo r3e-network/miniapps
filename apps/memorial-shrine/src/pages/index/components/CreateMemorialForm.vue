@@ -12,7 +12,7 @@
       <text class="label">{{ t("labelPhoto") }}</text>
       <view class="photo-upload" @click="uploadPhoto">
         <view class="photo-preview" v-if="photoPreview">
-          <image :src="photoPreview" mode="aspectFill" />
+          <image :src="photoPreview" mode="aspectFill" :alt="t('photoPreview')" />
         </view>
         <view class="photo-placeholder" v-else>
           <text class="icon">📷</text>

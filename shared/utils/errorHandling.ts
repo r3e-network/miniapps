@@ -25,7 +25,12 @@ export class MiniAppError extends Error {
  */
 export class WalletConnectionError extends MiniAppError {
   constructor(message: string, details?: unknown) {
-    super(message, "WALLET_CONNECTION", "Please connect your wallet to continue.", details);
+    super(
+      message,
+      "WALLET_CONNECTION",
+      "Please connect your wallet to continue.",
+      details,
+    );
     this.name = "WalletConnectionError";
   }
 }
@@ -35,7 +40,12 @@ export class WalletConnectionError extends MiniAppError {
  */
 export class ContractError extends MiniAppError {
   constructor(message: string, details?: unknown) {
-    super(message, "CONTRACT_ERROR", "Contract operation failed. Please try again.", details);
+    super(
+      message,
+      "CONTRACT_ERROR",
+      "Contract operation failed. Please try again.",
+      details,
+    );
     this.name = "ContractError";
   }
 }
@@ -45,7 +55,12 @@ export class ContractError extends MiniAppError {
  */
 export class TransactionError extends MiniAppError {
   constructor(message: string, details?: unknown) {
-    super(message, "TRANSACTION_ERROR", "Transaction failed. Please check your balance and try again.", details);
+    super(
+      message,
+      "TRANSACTION_ERROR",
+      "Transaction failed. Please check your balance and try again.",
+      details,
+    );
     this.name = "TransactionError";
   }
 }
@@ -56,7 +71,11 @@ export class TransactionError extends MiniAppError {
 export class InsufficientBalanceError extends MiniAppError {
   constructor(required: number, available: number, symbol: string = "GAS") {
     const message = `Insufficient ${symbol} balance. Required: ${required}, Available: ${available}`;
-    super(message, "INSUFFICIENT_BALANCE", `Insufficient ${symbol} balance.`, { required, available, symbol });
+    super(message, "INSUFFICIENT_BALANCE", `Insufficient ${symbol} balance.`, {
+      required,
+      available,
+      symbol,
+    });
     this.name = "InsufficientBalanceError";
   }
 }
@@ -66,7 +85,12 @@ export class InsufficientBalanceError extends MiniAppError {
  */
 export class NetworkError extends MiniAppError {
   constructor(message: string, details?: unknown) {
-    super(message, "NETWORK_ERROR", "Network error. Please check your connection and try again.", details);
+    super(
+      message,
+      "NETWORK_ERROR",
+      "Network error. Please check your connection and try again.",
+      details,
+    );
     this.name = "NetworkError";
   }
 }
@@ -76,7 +100,14 @@ export class NetworkError extends MiniAppError {
  */
 export class ValidationError extends MiniAppError {
   constructor(message: string, field?: string, details?: unknown) {
-    super(message, "VALIDATION_ERROR", "Invalid input. Please check and try again.", { field, ...details });
+    const detailsObj =
+      typeof details === "object" && details !== null ? details : {};
+    super(
+      message,
+      "VALIDATION_ERROR",
+      "Invalid input. Please check and try again.",
+      { field, ...detailsObj },
+    );
     this.name = "ValidationError";
   }
 }
@@ -231,7 +262,10 @@ export function createStatusRef() {
 /**
  * Format error for user display
  */
-export function formatErrorMessage(error: unknown, defaultMessage: string = "An error occurred"): string {
+export function formatErrorMessage(
+  error: unknown,
+  defaultMessage: string = "An error occurred",
+): string {
   if (isMiniAppError(error)) {
     return error.userMessage || error.message;
   }
@@ -293,7 +327,13 @@ export async function retryAsync<T>(
     onRetry?: (attempt: number, error: Error) => void;
   },
 ): Promise<T> {
-  const { maxAttempts = 3, baseDelayMs = 1000, maxDelayMs = 10000, backoffMultiplier = 2, onRetry } = options || {};
+  const {
+    maxAttempts = 3,
+    baseDelayMs = 1000,
+    maxDelayMs = 10000,
+    backoffMultiplier = 2,
+    onRetry,
+  } = options || {};
 
   let lastError: Error | null = null;
 
@@ -308,7 +348,10 @@ export async function retryAsync<T>(
       }
 
       // Calculate delay with exponential backoff
-      const delay = Math.min(baseDelayMs * Math.pow(backoffMultiplier, attempt - 1), maxDelayMs);
+      const delay = Math.min(
+        baseDelayMs * Math.pow(backoffMultiplier, attempt - 1),
+        maxDelayMs,
+      );
 
       if (onRetry) {
         onRetry(attempt, lastError);
@@ -346,7 +389,11 @@ export async function pollForEvent<T>(
     errorMessage?: string;
   },
 ): Promise<T | null> {
-  const { timeoutMs = 30000, pollIntervalMs = 1500, errorMessage = "Event not found in time" } = options || {};
+  const {
+    timeoutMs = 30000,
+    pollIntervalMs = 1500,
+    errorMessage = "Event not found in time",
+  } = options || {};
 
   const startTime = Date.now();
 
@@ -375,7 +422,10 @@ export async function pollForEvent<T>(
  * );
  * ```
  */
-export async function safeAsync<T>(operation: () => Promise<T>, defaultValue: T): Promise<T> {
+export async function safeAsync<T>(
+  operation: () => Promise<T>,
+  defaultValue: T,
+): Promise<T> {
   try {
     return await operation();
   } catch {

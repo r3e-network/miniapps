@@ -22,7 +22,7 @@
 import { ref, type Ref } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import { handleAsync } from "@shared/utils/errorHandling";
-import type { InvokeResult } from "@neo/types";
+import type { InvokeResult as WalletInvokeResult } from "@neo/types";
 
 export interface ContractArg {
   type: string;
@@ -79,7 +79,10 @@ export function useContractInteraction(scriptHash: string) {
         });
 
         // Extract txid/hash from result
-        const data = (result as InvokeResult)?.txid || (result as any)?.txHash || result;
+        const data =
+          (result as WalletInvokeResult)?.txid ||
+          (result as any)?.txHash ||
+          result;
         return data as T;
       },
       {

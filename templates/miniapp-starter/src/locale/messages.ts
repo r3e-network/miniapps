@@ -28,8 +28,8 @@ export const messages = {
   actionButton: { en: "Do Something", zh: "执行操作" },
   processing: { en: "Processing...", zh: "处理中..." },
   invalidInput: { en: "Please check your input", zh: "请检查您的输入" },
-  success: { en: "Operation successful!", zh: "操作成功！" },
-  error: { en: "An error occurred", zh: "发生错误" },
+  actionSuccess: { en: "Operation successful!", zh: "操作成功！" },
+  actionError: { en: "An error occurred", zh: "发生错误" },
 
   // ============================================================
   // DOCUMENTATION

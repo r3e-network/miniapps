@@ -30,12 +30,9 @@ const updateDimensions = () => {
   }
 };
 
-onLaunch(() => {
-  console.log("Guardian Policy launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Guardian Policy shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     updateDimensions();
@@ -43,7 +40,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Guardian Policy hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
   }

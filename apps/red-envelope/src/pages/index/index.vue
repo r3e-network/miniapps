@@ -8,11 +8,10 @@
         </view>
       </template>
 >
-    <!-- Chain Warning - Framework Component -->
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <view v-if="activeTab === 'create' || activeTab === 'claim'" class="app-container">
-      <LuckyOverlay :lucky-message="luckyMessage" :t="t as any" @close="luckyMessage = null" />
+      <LuckyOverlay :lucky-message="luckyMessage" :t="t" @close="luckyMessage = null" />
       <Fireworks :active="!!luckyMessage" :duration="3000" />
       <OpeningModal
         :visible="showOpeningModal"
@@ -27,26 +26,23 @@
       <AppStatus :status="status" />
 
       <view v-if="activeTab === 'create'" class="tab-content">
-        <CreateEnvelopeForm
+        <CreateForm
+          :is-loading="isLoading"
+          :t="t"
           v-model:name="name"
           v-model:description="description"
           v-model:amount="amount"
           v-model:count="count"
           v-model:expiryHours="expiryHours"
-          :is-loading="isLoading"
-          :t="t as any"
           @create="create"
         />
       </view>
 
       <view v-if="activeTab === 'claim'" class="tab-content">
-        <EnvelopeList
+        <ClaimInterface
           :envelopes="envelopes"
-          :loading-envelopes="loadingEnvelopes"
-          :opening-id="openingId"
-          :t="t as any"
-          @claim="openFromList"
-          @share="handleShare"
+          :t="t"
+          @select="openFromList"
         />
       </view>
     </view>
@@ -69,114 +65,24 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useWallet, useEvents } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { toFixed8, fromFixed8, formatHash } from "@shared/utils/format";
-import { requireNeoChain } from "@shared/utils/chain";
-import { parseInvokeResult, parseStackItem } from "@shared/utils/neo";
-import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
+import { toFixed8, fromFixed8 } from "@shared/utils/format";
+import { parseStackItem } from "@shared/utils/neo";
 import { pollForEvent } from "@shared/utils/errorHandling";
-import { ResponsiveLayout, NeoDoc, NeoCard, NeoButton, Fireworks, ChainWarning } from "@shared/components";
-import EnvelopeHeader from "./components/EnvelopeHeader.vue";
+import { ResponsiveLayout, NeoDoc, Fireworks, ChainWarning } from "@shared/components";
+
+import { useRedEnvelopeCreation } from "@/composables/useRedEnvelopeCreation";
+import { useRedEnvelopeClaim } from "@/composables/useRedEnvelopeClaim";
 import LuckyOverlay from "./components/LuckyOverlay.vue";
 import OpeningModal from "./components/OpeningModal.vue";
 import AppStatus from "./components/AppStatus.vue";
-import CreateEnvelopeForm from "./components/CreateEnvelopeForm.vue";
-import EnvelopeList from "./components/EnvelopeList.vue";
+import CreateForm from "./components/CreateForm.vue";
+import ClaimInterface from "./components/ClaimInterface.vue";
 
 const { t } = useI18n();
-
-const APP_ID = "miniapp-redenvelope";
 const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
-const { processPayment, isProcessing: isLoading } = usePaymentFlow(APP_ID);
 const { list: listEvents } = useEvents();
 
-// ============================================
-// Hybrid Mode: Frontend Distribution Preview
-// ============================================
-
-// Contract constants (matches MiniAppRedEnvelope.Hybrid.cs)
-const MIN_AMOUNT = 10000000n; // 0.1 GAS in fixed8
-const MAX_PACKETS = 100;
-const MIN_PER_PACKET = 1000000n; // 0.01 GAS in fixed8
-const BEST_LUCK_BONUS_RATE = 5n; // 5%
-
-/**
- * Generate deterministic seed from user input (for preview only).
- * Actual distribution uses TEE RNG service.
- */
-const generatePreviewSeed = (totalAmount: string, packetCount: string): Uint8Array => {
-  const data = `preview:${totalAmount}:${packetCount}:${Date.now()}`;
-  const encoder = new TextEncoder();
-  const bytes = encoder.encode(data);
-  // Simple hash for preview (not cryptographically secure, just for UI)
-  const hash = new Uint8Array(32);
-  for (let i = 0; i < bytes.length; i++) {
-    hash[i % 32] ^= bytes[i];
-  }
-  return hash;
-};
-
-/**
- * Get random value from seed at index (matches contract logic).
- */
-const getRandFromSeed = (seed: Uint8Array, index: number): bigint => {
-  // Combine seed with index
-  const combined = new Uint8Array(seed.length + 4);
-  combined.set(seed);
-  combined[seed.length] = index & 0xff;
-  combined[seed.length + 1] = (index >> 8) & 0xff;
-  combined[seed.length + 2] = (index >> 16) & 0xff;
-  combined[seed.length + 3] = (index >> 24) & 0xff;
-
-  // Simple hash (for preview)
-  let hash = 0n;
-  for (let i = 0; i < combined.length; i++) {
-    hash = (hash * 31n + BigInt(combined[i])) % 2n ** 256n;
-  }
-  return hash < 0n ? -hash : hash;
-};
-
-/**
- * Preview distribution calculation (matches contract PreviewDistribution).
- * Returns array of amounts in fixed8 format.
- */
-const previewDistribution = (totalAmountGas: number, packetCount: number): bigint[] => {
-  if (packetCount <= 0 || packetCount > MAX_PACKETS) return [];
-
-  const totalAmount = BigInt(toFixed8(totalAmountGas));
-  if (totalAmount < BigInt(packetCount) * MIN_PER_PACKET) return [];
-
-  const seed = generatePreviewSeed(totalAmountGas.toString(), packetCount.toString());
-  const amounts: bigint[] = [];
-  let remaining = totalAmount;
-
-  for (let i = 0; i < packetCount - 1; i++) {
-    const packetsLeft = BigInt(packetCount - i);
-    const maxForThis = remaining - (packetsLeft - 1n) * MIN_PER_PACKET;
-
-    const randValue = getRandFromSeed(seed, i);
-    const range = maxForThis - MIN_PER_PACKET;
-    let amount = MIN_PER_PACKET;
-
-    if (range > 0n) {
-      amount = MIN_PER_PACKET + (randValue % range);
-    }
-
-    amounts.push(amount);
-    remaining -= amount;
-  }
-
-  // Last packet gets remainder
-  amounts.push(remaining);
-
-  return amounts;
-};
-
-/**
- * Calculate best luck bonus amount.
- */
-const calculateBestLuckBonus = (bestLuckAmount: bigint): bigint => {
-  return (bestLuckAmount * BEST_LUCK_BONUS_RATE) / 100n;
-};
+const APP_ID = "miniapp-redenvelope";
 
 const activeTab = ref<string>("create");
 const navTabs = computed(() => [
@@ -191,158 +97,39 @@ const docFeatures = computed(() => [
   { name: t("feature2Name"), desc: t("feature2Desc") },
 ]);
 
-const name = ref("");
-const description = ref("");
-const amount = ref("");
-const count = ref("");
-const expiryHours = ref("24");
-const status = ref<{ msg: string; type: "success" | "error" } | null>(null);
+// Use composables
+const {
+  name,
+  description,
+  amount,
+  count,
+  expiryHours,
+  status,
+  isLoading,
+  defaultBlessing,
+  ensureContractAddress: ensureCreationContract,
+  processPayment,
+} = useRedEnvelopeCreation();
+
+const {
+  envelopes,
+  loadingEnvelopes,
+  contractAddress,
+  ensureContractAddress: ensureClaimContract,
+  fetchEnvelopeDetails,
+  loadEnvelopes,
+} = useRedEnvelopeClaim();
+
 const luckyMessage = ref<{ amount: number; from: string } | null>(null);
 const openingId = ref<string | null>(null);
-const contractAddress = ref<string | null>(null);
-const loadingEnvelopes = ref(false);
-
 const showOpeningModal = ref(false);
-const openingEnvelope = ref<EnvelopeItem | null>(null);
+const openingEnvelope = ref<any>(null);
 
-type EnvelopeItem = {
-  id: string;
-  creator: string;
-  from: string;
-  name?: string;
-  description?: string;
-  total: number;
-  remaining: number;
-  totalAmount: number;
-  bestLuckAddress?: string;
-  bestLuckAmount?: number;
-  ready: boolean;
-  expired: boolean;
-  canClaim: boolean;
-};
-
-const envelopes = ref<EnvelopeItem[]>([]);
-
-const parseEnvelopeData = (data: unknown) => {
-  if (!data) return null;
-  if (Array.isArray(data)) {
-    return {
-      creator: String(data[0] ?? ""),
-      totalAmount: Number(data[1] ?? 0),
-      packetCount: Number(data[2] ?? 0),
-      claimedCount: Number(data[3] ?? 0),
-      remainingAmount: Number(data[4] ?? 0),
-      bestLuckAddress: String(data[5] ?? ""),
-      bestLuckAmount: Number(data[6] ?? 0),
-      ready: Boolean(data[7]),
-      expiryTime: Number(data[8] ?? 0),
-    };
-  }
-  if (typeof data === "object") {
-    return {
-      creator: String(data.creator ?? ""),
-      totalAmount: Number(data.totalAmount ?? 0),
-      packetCount: Number(data.packetCount ?? 0),
-      claimedCount: Number(data.claimedCount ?? 0),
-      remainingAmount: Number(data.remainingAmount ?? 0),
-      bestLuckAddress: String(data.bestLuckAddress ?? ""),
-      bestLuckAmount: Number(data.bestLuckAmount ?? 0),
-      ready: Boolean(data.ready ?? false),
-      expiryTime: Number(data.expiryTime ?? 0),
-    };
-  }
-  return null;
-};
-
-const ensureContractAddress = async () => {
-  if (!requireNeoChain(chainType, t)) {
-    throw new Error(t("wrongChain"));
-  }
-  if (!contractAddress.value) {
-    contractAddress.value = await getContractAddress();
-  }
-  if (!contractAddress.value) {
-    throw new Error(t("contractUnavailable"));
-  }
-  return contractAddress.value;
-};
-
-const fetchEnvelopeDetails = async (
-  contract: string,
-  envelopeId: string,
-  eventData?: unknown,
-): Promise<EnvelopeItem | null> => {
+const handleConnect = async () => {
   try {
-    const envRes = await invokeRead({
-      scriptHash: contract,
-      operation: "GetEnvelope",
-      args: [{ type: "Integer", value: envelopeId }],
-    });
-    const parsed = parseEnvelopeData(parseInvokeResult(envRes));
-    if (!parsed) return null;
-
-    const packetCount = Number(parsed.packetCount || eventData?.packetCount || 0);
-    const claimedCount = Number(parsed.claimedCount || 0);
-    const remainingPackets = Math.max(0, packetCount - claimedCount);
-    const ready = Boolean(parsed.ready);
-    const expiryTime = Number(parsed.expiryTime || 0);
-    const expired = expiryTime > 0 && Date.now() > expiryTime * 1000;
-    const totalAmount = fromFixed8(parsed.totalAmount || eventData?.totalAmount || 0);
-    const canClaim = ready && !expired && remainingPackets > 0;
-    const creator = parsed.creator || eventData?.creator || "";
-
-    return {
-      id: envelopeId,
-      creator,
-      from: formatHash(creator),
-      total: packetCount,
-      remaining: remainingPackets,
-      totalAmount,
-      bestLuckAddress: parsed.bestLuckAddress || undefined,
-      bestLuckAmount: parsed.bestLuckAmount || undefined,
-      ready,
-      expired,
-      canClaim,
-      // Hydrate description from event if possible, typically description is not on-chain in state but in event
-      // For this demo we'll skip description if not available, or fetch from event if we have event list
-    } as EnvelopeItem;
-  } catch {
-    return null;
-  }
+    await connect();
+  } catch {}
 };
-
-const loadEnvelopes = async () => {
-  if (!contractAddress.value) {
-    contractAddress.value = await ensureContractAddress();
-  }
-  if (!contractAddress.value) return;
-  loadingEnvelopes.value = true;
-  try {
-    const res = await listEvents({ app_id: APP_ID, event_name: "EnvelopeCreated", limit: 25 });
-    const seen = new Set<string>();
-    const list = await Promise.all(
-      res.events.map(async (evt) => {
-        const values = Array.isArray((evt as any)?.state) ? (evt as any).state.map(parseStackItem) : [];
-        const envelopeId = String(values[0] ?? "");
-        if (!envelopeId || seen.has(envelopeId)) return null;
-        seen.add(envelopeId);
-
-        return fetchEnvelopeDetails(contractAddress.value!, envelopeId, {
-          creator: String(values[1] ?? ""),
-          totalAmount: Number(values[2] ?? 0),
-          packetCount: Number(values[3] ?? 0),
-        });
-      }),
-    );
-    envelopes.value = list.filter(Boolean).sort((a, b) => Number(b!.id) - Number(a!.id)) as EnvelopeItem[];
-  } catch (e: unknown) {
-    status.value = { msg: e?.message || t("error"), type: "error" };
-  } finally {
-    loadingEnvelopes.value = false;
-  }
-};
-
-const defaultBlessing = computed(() => t("defaultBlessing"));
 
 const create = async () => {
   if (isLoading.value) return;
@@ -354,7 +141,7 @@ const create = async () => {
     if (!address.value) {
       throw new Error(t("connectWallet"));
     }
-    const contract = await ensureContractAddress();
+    const contract = await ensureCreationContract();
 
     const totalValue = Number(amount.value);
     const packetCount = Number(count.value);
@@ -366,16 +153,13 @@ const create = async () => {
     if (!Number.isFinite(expiryValue) || expiryValue <= 0) throw new Error(t("invalidExpiry"));
     const expirySeconds = Math.round(expiryValue * 3600);
 
-    // Process payment flow using usePaymentFlow composable
     const { receiptId, invoke, waitForEvent } = await processPayment(amount.value, `redenvelope:${count.value}`);
     if (!receiptId) {
       throw new Error(t("receiptMissing"));
     }
 
-    // Default description to "Best Wishes" if empty
     const finalDescription = description.value.trim() || defaultBlessing.value;
 
-    // Invoke contract with receipt context
     const tx = await invoke(contract, "createEnvelope", [
       { type: "Hash160", value: address.value },
       { type: "String", value: name.value || "" },
@@ -386,7 +170,6 @@ const create = async () => {
       { type: "Integer", value: receiptId },
     ]);
 
-    // Wait for EnvelopeCreated event
     const txid = (tx as { txid?: string })?.txid || "";
     const createdEvt = txid ? await waitForEvent(txid, "EnvelopeCreated") : null;
     if (!createdEvt) {
@@ -400,27 +183,21 @@ const create = async () => {
     count.value = "";
     await loadEnvelopes();
   } catch (e: unknown) {
-    status.value = { msg: e?.message || t("error"), type: "error" };
+    status.value = { msg: (e as Error)?.message || t("error"), type: "error" };
   }
 };
 
-const handleConnect = async () => {
-  try {
-    await connect();
-  } catch {}
-};
-
-const claim = async (env: EnvelopeItem, fromModal = false) => {
+const claim = async (env: any, fromModal = false) => {
   if (openingId.value) return;
 
   if (!address.value) {
     await connect();
-    if (!address.value) return; // User cancelled
+    if (!address.value) return;
   }
 
   try {
     status.value = null;
-    const contract = await ensureContractAddress();
+    const contract = await ensureClaimContract();
 
     if (env.expired) throw new Error(t("envelopeExpired"));
     if (!env.ready) throw new Error(t("envelopeNotReady"));
@@ -451,7 +228,6 @@ const claim = async (env: EnvelopeItem, fromModal = false) => {
     const txid = String(
       (tx as { txid?: string; txHash?: string })?.txid || (tx as { txid?: string; txHash?: string })?.txHash || "",
     );
-    // Use pollForEvent for claim operation (no payment flow needed)
     const claimedEvt = txid
       ? await pollForEvent(
           async () => {
@@ -470,10 +246,8 @@ const claim = async (env: EnvelopeItem, fromModal = false) => {
     const claimedAmount = fromFixed8(Number(values[2] ?? 0));
     const remaining = Number(values[3] ?? env.remaining);
 
-    // Close the opening modal if open
     showOpeningModal.value = false;
 
-    // Show lucky result
     luckyMessage.value = {
       amount: Number(claimedAmount.toFixed(2)),
       from: env.from,
@@ -484,31 +258,16 @@ const claim = async (env: EnvelopeItem, fromModal = false) => {
 
     status.value = { msg: t("claimedFrom").replace("{0}", env.from), type: "success" };
 
-    // Refresh list
     await loadEnvelopes();
   } catch (e: unknown) {
-    status.value = { msg: e?.message || t("error"), type: "error" };
-    // Close opening modal on error to show the toast
+    status.value = { msg: (e as Error)?.message || t("error"), type: "error" };
     showOpeningModal.value = false;
   } finally {
     openingId.value = null;
   }
 };
 
-const handleShare = (env: EnvelopeItem) => {
-  const url = `${window.location.origin}${window.location.pathname}?id=${env.id}`;
-  uni.setClipboardData({
-    data: url,
-    success: () => {
-      status.value = { msg: t("copied"), type: "success" };
-      setTimeout(() => {
-        status.value = null;
-      }, 2000);
-    },
-  });
-};
-
-const openFromList = (env: EnvelopeItem) => {
+const openFromList = (env: any) => {
   openingEnvelope.value = env;
   showOpeningModal.value = true;
 };
@@ -520,14 +279,12 @@ onMounted(async () => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
     if (id) {
-      // Try to find in loaded list first
       const found = envelopes.value.find((e) => e.id === id);
       if (found) {
         openFromList(found);
         activeTab.value = "claim";
       } else {
-        // Fetch specifically
-        const contract = await ensureContractAddress();
+        const contract = await ensureClaimContract();
         const env = await fetchEnvelopeDetails(contract, id);
         if (env) {
           openingEnvelope.value = env;
@@ -544,6 +301,17 @@ watch(activeTab, async (tab) => {
     await loadEnvelopes();
   }
 });
+
+// Helper function
+function parseInvokeResult(result: unknown): unknown {
+  if (!result) return null;
+  if (typeof result === "object" && result !== null) {
+    if ("value" in result) {
+      return (result as { value: unknown }).value;
+    }
+  }
+  return result;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -575,7 +343,6 @@ watch(activeTab, async (tab) => {
     filter: blur(40px);
   }
 
-  /* Decorative gold pattern overlay (subtle) */
   &::after {
     content: "";
     position: absolute;
@@ -610,8 +377,6 @@ watch(activeTab, async (tab) => {
   -webkit-overflow-scrolling: touch;
 }
 
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;

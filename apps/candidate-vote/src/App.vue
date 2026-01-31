@@ -30,12 +30,9 @@ const updateDimensions = () => {
   }
 };
 
-onLaunch(() => {
-  console.log("Candidate Vote launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Candidate Vote shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     updateDimensions();
@@ -43,7 +40,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Candidate Vote hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
   }

@@ -122,7 +122,11 @@ export function parseInvokeResult(result: unknown): unknown {
   }
 
   // Handle primitive values
-  if (typeof result === "string" || typeof result === "number" || typeof result === "boolean") {
+  if (
+    typeof result === "string" ||
+    typeof result === "number" ||
+    typeof result === "boolean"
+  ) {
     return result;
   }
 

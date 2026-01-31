@@ -60,26 +60,9 @@ const updateDimensions = () => {
   }
 };
 
-// Watch for breakpoint changes
-watch(isMobile, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    console.log('Responsive: Mobile mode changed:', newVal);
-  }
-});
-
-watch(isDesktop, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    console.log('Responsive: Desktop mode changed:', newVal);
-  }
-});
-
-// Lifecycle hooks
-onLaunch(() => {
-  console.log("Milestone Escrow launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Milestone Escrow shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     window.addEventListener("orientationchange", updateDimensions);
@@ -88,7 +71,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Milestone Escrow hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
     window.removeEventListener("orientationchange", updateDimensions);

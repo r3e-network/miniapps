@@ -89,11 +89,24 @@ export type MiniAppSDK = {
     invokeInvocation?: (invocation: InvocationIntent) => Promise<TxResult>;
   };
   payments: {
-    payGAS(appId: string, amount: string, memo?: string): Promise<PayGASResponse>;
-    payGASAndInvoke?: (appId: string, amount: string, memo?: string) => Promise<PayGASResponse>;
+    payGAS(
+      appId: string,
+      amount: string,
+      memo?: string,
+    ): Promise<PayGASResponse>;
+    payGASAndInvoke?: (
+      appId: string,
+      amount: string,
+      memo?: string,
+    ) => Promise<PayGASResponse>;
   };
   governance: {
-    vote(appId: string, proposalId: string, neoAmount: string, support?: boolean): Promise<VoteBNEOResponse>;
+    vote(
+      appId: string,
+      proposalId: string,
+      neoAmount: string,
+      support?: boolean,
+    ): Promise<VoteBNEOResponse>;
     voteAndInvoke?: (
       appId: string,
       proposalId: string,
@@ -116,7 +129,11 @@ declare global {
 }
 
 export function getMiniAppSDK(): MiniAppSDK {
-  if (typeof window === "undefined") throw new Error("MiniAppSDK is browser-only");
-  if (!window.MiniAppSDK) throw new Error("MiniAppSDK not available (host must inject it or provide a bridge)");
+  if (typeof window === "undefined")
+    throw new Error("MiniAppSDK is browser-only");
+  if (!window.MiniAppSDK)
+    throw new Error(
+      "MiniAppSDK not available (host must inject it or provide a bridge)",
+    );
   return window.MiniAppSDK;
 }

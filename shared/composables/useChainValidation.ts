@@ -28,11 +28,7 @@ export function useChainValidation() {
    * Returns true when connected to EVM chain instead of Neo N3
    */
   const showWarning = computed(() => {
-    const resolvedChain =
-      typeof chainType.value === "string"
-        ? chainType.value
-        : ((chainType.value as { value?: string } | null)?.value ?? "");
-    return resolvedChain === "evm";
+    return chainType.value === "evm";
   });
 
   /**

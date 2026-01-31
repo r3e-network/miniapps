@@ -33,7 +33,7 @@
             @click="openArticle(article)"
           >
             <view class="article-inner">
-              <image v-if="article.image" :src="article.image" class="nnt-article-image" mode="aspectFill" />
+              <image v-if="article.image" :src="article.image" class="nnt-article-image" mode="aspectFill" :alt="article.title || t('articleImage')" />
               <view class="nnt-article-content">
                 <text class="nnt-article-title-glass">{{ article.title }}</text>
                 <view class="nnt-meta mb-2">

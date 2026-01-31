@@ -1,11 +1,15 @@
 import { ref } from "vue";
 import { getLocale, type Locale, type TranslationMap } from "../utils/i18n";
+import { commonMessages } from "../locale/common";
 
 type InterpolationArgs = Record<string, string | number>;
 
 const DEFAULT_MESSAGES = {
   docBadge: { en: "Documentation", zh: "文档" },
-  docFooter: { en: "NeoHub MiniApp Protocol v2.4.0", zh: "NeoHub MiniApp Protocol v2.4.0" },
+  docFooter: {
+    en: "NeoHub MiniApp Protocol v2.4.0",
+    zh: "NeoHub MiniApp Protocol v2.4.0",
+  },
 } as const;
 
 type DefaultMessages = typeof DEFAULT_MESSAGES;
@@ -20,7 +24,10 @@ const interpolate = (value: string, args: InterpolationArgs): string =>
   value.replace(/\{(\w+)\}/g, (_, key) => String(args[key] ?? `{${key}}`));
 
 export function createUseI18n<T extends TranslationMap>(messages: T) {
-  const mergedMessages = { ...DEFAULT_MESSAGES, ...messages } as MergedMessages<T>;
+  const mergedMessages = {
+    ...DEFAULT_MESSAGES,
+    ...messages,
+  } as MergedMessages<T>;
   const currentLocale = ref<Locale>(getLocale());
 
   const t = (key: keyof MergedMessages<T>, args?: InterpolationArgs) => {
@@ -66,13 +73,16 @@ export function createUseI18n<T extends TranslationMap>(messages: T) {
       const isAllowedOrigin =
         event.origin === expectedOrigin ||
         event.origin === window.location.origin ||
-        (isParentMessage && (event.origin === "null" || expectedOrigin === "null"));
+        (isParentMessage &&
+          (event.origin === "null" || expectedOrigin === "null"));
 
       if (!isAllowedOrigin) return;
       const data = event.data as Record<string, unknown> | null;
       if (!data || typeof data !== "object") return;
       if (data.type !== "language-change") return;
-      const newLang = String(data.language || data.locale || data.lang || "").trim();
+      const newLang = String(
+        data.language || data.locale || data.lang || "",
+      ).trim();
       if (!newLang) return;
       setLocale(newLang);
     });
@@ -84,3 +94,6 @@ export function createUseI18n<T extends TranslationMap>(messages: T) {
     setLocale,
   });
 }
+
+// Export a pre-configured useI18n for shared components using commonMessages
+export const useI18n = createUseI18n(commonMessages);

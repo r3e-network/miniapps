@@ -4,7 +4,14 @@
 
 /** Contract invocation argument */
 export interface ContractArg {
-  type: "String" | "Integer" | "Boolean" | "Hash160" | "Hash256" | "ByteArray" | "Array";
+  type:
+    | "String"
+    | "Integer"
+    | "Boolean"
+    | "Hash160"
+    | "Hash256"
+    | "ByteArray"
+    | "Array";
   value: unknown;
 }
 
@@ -25,7 +32,17 @@ export interface ContractInvokeResult {
 
 /** NEO VM stack item */
 export interface StackItem {
-  type: "Integer" | "Boolean" | "ByteString" | "Buffer" | "Array" | "Map" | "Struct" | "Pointer" | "InteropInterface" | "Any";
+  type:
+    | "Integer"
+    | "Boolean"
+    | "ByteString"
+    | "Buffer"
+    | "Array"
+    | "Map"
+    | "Struct"
+    | "Pointer"
+    | "InteropInterface"
+    | "Any";
   value: unknown;
 }
 

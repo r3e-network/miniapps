@@ -7,16 +7,12 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 
-onLaunch(() => {
-  console.log("Prediction Market App Launch");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Prediction Market App Show");
 });
 
 onHide(() => {
-  console.log("Prediction Market App Hide");
 });
 </script>
 

@@ -5,15 +5,9 @@ import { initTheme, listenForThemeChanges } from "../../../shared/utils/theme";
 
 let cleanupTheme: (() => void) | undefined;
 
-onLaunch(() => {
-  console.log("App Launch");
-});
-onShow(() => {
-  console.log("App Show");
-});
-onHide(() => {
-  console.log("App Hide");
-});
+onLaunch(() => {});
+onShow(() => {});
+onHide(() => {});
 
 onMounted(() => {
   initTheme();

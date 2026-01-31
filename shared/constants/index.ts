@@ -227,7 +227,9 @@ export function secondsToHuman(seconds: number): {
   remaining: number;
 } {
   const hours = Math.floor(seconds / TIME_CONSTANTS.HOUR_MS);
-  const minutes = Math.floor((seconds % TIME_CONSTANTS.HOUR_MS) / TIME_CONSTANTS.MINUTE_MS);
+  const minutes = Math.floor(
+    (seconds % TIME_CONSTANTS.HOUR_MS) / TIME_CONSTANTS.MINUTE_MS,
+  );
   const remaining = seconds % TIME_CONSTANTS.MINUTE_MS;
 
   return { hours, minutes, remaining };

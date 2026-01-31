@@ -25,8 +25,8 @@
             <text class="label">{{ t('address') }}</text>
             <view class="value-row">
               <text class="value">{{ result.address }}</text>
-              <view class="copy-btn" @click="copy(result.address)">
-                <text class="icon">📋</text>
+              <view class="copy-btn" @click="copy(result.address)" role="button" :aria-label="t('copyAddress')">
+                <text class="icon" aria-hidden="true">📋</text>
               </view>
             </view>
           </view>
@@ -37,8 +37,8 @@
             <text class="label">{{ t('pubKey') }}</text>
             <view class="value-row">
               <text class="value truncate">{{ result.publicKey }}</text>
-              <view class="copy-btn" @click="copy(result.publicKey)">
-                <text class="icon">📋</text>
+              <view class="copy-btn" @click="copy(result.publicKey)" role="button" :aria-label="t('copyPublicKey')">
+                <text class="icon" aria-hidden="true">📋</text>
               </view>
             </view>
           </view>
@@ -52,12 +52,12 @@
              </view>
              <view class="value-row">
                <text class="value blur" :class="{ revealed: showSecrets }">{{ result.wif }}</text>
-               <view class="action-btn" @click="showSecrets = !showSecrets">
-                 <text class="icon">{{ showSecrets ? '🙈' : '👁️' }}</text>
-               </view>
-               <view class="copy-btn" @click="copy(result.wif)">
-                 <text class="icon">📋</text>
-               </view>
+              <view class="action-btn" @click="showSecrets = !showSecrets" role="button" :aria-label="showSecrets ? t('hideSecrets') : t('showSecrets')">
+                  <text class="icon" aria-hidden="true">{{ showSecrets ? '🙈' : '👁️' }}</text>
+                </view>
+                <view class="copy-btn" @click="copy(result.wif)" role="button" :aria-label="t('copyWif')">
+                  <text class="icon" aria-hidden="true">📋</text>
+                </view>
              </view>
            </view>
         </ScrollReveal>
@@ -70,12 +70,12 @@
              </view>
              <view class="value-row">
                <text class="value blur" :class="{ revealed: showSecrets }">{{ result.privateKey }}</text>
-               <view class="action-btn" @click="showSecrets = !showSecrets">
-                 <text class="icon">{{ showSecrets ? '🙈' : '👁️' }}</text>
-               </view>
-               <view class="copy-btn" @click="copy(result.privateKey)">
-                 <text class="icon">📋</text>
-               </view>
+              <view class="action-btn" @click="showSecrets = !showSecrets" role="button" :aria-label="showSecrets ? t('hideSecrets') : t('showSecrets')">
+                  <text class="icon" aria-hidden="true">{{ showSecrets ? '🙈' : '👁️' }}</text>
+                </view>
+                <view class="copy-btn" @click="copy(result.privateKey)" role="button" :aria-label="t('copyPrivateKey')">
+                  <text class="icon" aria-hidden="true">📋</text>
+                </view>
              </view>
            </view>
         </ScrollReveal>

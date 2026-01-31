@@ -60,26 +60,10 @@ const updateDimensions = () => {
   }
 };
 
-// Watch for breakpoint changes (useful for debugging)
-watch(isMobile, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    console.log('Responsive: Mobile mode changed:', newVal);
-  }
-});
-
-watch(isDesktop, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    console.log('Responsive: Desktop mode changed:', newVal);
-  }
-});
-
 // Lifecycle hooks
-onLaunch(() => {
-  console.log("Daily Check-in launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Daily Check-in shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     window.addEventListener("orientationchange", updateDimensions);
@@ -88,7 +72,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Daily Check-in hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
     window.removeEventListener("orientationchange", updateDimensions);

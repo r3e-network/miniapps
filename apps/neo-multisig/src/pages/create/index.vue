@@ -9,55 +9,31 @@
     </view>
 
     <view class="content">
-      <NeoCard v-if="step === 1" class="step-card">
-        <text class="step-title">{{ t("step1Title") }}</text>
-        <text class="step-desc">{{ t("step1Desc") }}</text>
+      <CreationForm
+        v-if="step === 1"
+        :title="t('step1Title')"
+        :description="t('step1Desc')"
+        :signers="form.signers"
+        :is-valid="isValidSigners"
+        :next-label="t('buttonNext')"
+        :t="t"
+        @add-signer="addSigner"
+        @remove-signer="removeSigner"
+        @update-signer="updateSigner"
+        @next="step = 2"
+      />
 
-        <view class="signer-list">
-          <view v-for="(signer, index) in signers" :key="index" class="signer-row">
-            <text class="index">{{ index + 1 }}</text>
-            <input
-              class="input"
-              v-model="signers[index]"
-              :placeholder="t('signerPlaceholder')"
-            />
-            <text class="remove-btn" @click="removeSigner(index)" v-if="signers.length > 1">×</text>
-          </view>
-        </view>
-
-        <NeoButton variant="secondary" size="sm" @click="addSigner" class="add-btn">
-          {{ t("addSigner") }}
-        </NeoButton>
-
-        <view class="actions">
-          <NeoButton variant="primary" block @click="goThreshold" :disabled="!isValidSigners">
-            {{ t("buttonNext") }}
-          </NeoButton>
-        </view>
-      </NeoCard>
-
-      <NeoCard v-if="step === 2" class="step-card">
-        <text class="step-title">{{ t("step2Title") }}</text>
-        <text class="step-desc">{{ t("step2Desc") }}</text>
-
-        <view class="threshold-control">
-          <text class="threshold-val">{{ threshold }}</text>
-          <text class="threshold-total">/ {{ signers.length }}</text>
-        </view>
-
-        <slider
-          :value="threshold"
-          :min="1"
-          :max="signers.length"
-          activeColor="var(--multisig-accent)"
-          @change="onThresholdChange"
-        />
-
-        <view class="actions row">
-          <NeoButton variant="secondary" @click="step = 1">{{ t("buttonBack") }}</NeoButton>
-          <NeoButton variant="primary" @click="finalizeConfig">{{ t("buttonNext") }}</NeoButton>
-        </view>
-      </NeoCard>
+      <ThresholdConfig
+        v-if="step === 2"
+        :title="t('step2Title')"
+        :description="t('step2Desc')"
+        v-model:threshold="form.threshold"
+        :total-signers="form.signers.length"
+        :back-label="t('buttonBack')"
+        :next-label="t('buttonNext')"
+        @back="step = 1"
+        @next="finalizeConfig"
+      />
 
       <NeoCard v-if="step === 3" class="step-card">
         <text class="step-title">{{ t("step3Title") }}</text>
@@ -66,11 +42,11 @@
         <view class="summary-block">
           <view class="summary-row">
             <text class="label">{{ t("multisigAddressLabel") }}</text>
-            <text class="value mono">{{ multisigAddress || "--" }}</text>
+            <text class="value mono">{{ multisigAccount?.address || "--" }}</text>
           </view>
           <view class="summary-row">
             <text class="label">{{ t("multisigScriptHashLabel") }}</text>
-            <text class="value mono">{{ multisigScriptHash || "--" }}</text>
+            <text class="value mono">{{ multisigAccount?.scriptHash || "--" }}</text>
           </view>
         </view>
 
@@ -79,14 +55,14 @@
           <view class="pill-group">
             <view
               class="pill"
-              :class="{ active: selectedChain === 'neo-n3-mainnet' }"
+              :class="{ active: form.selectedChain === 'neo-n3-mainnet' }"
               @click="setChain('neo-n3-mainnet')"
             >
               <text>{{ t("chainMainnet") }}</text>
             </view>
             <view
               class="pill"
-              :class="{ active: selectedChain === 'neo-n3-testnet' }"
+              :class="{ active: form.selectedChain === 'neo-n3-testnet' }"
               @click="setChain('neo-n3-testnet')"
             >
               <text>{{ t("chainTestnet") }}</text>
@@ -97,24 +73,24 @@
         <view class="form-group">
           <text class="label">{{ t("assetLabel") }}</text>
           <view class="asset-toggle">
-            <text :class="{ active: asset === 'GAS' }" @click="asset = 'GAS'">{{ t("assetGas") }}</text>
-            <text :class="{ active: asset === 'NEO' }" @click="asset = 'NEO'">{{ t("assetNeo") }}</text>
+            <text :class="{ active: form.asset === 'GAS' }" @click="form.asset = 'GAS'">{{ t("assetGas") }}</text>
+            <text :class="{ active: form.asset === 'NEO' }" @click="form.asset = 'NEO'">{{ t("assetNeo") }}</text>
           </view>
         </view>
 
         <view class="form-group">
           <text class="label">{{ t("toAddressLabel") }}</text>
-          <input class="input" v-model="toAddress" :placeholder="t('toAddressPlaceholder')" />
+          <input class="input" v-model="form.toAddress" :placeholder="t('toAddressPlaceholder')" />
         </view>
 
         <view class="form-group">
           <text class="label">{{ t("amountLabel") }}</text>
-          <input class="input" v-model="amount" type="digit" :placeholder="t('amountPlaceholder')" />
+          <input class="input" v-model="form.amount" type="digit" :placeholder="t('amountPlaceholder')" />
         </view>
 
         <view class="form-group">
           <text class="label">{{ t("memoLabel") }}</text>
-          <input class="input" v-model="memo" :placeholder="t('memoPlaceholder')" />
+          <input class="input" v-model="form.memo" :placeholder="t('memoPlaceholder')" />
         </view>
 
         <view class="actions row">
@@ -131,19 +107,19 @@
 
         <view class="review-item">
           <text class="label">{{ t("reviewFrom") }}</text>
-          <text class="value mono">{{ multisigAddress }}</text>
+          <text class="value mono">{{ multisigAccount?.address }}</text>
         </view>
         <view class="review-item">
           <text class="label">{{ t("reviewTo") }}</text>
-          <text class="value mono">{{ toAddress }}</text>
+          <text class="value mono">{{ form.toAddress }}</text>
         </view>
         <view class="review-item">
           <text class="label">{{ t("reviewAmount") }}</text>
-          <text class="value highlight">{{ amount }} {{ asset }}</text>
+          <text class="value highlight">{{ form.amount }} {{ form.asset }}</text>
         </view>
         <view class="review-item">
           <text class="label">{{ t("reviewSigners") }}</text>
-          <text class="value">{{ threshold }} / {{ signers.length }}</text>
+          <text class="value">{{ form.threshold }} / {{ form.signers.length }}</text>
         </view>
         <view class="review-item">
           <text class="label">{{ t("reviewChain") }}</text>
@@ -166,14 +142,14 @@
           <text class="label">{{ t("reviewValidUntil") }}</text>
           <text class="value">{{ feeSummary.validUntilBlock }}</text>
         </view>
-        <view v-if="memo" class="review-item">
+        <view v-if="form.memo" class="review-item">
           <text class="label">{{ t("detailMemo") }}</text>
-          <text class="value">{{ memo }}</text>
+          <text class="value">{{ form.memo }}</text>
         </view>
 
         <view class="actions row">
           <NeoButton variant="secondary" @click="step = 3">{{ t("buttonBack") }}</NeoButton>
-          <NeoButton variant="primary" @click="submit" :disabled="isSubmitting">
+          <NeoButton variant="primary" @click="handleSubmit" :disabled="isSubmitting">
             {{ isSubmitting ? t("buttonCreating") : t("buttonCreate") }}
           </NeoButton>
         </view>
@@ -183,164 +159,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
 import { NeoCard, NeoButton } from "@shared/components";
 import { useI18n } from "@/composables/useI18n";
-import { useWallet } from "@neo/uniapp-sdk";
-import { api } from "../../services/api";
-import {
-  buildTransferTransaction,
-  createMultisigAccount,
-  formatFixed8,
-  isValidAddress,
-  normalizePublicKeys,
-  validateAmount,
-} from "../../utils/multisig";
+import { useMultisigCreation } from "@/composables/useMultisigCreation";
+import CreationForm from "./components/CreationForm.vue";
+import ThresholdConfig from "./components/ThresholdConfig.vue";
 
 const { t } = useI18n();
-const { chainId } = useWallet();
 
-const step = ref(1);
-const signers = ref(["", ""]);
-const threshold = ref(1);
-const selectedChain = ref<"neo-n3-mainnet" | "neo-n3-testnet">(
-  chainId.value === "neo-n3-testnet" ? "neo-n3-testnet" : "neo-n3-mainnet",
-);
+const {
+  step,
+  form,
+  isPreparing,
+  isSubmitting,
+  multisigAccount,
+  feeSummary,
+  isValidSigners,
+  isValidTx,
+  chainLabel,
+  addSigner,
+  removeSigner,
+  setChain,
+  finalizeConfig,
+  prepareTransaction,
+  submit,
+  formatFixed8,
+} = useMultisigCreation();
 
-const asset = ref<"GAS" | "NEO">("GAS");
-const toAddress = ref("");
-const amount = ref("");
-const memo = ref("");
-const isPreparing = ref(false);
-const isSubmitting = ref(false);
-
-const multisigAccount = ref<ReturnType<typeof createMultisigAccount> | null>(null);
-const preparedTx = ref<any>(null);
-const feeSummary = ref({
-  systemFee: "0",
-  networkFee: "0",
-  validUntilBlock: 0,
-});
-
-watch(signers, (next) => {
-  if (threshold.value > next.length) {
-    threshold.value = next.length || 1;
-  }
-}, { deep: true });
-
-const multisigAddress = computed(() => multisigAccount.value?.address || "");
-const multisigScriptHash = computed(() => multisigAccount.value?.scriptHash || "");
-const chainLabel = computed(() => (selectedChain.value === "neo-n3-mainnet" ? t("chainMainnet") : t("chainTestnet")));
-
-const trimmedSigners = computed(() => signers.value.map((s) => s.trim()));
-const isValidSigners = computed(() => {
-  if (trimmedSigners.value.some((s) => !s)) return false;
-  try {
-    normalizePublicKeys(trimmedSigners.value);
-    return true;
-  } catch {
-    return false;
-  }
-});
-
-const isValidTx = computed(() => {
-  return isValidAddress(toAddress.value) && validateAmount(amount.value, asset.value);
-});
+const updateSigner = ({ index, value }: { index: number; value: string }) => {
+  form.value.signers[index] = value;
+};
 
 const goBack = () => uni.navigateBack();
-const addSigner = () => signers.value.push("");
-const removeSigner = (i: number) => signers.value.splice(i, 1);
 
-const setChain = (chain: "neo-n3-mainnet" | "neo-n3-testnet") => {
-  selectedChain.value = chain;
-};
-
-const onThresholdChange = (e: any) => {
-  threshold.value = e.detail.value;
-};
-
-const goThreshold = () => {
-  step.value = 2;
-};
-
-const finalizeConfig = () => {
-  try {
-    const normalized = normalizePublicKeys(trimmedSigners.value);
-    multisigAccount.value = createMultisigAccount(threshold.value, normalized);
-    step.value = 3;
-  } catch (e: any) {
-    const message = e?.message?.includes("duplicate") ? t("toastDuplicateSigners") : t("toastInvalidSigners");
-    uni.showToast({ title: message, icon: "none" });
-  }
-};
-
-const prepareTransaction = async () => {
-  if (!multisigAccount.value) {
-    uni.showToast({ title: t("toastInvalidSigners"), icon: "none" });
-    return;
-  }
-  if (!isValidAddress(toAddress.value)) {
-    uni.showToast({ title: t("toastInvalidAddress"), icon: "none" });
-    return;
-  }
-  if (!validateAmount(amount.value, asset.value)) {
-    uni.showToast({ title: t("toastInvalidAmount"), icon: "none" });
-    return;
-  }
-
-  isPreparing.value = true;
-  try {
-    const prepared = await buildTransferTransaction({
-      chainId: selectedChain.value,
-      fromAddress: multisigAddress.value,
-      toAddress: toAddress.value,
-      amount: amount.value,
-      assetSymbol: asset.value,
-      threshold: threshold.value,
-      publicKeys: multisigAccount.value.publicKeys,
-    });
-    preparedTx.value = prepared.tx;
-    feeSummary.value = {
-      systemFee: prepared.systemFee,
-      networkFee: prepared.networkFee,
-      validUntilBlock: prepared.validUntilBlock,
-    };
-    step.value = 4;
-  } catch (e: any) {
-    uni.showToast({ title: t("toastPrepareFailed"), icon: "none" });
-  } finally {
-    isPreparing.value = false;
-  }
-};
-
-const submit = async () => {
-  if (!preparedTx.value || !multisigAccount.value) return;
-  isSubmitting.value = true;
-  try {
-    const result = await api.create({
-      chainId: selectedChain.value,
-      scriptHash: multisigAccount.value.scriptHash,
-      threshold: threshold.value,
-      signers: multisigAccount.value.publicKeys,
-      transactionHex: preparedTx.value.serialize(false),
-      memo: memo.value || undefined,
-    });
-
-    const history = uni.getStorageSync("multisig_history") ? JSON.parse(uni.getStorageSync("multisig_history")) : [];
-    history.unshift({
-      id: result.id,
-      scriptHash: multisigAccount.value.scriptHash,
-      status: result.status || "pending",
-      createdAt: result.created_at || new Date().toISOString(),
-    });
-    uni.setStorageSync("multisig_history", JSON.stringify(history.slice(0, 10)));
-
-    uni.redirectTo({ url: `/pages/sign/index?id=${result.id}` });
-  } catch (e: any) {
-    uni.showToast({ title: t("toastCreateFailed"), icon: "none" });
-  } finally {
-    isSubmitting.value = false;
-  }
+const handleSubmit = async () => {
+  await submit((id) => {
+    uni.redirectTo({ url: `/pages/sign/index?id=${id}` });
+  });
 };
 </script>
 
@@ -369,23 +224,6 @@ const submit = async () => {
   background: var(--bg-body);
   min-height: 100vh;
   color: var(--text-primary);
-}
-
-:global(.theme-light) .page-container,
-:global([data-theme="light"]) .page-container {
-  --multisig-accent-soft: rgba(0, 229, 153, 0.18);
-  --multisig-accent-strong: rgba(0, 229, 153, 0.22);
-  --multisig-accent-text: #0b0c16;
-  --multisig-surface: rgba(15, 23, 42, 0.04);
-  --multisig-surface-strong: rgba(15, 23, 42, 0.08);
-  --multisig-border: rgba(15, 23, 42, 0.12);
-  --multisig-border-subtle: rgba(15, 23, 42, 0.08);
-  --multisig-divider: rgba(15, 23, 42, 0.1);
-  --multisig-pill-bg: rgba(15, 23, 42, 0.05);
-  --multisig-pill-active-bg: rgba(0, 229, 153, 0.16);
-  --multisig-pill-active-text: #0b0c16;
-  --multisig-input-bg: rgba(15, 23, 42, 0.04);
-  --multisig-input-text: var(--text-primary);
 }
 
 .nav-header {
@@ -433,55 +271,6 @@ const submit = async () => {
   color: var(--text-secondary);
   margin-bottom: 24px;
   display: block;
-}
-
-.signer-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.index {
-  font-size: 12px;
-  color: var(--text-secondary);
-  width: 18px;
-  text-align: center;
-}
-
-.input {
-  flex: 1;
-  background: var(--multisig-input-bg);
-  border: 1px solid var(--multisig-border);
-  border-radius: 8px;
-  padding: 12px;
-  color: var(--multisig-input-text);
-  font-size: 12px;
-  font-family: $font-mono;
-}
-
-.remove-btn {
-  font-size: 20px;
-  color: var(--multisig-remove);
-}
-
-.add-btn {
-  margin-bottom: 24px;
-}
-
-.threshold-control {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.threshold-val {
-  font-size: 48px;
-  font-weight: 800;
-  color: var(--multisig-accent);
-}
-
-.threshold-total {
-  color: var(--text-secondary);
 }
 
 .summary-block {
@@ -562,6 +351,18 @@ const submit = async () => {
       color: var(--multisig-accent-text);
     }
   }
+}
+
+.input {
+  flex: 1;
+  background: var(--multisig-input-bg);
+  border: 1px solid var(--multisig-border);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--multisig-input-text);
+  font-size: 12px;
+  font-family: $font-mono;
+  width: 100%;
 }
 
 .actions {

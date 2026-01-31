@@ -21,7 +21,10 @@ export interface GameStateOptions {
 }
 
 /** Reactive game state interface for Vue composables */
-export interface GameState extends Omit<GameStateType, "wins" | "losses" | "totalGames" | "winRate"> {
+export interface GameState extends Omit<
+  GameStateType,
+  "wins" | "losses" | "totalGames" | "winRate"
+> {
   /** Number of wins (reactive) */
   wins: Ref<number>;
   /** Number of losses (reactive) */

@@ -23,7 +23,9 @@ export function useTheme(initialTheme?: ThemeMode) {
   // Get initial theme from localStorage or system preference
   const getSystemTheme = (): ResolvedTheme => {
     if (typeof window === "undefined") return "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   };
 
   const getStoredTheme = (): ThemeMode => {
@@ -150,7 +152,9 @@ export function useTheme(initialTheme?: ThemeMode) {
  */
 export function getThemeVariable(variableName: string): string {
   if (typeof document === "undefined") return "";
-  return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(variableName)
+    .trim();
 }
 
 /**

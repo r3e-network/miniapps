@@ -1,15 +1,12 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event"
+  <ResponsiveLayout :desktop-breakpoint="1024" :tabs="navTabs" :active-tab="activeTab" @tab-change="activeTab = $event">
+    <template #desktop-sidebar>
+      <view class="desktop-sidebar">
+        <text class="sidebar-title">{{ t('overview') }}</text>
+      </view>
+    </template>
 
-      <!-- Desktop Sidebar -->
-      <template #desktop-sidebar>
-        <view class="desktop-sidebar">
-          <text class="sidebar-title">{{ t('overview') }}</text>
-        </view>
-      </template>
->
     <view class="theme-time-capsule">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <view v-if="activeTab === 'capsules' || activeTab === 'create'" class="app-container">
@@ -21,7 +18,6 @@
           <text class="status-text font-bold uppercase tracking-wider">{{ status.msg }}</text>
         </NeoCard>
 
-        <!-- Capsules Tab -->
         <view v-if="activeTab === 'capsules'" class="tab-content">
           <NeoCard variant="erobo-neo" class="mb-4">
             <text class="helper-text neutral">{{ t("fishDescription") }}</text>
@@ -32,15 +28,14 @@
               :loading="isBusy"
               :disabled="isBusy"
               class="mt-3"
-              @click="fish"
+              @click="handleFish"
             >
               {{ t("fishButton") }}
             </NeoButton>
           </NeoCard>
-          <CapsuleList :capsules="capsules" :current-time="currentTime" :t="t as any" @open="open" />
+          <CapsuleList :capsules="capsules" :current-time="currentTime" :t="t as any" @open="handleOpen" />
         </view>
 
-        <!-- Create Tab -->
         <view v-if="activeTab === 'create'" class="tab-content">
           <CreateCapsuleForm
             v-model:title="newCapsule.title"
@@ -51,12 +46,11 @@
             :is-loading="isBusy"
             :can-create="canCreate"
             :t="t as any"
-            @create="create"
+            @create="handleCreate"
           />
         </view>
       </view>
 
-      <!-- Docs Tab -->
       <view v-if="activeTab === 'docs'" class="tab-content scrollable">
         <NeoDoc
           :title="t('title')"
@@ -72,20 +66,18 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import { useWallet, useEvents } from "@neo/uniapp-sdk";
+import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { sha256Hex } from "@shared/utils/hash";
-import { requireNeoChain } from "@shared/utils/chain";
-import { addressToScriptHash, normalizeScriptHash, parseInvokeResult, parseStackItem } from "@shared/utils/neo";
-import { usePaymentFlow } from "@shared/composables/usePaymentFlow";
 import { ResponsiveLayout, NeoDoc, NeoCard, NeoButton, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
-
+import { useCapsuleCreation } from "@/composables/useCapsuleCreation";
+import { useCapsuleUnlock } from "@/composables/useCapsuleUnlock";
 import CapsuleList, { type Capsule } from "./components/CapsuleList.vue";
 import CreateCapsuleForm from "./components/CreateCapsuleForm.vue";
 
 const { t } = useI18n();
+const { address } = useWallet() as WalletSDK;
 
 const docSteps = computed(() => [t("step1"), t("step2"), t("step3"), t("step4")]);
 const docFeatures = computed(() => [
@@ -93,23 +85,6 @@ const docFeatures = computed(() => [
   { name: t("feature2Name"), desc: t("feature2Desc") },
   { name: t("feature3Name"), desc: t("feature3Desc") },
 ]);
-
-const APP_ID = "miniapp-time-capsule";
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
-const { processPayment, isProcessing: paymentProcessing } = usePaymentFlow(APP_ID);
-const { list: listEvents } = useEvents();
-const contractAddress = ref<string | null>(null);
-
-const ensureContractAddress = async () => {
-  if (!requireNeoChain(chainType, t)) {
-    throw new Error(t("wrongChain"));
-  }
-  if (!contractAddress.value) {
-    contractAddress.value = await getContractAddress();
-  }
-  if (!contractAddress.value) throw new Error(t("error"));
-  return contractAddress.value;
-};
 
 const activeTab = ref("capsules");
 const navTabs = computed<NavTab[]>(() => [
@@ -119,56 +94,14 @@ const navTabs = computed<NavTab[]>(() => [
 ]);
 
 const capsules = ref<Capsule[]>([]);
+const currentTime = ref(Date.now());
 const isLoadingData = ref(false);
 
-const BURY_FEE = "0.2";
-const FISH_FEE = "0.05";
-const MIN_LOCK_DAYS = 1;
-const MAX_LOCK_DAYS = 3650;
-const CONTENT_STORE_KEY = "time-capsule-content";
+const { newCapsule, status, isBusy: createBusy, canCreate, create } = useCapsuleCreation();
+const { isBusy: unlockBusy, open, fish, ownerMatches, listAllEvents, ensureContractAddress, invokeRead, parseInvokeResult, localContent } = useCapsuleUnlock();
 
-const loadLocalContent = () => {
-  try {
-    const raw = uni.getStorageSync(CONTENT_STORE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return {};
-    const normalized: Record<string, string> = {};
-    for (const [key, value] of Object.entries(parsed)) {
-      if (typeof value === "string") {
-        normalized[key] = value;
-      } else if (value && typeof value === "object") {
-        const legacy = value as { hash?: string; content?: string };
-        const hashKey = String(legacy.hash || key);
-        if (legacy.content) {
-          normalized[hashKey] = String(legacy.content);
-        }
-      }
-    }
-    return normalized;
-  } catch {
-    return {};
-  }
-};
+const isBusy = computed(() => createBusy.value || unlockBusy.value || isLoadingData.value);
 
-const localContent = ref<Record<string, string>>(loadLocalContent());
-const saveLocalContent = (hash: string, content: string) => {
-  if (!hash) return;
-  localContent.value = { ...localContent.value, [hash]: content };
-  try {
-    uni.setStorageSync(CONTENT_STORE_KEY, JSON.stringify(localContent.value));
-  } catch {
-    // ignore storage errors
-  }
-};
-
-const newCapsule = ref({ title: "", content: "", days: "30", isPublic: false, category: 1 });
-const status = ref<{ msg: string; type: string } | null>(null);
-const currentTime = ref(Date.now());
-const isProcessing = ref(false);
-const isBusy = computed(() => paymentProcessing.value || isProcessing.value);
-
-// Countdown timer
 let countdownInterval: number | null = null;
 
 onMounted(() => {
@@ -187,39 +120,6 @@ onUnmounted(() => {
 watch(address, () => {
   fetchData();
 });
-
-const canCreate = computed(() => {
-  const daysValue = Number.parseInt(newCapsule.value.days, 10);
-  return (
-    newCapsule.value.title.trim() !== "" &&
-    newCapsule.value.content.trim() !== "" &&
-    Number.isFinite(daysValue) &&
-    daysValue >= MIN_LOCK_DAYS &&
-    daysValue <= MAX_LOCK_DAYS
-  );
-});
-
-const ownerMatches = (value: unknown) => {
-  if (!address.value) return false;
-  const val = String(value || "");
-  if (val === address.value) return true;
-  const normalized = normalizeScriptHash(val);
-  const addrHash = addressToScriptHash(address.value);
-  return Boolean(normalized && addrHash && normalized === addrHash);
-};
-
-const listAllEvents = async (eventName: string) => {
-  const events: any[] = [];
-  let afterId: string | undefined;
-  let hasMore = true;
-  while (hasMore) {
-    const res = await listEvents({ app_id: APP_ID, event_name: eventName, limit: 50, after_id: afterId });
-    events.push(...res.events);
-    hasMore = Boolean(res.has_more && res.last_id);
-    afterId = res.last_id || undefined;
-  }
-  return events;
-};
 
 const toNumber = (value: unknown) => {
   const num = Number(value);
@@ -252,10 +152,8 @@ const buildCapsuleFromDetails = (
   } as Capsule;
 };
 
-// Fetch capsules from smart contract
 const fetchData = async () => {
   if (!address.value) return;
-
   isLoadingData.value = true;
   try {
     const contract = await ensureContractAddress();
@@ -263,7 +161,7 @@ const fetchData = async () => {
 
     const userCapsules = await Promise.all(
       buriedEvents.map(async (evt) => {
-        const values = Array.isArray(evt?.state) ? evt.state.map(parseStackItem) : [];
+        const values = Array.isArray(evt?.state) ? evt.state.map((s: any) => parseInvokeResult(s)) : [];
         const owner = values[0];
         const id = String(values[1] || "");
         const unlockTimeEvent = toNumber(values[2] || 0);
@@ -320,162 +218,38 @@ const fetchData = async () => {
 
     capsules.value = resolvedCapsules.sort((a, b) => Number(b.id) - Number(a.id));
   } catch {
+    // ignore
   } finally {
     isLoadingData.value = false;
   }
 };
 
-const create = async () => {
-  if (isBusy.value || !canCreate.value) return;
-
-  try {
-    status.value = { msg: t("creatingCapsule"), type: "loading" };
-    isProcessing.value = true;
-
-    // Ensure wallet is connected
-    if (!address.value) {
-      await connect();
-    }
-    if (!address.value) {
-      throw new Error(t("connectWallet"));
-    }
-
-    const contract = await ensureContractAddress();
-
-    // Pay the creation fee using usePaymentFlow
-    const { receiptId, invoke: invokeWithReceipt } = await processPayment(BURY_FEE, `time-capsule:bury:${Date.now()}`);
-
-    const daysValue = Number.parseInt(newCapsule.value.days, 10);
-    if (!Number.isFinite(daysValue) || daysValue < MIN_LOCK_DAYS || daysValue > MAX_LOCK_DAYS) {
-      throw new Error(t("invalidLockDuration"));
-    }
-
-    // Calculate unlock timestamp
-    const unlockDate = new Date();
-    unlockDate.setDate(unlockDate.getDate() + daysValue);
-    const unlockTimestamp = Math.floor(unlockDate.getTime() / 1000);
-    const content = newCapsule.value.content.trim();
-    const contentHash = await sha256Hex(content);
-
-    // Create capsule on-chain with receipt ID
-    await invokeWithReceipt(contract, "bury", [
-      { type: "Hash160", value: address.value },
-      { type: "String", value: contentHash },
-      { type: "String", value: newCapsule.value.title.trim().slice(0, 100) },
-      { type: "Integer", value: String(unlockTimestamp) },
-      { type: "Boolean", value: newCapsule.value.isPublic },
-      { type: "Integer", value: String(newCapsule.value.category) },
-      { type: "Integer", value: String(receiptId) },
-    ]);
-
-    saveLocalContent(contentHash, content);
-
-    status.value = { msg: t("capsuleCreated"), type: "success" };
-    newCapsule.value = { title: "", content: "", days: "30", isPublic: false, category: 1 };
+const handleCreate = async () => {
+  await create(() => {
     activeTab.value = "capsules";
-    await fetchData();
-  } catch (e: any) {
-    status.value = { msg: e.message || t("error"), type: "error" };
-  } finally {
-    isProcessing.value = false;
-  }
+    fetchData();
+  });
 };
 
-const open = async (cap: Capsule) => {
-  if (cap.locked) {
-    status.value = { msg: t("notUnlocked"), type: "error" };
-    return;
-  }
-  if (isBusy.value) return;
-
-  try {
-    isProcessing.value = true;
-    const contract = await ensureContractAddress();
-
-    if (!address.value) {
-      await connect();
+const handleOpen = async (cap: Capsule) => {
+  await open(cap, (msg, type) => {
+    status.value = { msg, type };
+    if (type !== "error") {
+      fetchData();
     }
-    if (!address.value) {
-      throw new Error(t("connectWallet"));
-    }
-
-    if (!cap.revealed) {
-      status.value = { msg: t("revealing"), type: "loading" };
-      await invokeContract({
-        scriptHash: contract,
-        operation: "Reveal",
-        args: [
-          { type: "Hash160", value: address.value },
-          { type: "Integer", value: cap.id },
-        ],
-      });
-      await fetchData();
-    }
-
-    const content = cap.contentHash ? localContent.value[cap.contentHash] : "";
-    if (content) {
-      status.value = { msg: `${t("message")} ${content}`, type: "success" };
-    } else if (cap.contentHash) {
-      status.value = { msg: `${t("contentUnavailable")} ${cap.contentHash}`, type: "success" };
-    } else {
-      status.value = { msg: t("capsuleRevealed"), type: "success" };
-    }
-  } catch (e: any) {
-    status.value = { msg: e.message || t("error"), type: "error" };
-  } finally {
-    isProcessing.value = false;
-  }
+  });
 };
 
-const fish = async () => {
-  if (isBusy.value) return;
-
-  try {
-    isProcessing.value = true;
-    status.value = { msg: t("fishing"), type: "loading" };
-    const requestStartedAt = Date.now();
-
-    if (!address.value) {
-      await connect();
-    }
-    if (!address.value) {
-      throw new Error(t("connectWallet"));
-    }
-
-    const contract = await ensureContractAddress();
-    const { receiptId, invoke: invokeWithReceipt } = await processPayment(FISH_FEE, `time-capsule:fish:${Date.now()}`);
-
-    await invokeWithReceipt(contract, "fish", [
-      { type: "Hash160", value: address.value },
-      { type: "Integer", value: String(receiptId) },
-    ]);
-
-    const fishEvents = await listAllEvents("CapsuleFished");
-    const match = fishEvents.find((evt) => {
-      const values = Array.isArray(evt?.state) ? evt.state.map(parseStackItem) : [];
-      const timestamp = evt?.created_at ? new Date(evt.created_at).getTime() : 0;
-      return ownerMatches(values[0]) && timestamp >= requestStartedAt - 1000;
-    });
-
-    if (match) {
-      const values = Array.isArray(match?.state) ? match.state.map(parseStackItem) : [];
-      const fishedId = String(values[1] || "");
-      status.value = { msg: t("fishResult").replace("{id}", fishedId || "?"), type: "success" };
-    } else {
-      status.value = { msg: t("fishNone"), type: "success" };
-    }
-  } catch (e: any) {
-    status.value = { msg: e.message || t("error"), type: "error" };
-  } finally {
-    isProcessing.value = false;
-  }
+const handleFish = async () => {
+  await fish((msg, type) => {
+    status.value = { msg, type };
+  });
 };
 </script>
 
 <style lang="scss" scoped>
 @use "@shared/styles/tokens.scss" as *;
 @use "@shared/styles/variables.scss";
-
 @import "./time-capsule-theme.scss";
 
 :global(page) {
@@ -494,7 +268,6 @@ const fish = async () => {
   min-height: 100vh;
   position: relative;
 
-  /* Tech Grid Background */
   &::before {
     content: "";
     position: absolute;
@@ -522,7 +295,6 @@ const fish = async () => {
   letter-spacing: 0.05em;
 }
 
-/* Sci-fi UI Overrides */
 :global(.theme-time-capsule) :deep(.neo-card) {
   background: var(--capsule-card-bg) !important;
   border: 1px solid var(--capsule-card-border) !important;
@@ -533,7 +305,6 @@ const fish = async () => {
   position: relative;
   overflow: hidden;
 
-  /* Corner accents */
   &::after {
     content: "";
     position: absolute;
@@ -581,32 +352,11 @@ const fish = async () => {
   }
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .scrollable {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-.capsule-warning-title {
-  color: var(--capsule-cyan);
-}
-
-.capsule-warning-desc {
-  color: var(--capsule-text);
-}
-
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;

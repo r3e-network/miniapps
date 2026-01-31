@@ -1,182 +1,47 @@
 <template>
-  <ResponsiveLayout :desktop-breakpoint="1024" class="theme-soulbound-certificate" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange"
+  :desktop-breakpoint <ResponsiveLayout="1024" class="theme-soulbound-certificate" :tabs="navTabs" :active-tab="activeTab" @tab-change="onTabChange">
 
-      <!-- Desktop Sidebar -->
       <template #desktop-sidebar>
         <view class="desktop-sidebar">
           <text class="sidebar-title">{{ t('overview') }}</text>
         </view>
       </template>
->
+
     <view v-if="activeTab === 'templates'" class="tab-content">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold">{{ status.msg }}</text>
       </NeoCard>
 
-      <NeoCard variant="erobo-neo">
-        <view class="form-group">
-          <NeoInput v-model="form.name" :label="t('templateName')" :placeholder="t('templateNamePlaceholder')" />
-          <NeoInput v-model="form.issuerName" :label="t('issuerName')" :placeholder="t('issuerNamePlaceholder')" />
-          <NeoInput v-model="form.category" :label="t('category')" :placeholder="t('categoryPlaceholder')" />
-          <NeoInput
-            v-model="form.maxSupply"
-            type="number"
-            :label="t('maxSupply')"
-            :placeholder="t('maxSupplyPlaceholder')"
-          />
-          <NeoInput
-            v-model="form.description"
-            type="textarea"
-            :label="t('description')"
-            :placeholder="t('descriptionPlaceholder')"
-          />
+      <CertificateForm :loading="isCreating" @create="createTemplate" />
 
-          <NeoButton
-            variant="primary"
-            size="lg"
-            block
-            :loading="isCreating"
-            :disabled="isCreating"
-            @click="createTemplate"
-          >
-            {{ isCreating ? t("creating") : t("createTemplate") }}
-          </NeoButton>
-        </view>
-      </NeoCard>
-
-      <NeoCard variant="erobo" class="template-list">
-        <view class="templates-header">
-          <text class="section-title">{{ t("yourTemplates") }}</text>
-          <NeoButton size="sm" variant="secondary" :loading="isRefreshing" @click="refreshTemplates">
-            {{ t("refresh") }}
-          </NeoButton>
-        </view>
-
-        <view v-if="!address" class="empty-state">
-          <NeoCard variant="erobo" class="p-6 text-center">
-            <text class="text-sm block mb-3">{{ t("walletNotConnected") }}</text>
-            <NeoButton size="sm" variant="primary" @click="connectWallet">
-              {{ t("connectWallet") }}
-            </NeoButton>
-          </NeoCard>
-        </view>
-
-        <view v-else-if="templates.length === 0" class="empty-state">
-          <NeoCard variant="erobo" class="p-6 text-center opacity-70">
-            <text class="text-xs">{{ t("emptyTemplates") }}</text>
-          </NeoCard>
-        </view>
-
-        <view v-else class="template-cards">
-          <view v-for="template in templates" :key="`template-${template.id}`" class="template-card">
-            <view class="template-card__header">
-              <view>
-                <text class="template-title">{{ template.name || `#${template.id}` }}</text>
-                <text class="template-subtitle">{{ template.issuerName || addressShort(template.issuer) }}</text>
-              </view>
-              <text :class="['status-pill', template.active ? 'active' : 'inactive']">
-                {{ template.active ? t("statusActive") : t("statusInactive") }}
-              </text>
-            </view>
-
-            <view class="template-meta">
-              <text class="meta-label">{{ t("category") }}</text>
-              <text class="meta-value">{{ template.category || "--" }}</text>
-            </view>
-
-            <view class="template-metrics">
-              <view>
-                <text class="metric-label">{{ t("issued") }}</text>
-                <text class="metric-value">{{ template.issued.toString() }}</text>
-              </view>
-              <view>
-                <text class="metric-label">{{ t("supply") }}</text>
-                <text class="metric-value">{{ template.maxSupply.toString() }}</text>
-              </view>
-            </view>
-
-            <text class="template-desc">{{ template.description || "--" }}</text>
-
-            <view class="template-actions">
-              <NeoButton
-                size="sm"
-                variant="primary"
-                :disabled="!template.active || template.issued >= template.maxSupply"
-                @click="openIssueModal(template)"
-              >
-                {{ template.issued >= template.maxSupply ? t("soldOut") : t("issueCertificate") }}
-              </NeoButton>
-              <NeoButton
-                size="sm"
-                variant="secondary"
-                :loading="togglingId === template.id"
-                @click="toggleTemplate(template)"
-              >
-                {{ template.active ? t("deactivate") : t("activate") }}
-              </NeoButton>
-            </view>
-          </view>
-        </view>
-      </NeoCard>
+      <TemplateList
+        :templates="templates"
+        :refreshing="isRefreshing"
+        :toggling-id="togglingId"
+        :has-address="!!address"
+        @refresh="refreshTemplates"
+        @connect="connectWallet"
+        @issue="openIssueModal"
+        @toggle="toggleTemplate"
+      />
     </view>
 
     <view v-if="activeTab === 'certificates'" class="tab-content">
-      <view class="templates-header">
-        <text class="section-title">{{ t("certificatesTab") }}</text>
-        <NeoButton size="sm" variant="secondary" :loading="isRefreshingCertificates" @click="refreshCertificates">
-          {{ t("refresh") }}
-        </NeoButton>
-      </view>
-
       <NeoCard v-if="status" :variant="status.type === 'error' ? 'danger' : 'success'" class="text-center">
         <text class="font-bold">{{ status.msg }}</text>
       </NeoCard>
 
-      <view v-if="!address" class="empty-state">
-        <NeoCard variant="erobo" class="p-6 text-center">
-          <text class="text-sm block mb-3">{{ t("walletNotConnected") }}</text>
-          <NeoButton size="sm" variant="primary" @click="connectWallet">
-            {{ t("connectWallet") }}
-          </NeoButton>
-        </NeoCard>
-      </view>
-
-      <view v-else-if="certificates.length === 0" class="empty-state">
-        <NeoCard variant="erobo" class="p-6 text-center opacity-70">
-          <text class="text-xs">{{ t("emptyCertificates") }}</text>
-        </NeoCard>
-      </view>
-
-      <view v-else class="certificate-grid">
-        <view v-for="cert in certificates" :key="`cert-${cert.tokenId}`" class="certificate-card">
-          <view class="template-card__header">
-            <view>
-              <text class="template-title">{{ cert.templateName || `#${cert.templateId}` }}</text>
-              <text class="template-subtitle">{{ cert.issuerName || addressShort(cert.owner) }}</text>
-            </view>
-            <text :class="['status-pill', cert.revoked ? 'revoked' : 'active']">
-              {{ cert.revoked ? t("certificateRevoked") : t("certificateValid") }}
-            </text>
-          </view>
-
-          <view class="certificate-body">
-            <view class="certificate-qr" v-if="certQrs[cert.tokenId]">
-              <image :src="certQrs[cert.tokenId]" class="certificate-qr__img" mode="aspectFit" />
-            </view>
-            <view class="certificate-details">
-              <text class="detail-row">{{ t("recipientName") }}: {{ cert.recipientName || "--" }}</text>
-              <text class="detail-row">{{ t("achievement") }}: {{ cert.achievement || "--" }}</text>
-              <text class="detail-row">{{ t("tokenId") }}: {{ cert.tokenId }}</text>
-              <NeoButton size="sm" variant="secondary" class="copy-btn" @click="copyTokenId(cert.tokenId)">
-                {{ t("copyTokenId") }}
-              </NeoButton>
-            </view>
-          </view>
-        </view>
-      </view>
+      <CertificateGallery
+        :certificates="certificates"
+        :cert-qrs="certQrs"
+        :refreshing="isRefreshingCertificates"
+        :has-address="!!address"
+        @refresh="refreshCertificates"
+        @connect="connectWallet"
+        @copy-token-id="copyTokenId"
+      />
     </view>
 
     <view v-if="activeTab === 'verify'" class="tab-content">
@@ -184,34 +49,13 @@
         <text class="font-bold">{{ status.msg }}</text>
       </NeoCard>
 
-      <NeoCard variant="erobo-neo">
-        <view class="form-group">
-          <NeoInput v-model="verify.tokenId" :label="t('verifyTokenId')" :placeholder="t('verifyTokenIdPlaceholder')" />
-          <view class="verify-actions">
-            <NeoButton size="sm" variant="secondary" :loading="isLookingUp" @click="lookupCertificate">
-              {{ isLookingUp ? t("lookingUp") : t("lookup") }}
-            </NeoButton>
-            <NeoButton size="sm" variant="primary" :loading="isRevoking" @click="revokeCertificate">
-              {{ isRevoking ? t("revoking") : t("revoke") }}
-            </NeoButton>
-          </view>
-        </view>
-      </NeoCard>
-
-      <NeoCard v-if="lookup" variant="erobo" class="lookup-card">
-        <view class="template-card__header">
-          <view>
-            <text class="template-title">{{ lookup.templateName || `#${lookup.templateId}` }}</text>
-            <text class="template-subtitle">{{ lookup.issuerName || addressShort(lookup.owner) }}</text>
-          </view>
-          <text :class="['status-pill', lookup.revoked ? 'revoked' : 'active']">
-            {{ lookup.revoked ? t("certificateRevoked") : t("certificateValid") }}
-          </text>
-        </view>
-        <text class="detail-row">{{ t("recipientName") }}: {{ lookup.recipientName || "--" }}</text>
-        <text class="detail-row">{{ t("achievement") }}: {{ lookup.achievement || "--" }}</text>
-        <text class="detail-row">{{ t("tokenId") }}: {{ lookup.tokenId }}</text>
-      </NeoCard>
+      <VerifyCertificate
+        :looking-up="isLookingUp"
+        :revoking="isRevoking"
+        :result="lookup"
+        @lookup="lookupCertificate"
+        @revoke="revokeCertificate"
+      />
     </view>
 
     <view v-if="activeTab === 'docs'" class="tab-content scrollable">
@@ -229,46 +73,33 @@
     </view>
   </ResponsiveLayout>
 
-  <NeoModal :visible="issueModalOpen" :title="t('issueTitle')" :closeable="true" @close="closeIssueModal">
-    <view class="form-group">
-      <NeoInput
-        v-model="issueForm.recipient"
-        :label="t('issueRecipient')"
-        :placeholder="t('issueRecipientPlaceholder')"
-      />
-      <NeoInput
-        v-model="issueForm.recipientName"
-        :label="t('recipientName')"
-        :placeholder="t('recipientNamePlaceholder')"
-      />
-      <NeoInput v-model="issueForm.achievement" :label="t('achievement')" :placeholder="t('achievementPlaceholder')" />
-      <NeoInput v-model="issueForm.memo" :label="t('memo')" :placeholder="t('memoPlaceholder')" />
-    </view>
-
-    <template #footer>
-      <NeoButton size="sm" variant="secondary" @click="closeIssueModal">
-        {{ t("cancel") }}
-      </NeoButton>
-      <NeoButton size="sm" variant="primary" :loading="isIssuing" @click="issueCertificate">
-        {{ isIssuing ? t("issuing") : t("issue") }}
-      </NeoButton>
-    </template>
-  </NeoModal>
+  <IssueModal
+    :visible="issueModalOpen"
+    :loading="isIssuing"
+    :template-id="issueForm.templateId"
+    @close="closeIssueModal"
+    @issue="issueCertificate"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from "vue";
-import QRCode from "qrcode";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { ResponsiveLayout, NeoCard, NeoButton, NeoInput, NeoModal, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
+import { addressToScriptHash } from "@shared/utils/neo";
 import { requireNeoChain } from "@shared/utils/chain";
-import { addressToScriptHash, parseInvokeResult } from "@shared/utils/neo";
+import { useCertificates } from "@/composables/useCertificates";
+import CertificateForm from "@/components/CertificateForm.vue";
+import TemplateList from "@/components/TemplateList.vue";
+import CertificateGallery from "@/components/CertificateGallery.vue";
+import VerifyCertificate from "@/components/VerifyCertificate.vue";
+import IssueModal from "@/components/IssueModal.vue";
 
 const { t } = useI18n();
-const { address, connect, invokeContract, invokeRead, chainType, getContractAddress } = useWallet() as WalletSDK;
+const { address, connect, invokeContract, invokeRead, chainType } = useWallet() as WalletSDK;
 
 const activeTab = ref("templates");
 const navTabs = computed<NavTab[]>(() => [
@@ -294,10 +125,6 @@ const issueForm = reactive({
   memo: "",
 });
 
-const verify = reactive({
-  tokenId: "",
-});
-
 const status = ref<{ msg: string; type: "success" | "error" } | null>(null);
 const isCreating = ref(false);
 const isRefreshing = ref(false);
@@ -307,212 +134,15 @@ const isLookingUp = ref(false);
 const isRevoking = ref(false);
 const issueModalOpen = ref(false);
 const togglingId = ref<string | null>(null);
-const contractAddress = ref<string | null>(null);
+const lookup = ref<any>(null);
 
-interface TemplateItem {
-  id: string;
-  issuer: string;
-  name: string;
-  issuerName: string;
-  category: string;
-  maxSupply: bigint;
-  issued: bigint;
-  description: string;
-  active: boolean;
-}
-
-interface CertificateItem {
-  tokenId: string;
-  templateId: string;
-  owner: string;
-  templateName: string;
-  issuerName: string;
-  category: string;
-  description: string;
-  recipientName: string;
-  achievement: string;
-  memo: string;
-  issuedTime: number;
-  revoked: boolean;
-  revokedTime: number;
-}
-
-const templates = ref<TemplateItem[]>([]);
-const certificates = ref<CertificateItem[]>([]);
-const certQrs = reactive<Record<string, string>>({});
-const lookup = ref<CertificateItem | null>(null);
-
-const ensureContractAddress = async () => {
-  if (!requireNeoChain(chainType, t)) {
-    throw new Error(t("wrongChain"));
-  }
-  if (!contractAddress.value) {
-    contractAddress.value = await getContractAddress();
-  }
-  if (!contractAddress.value) {
-    throw new Error(t("contractMissing"));
-  }
-  return contractAddress.value;
-};
+const { templates, certificates, certQrs, refreshTemplates, refreshCertificates, parseBigInt, ensureContractAddress } = useCertificates();
 
 const setStatus = (msg: string, type: "success" | "error") => {
   status.value = { msg, type };
   setTimeout(() => {
     if (status.value?.msg === msg) status.value = null;
   }, 4000);
-};
-
-const parseBigInt = (value: unknown) => {
-  try {
-    return BigInt(String(value ?? "0"));
-  } catch {
-    return 0n;
-  }
-};
-
-const parseBool = (value: unknown) => value === true || value === "true" || value === 1 || value === "1";
-
-const addressShort = (value: string) => {
-  const trimmed = String(value || "");
-  if (!trimmed) return "--";
-  if (trimmed.length <= 12) return trimmed;
-  return `${trimmed.slice(0, 6)}...${trimmed.slice(-4)}`;
-};
-
-const encodeTokenId = (tokenId: string) => {
-  try {
-    const bytes = new TextEncoder().encode(tokenId);
-    return btoa(String.fromCharCode(...bytes));
-  } catch {
-    return tokenId;
-  }
-};
-
-const parseTemplate = (raw: any, id: string): TemplateItem | null => {
-  if (!raw || typeof raw !== "object") return null;
-  return {
-    id,
-    issuer: String(raw.issuer || ""),
-    name: String(raw.name || ""),
-    issuerName: String(raw.issuerName || ""),
-    category: String(raw.category || ""),
-    maxSupply: parseBigInt(raw.maxSupply),
-    issued: parseBigInt(raw.issued),
-    description: String(raw.description || ""),
-    active: parseBool(raw.active),
-  };
-};
-
-const parseCertificate = (raw: any, tokenId: string): CertificateItem | null => {
-  if (!raw || typeof raw !== "object") return null;
-  return {
-    tokenId,
-    templateId: String(raw.templateId || ""),
-    owner: String(raw.owner || ""),
-    templateName: String(raw.templateName || ""),
-    issuerName: String(raw.issuerName || ""),
-    category: String(raw.category || ""),
-    description: String(raw.description || ""),
-    recipientName: String(raw.recipientName || ""),
-    achievement: String(raw.achievement || ""),
-    memo: String(raw.memo || ""),
-    issuedTime: Number.parseInt(String(raw.issuedTime || "0"), 10) || 0,
-    revoked: parseBool(raw.revoked),
-    revokedTime: Number.parseInt(String(raw.revokedTime || "0"), 10) || 0,
-  };
-};
-
-const fetchTemplateIds = async (issuerAddress: string) => {
-  const contract = await ensureContractAddress();
-  const result = await invokeRead({
-    contractAddress: contract,
-      operation: "GetIssuerTemplates",
-    args: [
-      { type: "Hash160", value: issuerAddress },
-      { type: "Integer", value: "0" },
-      { type: "Integer", value: "20" },
-    ],
-  });
-  const parsed = parseInvokeResult(result);
-  if (!Array.isArray(parsed)) return [] as string[];
-  return parsed
-    .map((value) => String(value || ""))
-    .map((value) => Number.parseInt(value, 10))
-    .filter((value) => Number.isFinite(value) && value > 0)
-    .map((value) => String(value));
-};
-
-const fetchTemplateDetails = async (templateId: string) => {
-  const contract = await ensureContractAddress();
-  const details = await invokeRead({
-    contractAddress: contract,
-      operation: "GetTemplateDetails",
-    args: [{ type: "Integer", value: templateId }],
-  });
-  const parsed = parseInvokeResult(details) as any;
-  return parseTemplate(parsed, templateId);
-};
-
-const refreshTemplates = async () => {
-  if (!address.value) return;
-  if (isRefreshing.value) return;
-  try {
-    isRefreshing.value = true;
-    const ids = await fetchTemplateIds(address.value);
-    const details = await Promise.all(ids.map(fetchTemplateDetails));
-    templates.value = details.filter(Boolean) as TemplateItem[];
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isRefreshing.value = false;
-  }
-};
-
-const refreshCertificates = async () => {
-  if (!address.value) return;
-  if (isRefreshingCertificates.value) return;
-  try {
-    isRefreshingCertificates.value = true;
-    const contract = await ensureContractAddress();
-    const tokenResult = await invokeRead({
-      contractAddress: contract,
-      operation: "TokensOf",
-      args: [{ type: "Hash160", value: address.value }],
-    });
-    const parsed = parseInvokeResult(tokenResult);
-    if (!Array.isArray(parsed)) {
-      certificates.value = [];
-      return;
-    }
-    const tokenIds = parsed.map((value) => String(value || "")).filter(Boolean);
-
-    const details = await Promise.all(
-      tokenIds.map(async (tokenId) => {
-        const detailResult = await invokeRead({
-          contractAddress: contract,
-          operation: "GetCertificateDetails",
-          args: [{ type: "ByteArray", value: encodeTokenId(tokenId) }],
-        });
-        const detailParsed = parseInvokeResult(detailResult) as any;
-        return parseCertificate(detailParsed, tokenId);
-      }),
-    );
-
-    certificates.value = details.filter(Boolean) as CertificateItem[];
-    await Promise.all(
-      certificates.value.map(async (cert) => {
-        if (!certQrs[cert.tokenId]) {
-          try {
-            certQrs[cert.tokenId] = await QRCode.toDataURL(cert.tokenId, { margin: 1 });
-          } catch {}
-        }
-      }),
-    );
-  } catch (e: any) {
-    setStatus(e.message || t("contractMissing"), "error");
-  } finally {
-    isRefreshingCertificates.value = false;
-  }
 };
 
 const connectWallet = async () => {
@@ -527,17 +157,17 @@ const connectWallet = async () => {
   }
 };
 
-const createTemplate = async () => {
+const createTemplate = async (data: { name: string; issuerName: string; category: string; maxSupply: string; description: string }) => {
   if (isCreating.value) return;
   if (!requireNeoChain(chainType, t)) return;
 
-  const name = form.name.trim();
+  const name = data.name.trim();
   if (!name) {
     setStatus(t("nameRequired"), "error");
     return;
   }
 
-  const maxSupply = parseBigInt(form.maxSupply);
+  const maxSupply = parseBigInt(data.maxSupply);
   if (maxSupply <= 0n) {
     setStatus(t("invalidSupply"), "error");
     return;
@@ -555,10 +185,10 @@ const createTemplate = async () => {
       args: [
         { type: "Hash160", value: address.value },
         { type: "String", value: name },
-        { type: "String", value: form.issuerName.trim() },
-        { type: "String", value: form.category.trim() },
+        { type: "String", value: data.issuerName.trim() },
+        { type: "String", value: data.category.trim() },
         { type: "Integer", value: maxSupply.toString() },
-        { type: "String", value: form.description.trim() },
+        { type: "String", value: data.description.trim() },
       ],
     });
 
@@ -577,7 +207,7 @@ const createTemplate = async () => {
   }
 };
 
-const openIssueModal = (template: TemplateItem) => {
+const openIssueModal = (template: any) => {
   issueForm.templateId = template.id;
   issueForm.recipient = "";
   issueForm.recipientName = "";
@@ -590,11 +220,11 @@ const closeIssueModal = () => {
   issueModalOpen.value = false;
 };
 
-const issueCertificate = async () => {
+const issueCertificate = async (data: { templateId: string; recipient: string; recipientName: string; achievement: string; memo: string }) => {
   if (isIssuing.value) return;
   if (!requireNeoChain(chainType, t)) return;
 
-  const recipient = issueForm.recipient.trim();
+  const recipient = data.recipient.trim();
   if (!recipient || !addressToScriptHash(recipient)) {
     setStatus(t("invalidRecipient"), "error");
     return;
@@ -612,10 +242,10 @@ const issueCertificate = async () => {
       args: [
         { type: "Hash160", value: address.value },
         { type: "Hash160", value: recipient },
-        { type: "Integer", value: issueForm.templateId },
-        { type: "String", value: issueForm.recipientName.trim() },
-        { type: "String", value: issueForm.achievement.trim() },
-        { type: "String", value: issueForm.memo.trim() },
+        { type: "Integer", value: data.templateId },
+        { type: "String", value: data.recipientName.trim() },
+        { type: "String", value: data.achievement.trim() },
+        { type: "String", value: data.memo.trim() },
       ],
     });
 
@@ -630,7 +260,7 @@ const issueCertificate = async () => {
   }
 };
 
-const toggleTemplate = async (template: TemplateItem) => {
+const toggleTemplate = async (template: any) => {
   if (togglingId.value) return;
   if (!requireNeoChain(chainType, t)) return;
   try {
@@ -655,10 +285,9 @@ const toggleTemplate = async (template: TemplateItem) => {
   }
 };
 
-const lookupCertificate = async () => {
+const lookupCertificate = async (tokenId: string) => {
   if (isLookingUp.value) return;
   if (!requireNeoChain(chainType, t)) return;
-  const tokenId = verify.tokenId.trim();
   if (!tokenId) {
     setStatus(t("invalidTokenId"), "error");
     return;
@@ -669,16 +298,15 @@ const lookupCertificate = async () => {
     const detailResult = await invokeRead({
       contractAddress: contract,
       operation: "GetCertificateDetails",
-      args: [{ type: "ByteArray", value: encodeTokenId(tokenId) }],
+      args: [{ type: "ByteArray", value: tokenId }],
     });
-    const detailParsed = parseInvokeResult(detailResult) as any;
-    const parsed = parseCertificate(detailParsed, tokenId);
-    if (!parsed) {
+    const detailParsed = detailResult as any;
+    if (!detailParsed) {
       setStatus(t("certificateNotFound"), "error");
       lookup.value = null;
       return;
     }
-    lookup.value = parsed;
+    lookup.value = detailParsed;
   } catch (e: any) {
     setStatus(e.message || t("contractMissing"), "error");
   } finally {
@@ -686,10 +314,9 @@ const lookupCertificate = async () => {
   }
 };
 
-const revokeCertificate = async () => {
+const revokeCertificate = async (tokenId: string) => {
   if (isRevoking.value) return;
   if (!requireNeoChain(chainType, t)) return;
-  const tokenId = verify.tokenId.trim();
   if (!tokenId) {
     setStatus(t("invalidTokenId"), "error");
     return;
@@ -704,11 +331,11 @@ const revokeCertificate = async () => {
       operation: "RevokeCertificate",
       args: [
         { type: "Hash160", value: address.value },
-        { type: "ByteArray", value: encodeTokenId(tokenId) },
+        { type: "ByteArray", value: tokenId },
       ],
     });
     setStatus(t("revokeSuccess"), "success");
-    await lookupCertificate();
+    await lookupCertificate(tokenId);
   } catch (e: any) {
     setStatus(e.message || t("contractMissing"), "error");
   } finally {
@@ -717,7 +344,6 @@ const revokeCertificate = async () => {
 };
 
 const copyTokenId = (tokenId: string) => {
-  // @ts-ignore
   uni.setClipboardData({
     data: tokenId,
     success: () => {
@@ -728,12 +354,8 @@ const copyTokenId = (tokenId: string) => {
 
 const onTabChange = async (tab: string) => {
   activeTab.value = tab;
-  if (tab === "templates") {
-    await refreshTemplates();
-  }
-  if (tab === "certificates") {
-    await refreshCertificates();
-  }
+  if (tab === "templates") await refreshTemplates();
+  if (tab === "certificates") await refreshCertificates();
 };
 
 onMounted(async () => {
@@ -773,12 +395,6 @@ watch(address, async (newAddr) => {
   gap: 16px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .section-title {
   font-size: 18px;
   font-weight: 700;
@@ -790,29 +406,11 @@ watch(address, async (newAddr) => {
   justify-content: space-between;
 }
 
-.template-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .template-cards,
 .certificate-grid {
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.template-card,
-.certificate-card,
-.lookup-card {
-  background: var(--soul-card-bg);
-  border: 1px solid var(--soul-card-border);
-  border-radius: 18px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
 .template-card__header {
@@ -940,20 +538,12 @@ watch(address, async (newAddr) => {
   color: #94a3b8;
 }
 
-.verify-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
 .empty-state {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;

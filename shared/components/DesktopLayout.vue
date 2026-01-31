@@ -14,7 +14,7 @@
           v-for="tab in tabs"
           :key="tab.id"
           :class="['nav-item', activeTab === tab.id && 'active']"
-          :role="menuitem"
+          role="menuitem"
           :tabindex="activeTab === tab.id ? 0 : -1"
           :aria-label="tab.label"
           :aria-current="activeTab === tab.id ? 'page' : undefined"

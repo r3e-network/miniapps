@@ -4,7 +4,11 @@
  * Provides event listening functionality for Neo blockchain events.
  */
 
-import type { EventsSDK, EventsListOptions, EventsListResult } from "@neo/types";
+import type {
+  EventsSDK,
+  EventsListOptions,
+  EventsListResult,
+} from "@neo/types";
 
 /**
  * Events composable for blockchain event operations
@@ -28,14 +32,21 @@ import type { EventsSDK, EventsListOptions, EventsListResult } from "@neo/types"
  * console.log("Events:", result.events);
  * ```
  */
-export function useEvents(): Partial<EventsSDK> {
+/** Return type for useEvents composable */
+export interface UseEventsReturn {
+  list: (options: EventsListOptions) => Promise<EventsListResult>;
+}
+
+export function useEvents(): UseEventsReturn {
   /**
    * List events with pagination
    *
    * @param options - Event list options including filters and pagination
    * @returns Events list with pagination info
    */
-  const list = async (options: EventsListOptions): Promise<EventsListResult> => {
+  const list = async (
+    options: EventsListOptions,
+  ): Promise<EventsListResult> => {
     if (typeof window !== "undefined" && (window as any).neo) {
       const neo = (window as any).neo;
       return await neo.listEvents(options);

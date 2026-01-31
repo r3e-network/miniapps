@@ -1,4 +1,10 @@
-import { aexists, ahash, aoutput, anumber, isBytes } from "@noble/hashes/utils.js";
+import {
+  aexists,
+  ahash,
+  aoutput,
+  anumber,
+  isBytes,
+} from "@noble/hashes/utils.js";
 
 export function number(n: number): void {
   anumber(n);
@@ -15,7 +21,9 @@ export function bytes(value: Uint8Array, ...lengths: number[]): void {
     throw new Error("Uint8Array expected");
   }
   if (lengths.length > 0 && !lengths.includes(value.length)) {
-    throw new Error(`Uint8Array expected of length ${lengths}, not of length=${value.length}`);
+    throw new Error(
+      `Uint8Array expected of length ${lengths}, not of length=${value.length}`,
+    );
   }
 }
 
@@ -23,7 +31,10 @@ export function hash(value: unknown): void {
   ahash(value as any);
 }
 
-export function exists(instance: { destroyed?: boolean; finished?: boolean }, checkFinished = true): void {
+export function exists(
+  instance: { destroyed?: boolean; finished?: boolean },
+  checkFinished = true,
+): void {
   aexists(instance as any, checkFinished);
 }
 

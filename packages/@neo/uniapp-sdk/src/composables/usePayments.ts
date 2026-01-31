@@ -23,7 +23,12 @@ import type { PaymentsSDK } from "@neo/types";
  * console.log("Receipt ID:", result.receipt_id);
  * ```
  */
-export function usePayments(): Partial<PaymentsSDK> {
+/** Return type for usePayments composable */
+export interface UsePaymentsReturn {
+  payGAS: (amount: string, memo?: string) => Promise<{ receipt_id?: string }>;
+}
+
+export function usePayments(): UsePaymentsReturn {
   /**
    * Pay GAS tokens
    *
@@ -31,7 +36,10 @@ export function usePayments(): Partial<PaymentsSDK> {
    * @param memo - Optional memo/note for the payment
    * @returns Payment result with receipt ID
    */
-  const payGAS = async (amount: string, memo?: string): Promise<{ receipt_id?: string }> => {
+  const payGAS = async (
+    amount: string,
+    memo?: string,
+  ): Promise<{ receipt_id?: string }> => {
     if (typeof window !== "undefined" && (window as any).neo) {
       const neo = (window as any).neo;
       return await neo.payGAS(amount, memo);

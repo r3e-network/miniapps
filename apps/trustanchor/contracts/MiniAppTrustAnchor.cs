@@ -156,7 +156,7 @@ namespace NeoMiniAppPlatform.Contracts
         [Safe]
         public static UInt160 GetAgentByIndex(BigInteger index)
         {
-            ByteString key = Helper.Concat((ByteString)PREFIX_AGENT_INDEX, index.ToByteArray());
+            ByteString key = Helper.Concat((ByteString)PREFIX_AGENT_INDEX, (ByteString)index.ToByteArray());
             ByteString data = Storage.Get(Storage.CurrentContext, key);
             if (data == null) return UInt160.Zero;
             UInt160 agentAddr = (UInt160)data;
@@ -244,7 +244,7 @@ namespace NeoMiniAppPlatform.Contracts
             Storage.Put(Storage.CurrentContext, key, StdLib.Serialize(newAgent));
 
             // Add to agent index
-            ByteString indexKey = Helper.Concat((ByteString)PREFIX_AGENT_INDEX, total.ToByteArray());
+            ByteString indexKey = Helper.Concat((ByteString)PREFIX_AGENT_INDEX, (ByteString)total.ToByteArray());
             Storage.Put(Storage.CurrentContext, indexKey, (ByteString)sender);
 
             Storage.Put(Storage.CurrentContext, PREFIX_TOTAL_AGENTS, total + 1);

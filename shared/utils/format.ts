@@ -17,7 +17,10 @@ export function formatNumber(value: number | string, decimals = 2): string {
  * Format GAS amount from raw units (1 GAS = 100000000 = 1e8)
  * Handles bigint, number, or string input
  */
-export function formatGas(amount: bigint | number | string, decimals = 4): string {
+export function formatGas(
+  amount: bigint | number | string,
+  decimals = 4,
+): string {
   const value = typeof amount === "bigint" ? amount : BigInt(amount || 0);
   const divisor = BigInt(100000000);
   const whole = value / divisor;
@@ -37,7 +40,10 @@ export function formatGas(amount: bigint | number | string, decimals = 4): strin
  * Format a Fixed8 value (8 decimal places) for display
  * Convenience wrapper for formatGas
  */
-export function formatFixed8(value: bigint | number | string, decimals = 4): string {
+export function formatFixed8(
+  value: bigint | number | string,
+  decimals = 4,
+): string {
   return formatGas(value, decimals);
 }
 
@@ -61,7 +67,10 @@ export function fromFixed8(value: bigint | number | string | unknown): number {
  * Convert human-readable value to fixed decimal integer string.
  * Uses string parsing to avoid floating point rounding.
  */
-export function toFixedDecimals(value: string | number, decimals: number): string {
+export function toFixedDecimals(
+  value: string | number,
+  decimals: number,
+): string {
   if (!Number.isFinite(decimals) || decimals < 0) return "0";
   const raw = typeof value === "number" ? String(value) : String(value);
   const trimmed = raw.trim();
@@ -151,4 +160,23 @@ export function formatHash(hash: string, head = 6, tail = 4): string {
  */
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function trimTrailingZero(value: string): string {
+  return value.replace(/\.0$/, "");
+}
+
+/**
+ * Format a large number to compact form (K, M, B)
+ * e.g., 1500000 -> "1.5M"
+ */
+export function formatCompactNumber(value: number): string {
+  if (!Number.isFinite(value)) return "--";
+  const absValue = Math.abs(value);
+  const format = (num: number, unit: string) => `${trimTrailingZero(num.toFixed(1))}${unit}`;
+
+  if (absValue >= 1_000_000_000) return format(value / 1_000_000_000, "B");
+  if (absValue >= 1_000_000) return format(value / 1_000_000, "M");
+  if (absValue >= 1_000) return format(value / 1_000, "K");
+  return trimTrailingZero(value.toFixed(0));
 }

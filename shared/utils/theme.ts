@@ -21,7 +21,10 @@ export function getTheme(): Theme {
   if (typeof window !== "undefined") {
     const stored = normalizeTheme(window.localStorage?.getItem("theme"));
     if (stored) return stored;
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: light)").matches
+    ) {
       return "light";
     }
   }
@@ -64,7 +67,8 @@ export function listenForThemeChanges(): () => void {
     const isAllowedOrigin =
       event.origin === expectedOrigin ||
       event.origin === window.location.origin ||
-      (isParentMessage && (event.origin === "null" || expectedOrigin === "null"));
+      (isParentMessage &&
+        (event.origin === "null" || expectedOrigin === "null"));
 
     if (!isAllowedOrigin) {
       return;

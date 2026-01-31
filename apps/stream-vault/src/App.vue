@@ -60,26 +60,11 @@ const updateDimensions = () => {
   }
 };
 
-// Watch for breakpoint changes
-watch(isMobile, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    console.log('Responsive: Mobile mode changed:', newVal);
-  }
-});
 
-watch(isDesktop, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    console.log('Responsive: Desktop mode changed:', newVal);
-  }
-});
 
-// Lifecycle hooks
-onLaunch(() => {
-  console.log("Stream Vault launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Stream Vault shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     window.addEventListener("orientationchange", updateDimensions);
@@ -88,7 +73,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Stream Vault hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
     window.removeEventListener("orientationchange", updateDimensions);

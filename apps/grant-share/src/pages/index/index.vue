@@ -9,81 +9,29 @@
       </template>
 >
     <view class="app-container">
-      <!-- Chain Warning - Framework Component -->
       <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
-      <!-- Status Message -->
       <NeoCard v-if="statusMessage" :variant="statusType === 'error' ? 'danger' : 'success'" class="mb-4 text-center">
         <text class="font-bold uppercase tracking-wider">{{ statusMessage }}</text>
       </NeoCard>
 
       <!-- Grants Tab -->
       <view v-if="activeTab === 'grants'" class="tab-content">
-        <!-- Active Grants Section -->
-        <view class="grants-section">
-          <view v-if="loading" class="empty-state">
-            <text class="empty-text">{{ t("loading") }}</text>
-          </view>
-
-          <view v-else-if="fetchError" class="empty-state">
-            <text class="empty-text">{{ t("loadFailed") }}</text>
-          </view>
-
-          <view v-else-if="grants.length === 0" class="empty-state">
-            <text class="empty-text">{{ t("noActiveGrants") }}</text>
-          </view>
-
-          <!-- Grant Cards -->
-          <view v-else class="grants-list">
-            <NeoCard
-              v-for="grant in grants"
-              :key="grant.id"
-              variant="erobo-neo"
-              class="grant-card-neo clickable"
-              hoverable
-              @click="goToDetail(grant)"
-            >
-              <view class="grant-card-header">
-                <view class="grant-info">
-                  <text class="grant-title-glass">{{ grant.title }}</text>
-                  <text v-if="grant.proposer" class="grant-creator-glass">{{ t("by") }} {{ grant.proposer }}</text>
-                </view>
-                <view :class="['grant-badge-glass', grant.state]">
-                  <text class="badge-text">{{ getStatusLabel(grant.state) }}</text>
-                </view>
-              </view>
-
-              <view class="proposal-meta">
-                <text v-if="grant.onchainId !== null" class="meta-item">#{{ grant.onchainId }}</text>
-                <text v-if="grant.createdAt" class="meta-item">{{ formatDate(grant.createdAt) }}</text>
-              </view>
-
-              <view class="proposal-stats">
-                <view class="stat-chip accept">{{ t("votesFor") }} {{ formatCount(grant.votesAccept) }}</view>
-                <view class="stat-chip reject">{{ t("votesAgainst") }} {{ formatCount(grant.votesReject) }}</view>
-                <view class="stat-chip comments">{{ t("comments") }} {{ formatCount(grant.comments) }}</view>
-              </view>
-
-              <view class="proposal-actions">
-                <view @click.stop>
-                  <NeoButton
-                    size="sm"
-                    variant="secondary"
-                    :disabled="!grant.discussionUrl"
-                    @click="copyLink(grant.discussionUrl)"
-                  >
-                    {{ grant.discussionUrl ? t("copyDiscussion") : t("noDiscussion") }}
-                  </NeoButton>
-                </view>
-              </view>
-            </NeoCard>
-          </view>
-        </view>
+        <ProposalGallery
+          :grants="grants"
+          :loading="loading"
+          :fetch-error="fetchError"
+          :t="t"
+          :format-count="formatCount"
+          :format-date="formatDate"
+          :get-status-label="getStatusLabel"
+          @select="goToDetail"
+          @copy-link="copyLink"
+        />
       </view>
 
       <!-- Stats Tab -->
       <view v-if="activeTab === 'stats'" class="tab-content">
-        <!-- Grant Pool Overview -->
         <NeoCard variant="erobo" class="pool-overview-card">
           <view class="pool-stats">
             <view class="pool-stat-glass">
@@ -117,55 +65,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useWallet } from "@neo/uniapp-sdk";
-import type { WalletSDK } from "@neo/types";
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from "@/composables/useI18n";
-import { ResponsiveLayout, NeoButton, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
+import { ResponsiveLayout, NeoCard, NeoDoc, ChainWarning } from "@shared/components";
 import type { NavTab } from "@shared/components/NavBar.vue";
 
-const { t, locale } = useI18n();
+import { useGrantProposals } from "@/composables/useGrantProposals";
+import { useGrantVoting } from "@/composables/useGrantVoting";
+import ProposalGallery from "./components/ProposalGallery.vue";
 
-// Responsive layout
-const windowWidth = ref(window.innerWidth);
-const isMobile = computed(() => windowWidth.value < 768);
-const isDesktop = computed(() => windowWidth.value >= 1024);
+const { t } = useI18n();
 
-const handleResize = () => { windowWidth.value = window.innerWidth; };
-onMounted(() => window.addEventListener('resize', handleResize));
-onUnmounted(() => window.removeEventListener('resize', handleResize));
+const {
+  grants,
+  totalProposals,
+  loading,
+  fetchError,
+  activeProposals,
+  displayedProposals,
+  fetchGrants,
+  formatCount,
+  formatDate,
+  getStatusLabel,
+} = useGrantProposals();
 
-function goToDetail(grant: Grant) {
-  try {
-    uni.setStorageSync("current_grant_detail", grant);
-  } catch (e) {
-    console.error("Failed to save grant detail", e);
-  }
-  uni.navigateTo({
-    url: `/pages/detail/index?id=${grant.id}`,
-  });
-}
-
-const docSteps = computed(() => [t("step1"), t("step2"), t("step3"), t("step4")]);
-const docFeatures = computed(() => [
-  { name: t("feature1Name"), desc: t("feature1Desc") },
-  { name: t("feature2Name"), desc: t("feature2Desc") },
-]);
-
-const { chainType } = useWallet() as WalletSDK;
-
-interface Grant {
-  id: string;
-  title: string;
-  proposer: string;
-  state: string;
-  votesAccept: number;
-  votesReject: number;
-  discussionUrl: string;
-  createdAt: string;
-  comments: number;
-  onchainId: number | null;
-}
+const { statusMessage, statusType, copyLink } = useGrantVoting();
 
 const activeTab = ref<string>("grants");
 const navTabs = computed<NavTab[]>(() => [
@@ -174,136 +98,21 @@ const navTabs = computed<NavTab[]>(() => [
   { id: "docs", icon: "book", label: t("docs") },
 ]);
 
-const grants = ref<Grant[]>([]);
-const totalProposals = ref(0);
-const loading = ref(false);
-const fetchError = ref(false);
-const statusMessage = ref("");
-const statusType = ref<"success" | "error">("success");
+const docSteps = computed(() => [t("step1"), t("step2"), t("step3"), t("step4")]);
+const docFeatures = computed(() => [
+  { name: t("feature1Name"), desc: t("feature1Desc") },
+  { name: t("feature2Name"), desc: t("feature2Desc") },
+]);
 
-const displayedProposals = computed(() => grants.value.length);
-const activeProposals = computed(() => grants.value.filter((grant) => isActiveState(grant.state)).length);
-
-function decodeBase64(str: string) {
+function goToDetail(grant: any) {
   try {
-    return decodeURIComponent(escape(atob(str)));
-  } catch {
-    return str;
-  }
-}
-
-function normalizeState(state: string): string {
-  return String(state || "").toLowerCase();
-}
-
-function isActiveState(state: string): boolean {
-  const normalized = normalizeState(state);
-  return ["active", "review", "voting", "discussion"].includes(normalized);
-}
-
-async function fetchGrants() {
-  loading.value = true;
-  fetchError.value = false;
-  try {
-    const res = await new Promise<any>((resolve, reject) => {
-      uni.request({
-        url: "/api/grantshares/proposals",
-        success: (r) => resolve(r.data),
-        fail: (e) => reject(e),
-      });
-    });
-
-    if (res && Array.isArray(res.items)) {
-      grants.value = res.items
-        .map((item: any) => {
-          const title = decodeBase64(item.title || "");
-          return {
-            id: String(item.offchain_id || item.id || ""),
-            title,
-            proposer: String(item.proposer || item.proposer_address || item.proposerAddress || ""),
-            state: normalizeState(item.state || ""),
-            votesAccept: Number(item.votes_amount_accept || item.votesAmountAccept || 0),
-            votesReject: Number(item.votes_amount_reject || item.votesAmountReject || 0),
-            discussionUrl: String(item.discussion_url || item.discussionUrl || ""),
-            createdAt: String(item.offchain_creation_timestamp || item.offchainCreationTimestamp || ""),
-            comments: Number(item.offchain_comments_count || item.offchainCommentsCount || 0),
-            onchainId: item.onchain_id ?? item.onchainId ?? null,
-          } as Grant;
-        })
-        .filter((item: Grant) => item.id && item.title);
-
-      const totalCount = Number(res.total ?? res.totalCount ?? grants.value.length);
-      totalProposals.value = Number.isFinite(totalCount) ? totalCount : grants.value.length;
-    } else {
-      grants.value = [];
-      totalProposals.value = 0;
-    }
+    uni.setStorageSync("current_grant_detail", grant);
   } catch (e) {
-    grants.value = [];
-    totalProposals.value = 0;
-    fetchError.value = true;
-  } finally {
-    loading.value = false;
+    // Storage save failed - continue anyway
   }
-}
-
-function formatCount(amount: number): string {
-  return Number.isFinite(amount) ? amount.toLocaleString() : "0";
-}
-
-function formatDate(dateStr: string): string {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  if (Number.isNaN(date.getTime())) return "";
-  const dateLocale = locale.value === "zh" ? "zh-CN" : "en-US";
-  return date.toLocaleDateString(dateLocale, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+  uni.navigateTo({
+    url: `/pages/detail/index?id=${grant.id}`,
   });
-}
-
-function getStatusLabel(state: string): string {
-  const statusMap: Record<string, string> = {
-    active: t("statusActive"),
-    review: t("statusReview"),
-    voting: t("statusVoting"),
-    discussion: t("statusDiscussion"),
-    executed: t("statusExecuted"),
-    cancelled: t("statusCancelled"),
-    rejected: t("statusRejected"),
-    expired: t("statusExpired"),
-  };
-  return statusMap[normalizeState(state)] || state;
-}
-
-function showStatus(message: string, type: "success" | "error") {
-  statusMessage.value = message;
-  statusType.value = type;
-  setTimeout(() => (statusMessage.value = ""), 5000);
-}
-
-function copyLink(url: string) {
-  if (!url) return;
-  const uniApi = (globalThis as any)?.uni;
-  if (uniApi?.setClipboardData) {
-    uniApi.setClipboardData({
-      data: url,
-      success: () => showStatus(t("linkCopied"), "success"),
-      fail: () => showStatus(t("copyFailed"), "error"),
-    });
-    return;
-  }
-
-  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    navigator.clipboard
-      .writeText(url)
-      .then(() => showStatus(t("linkCopied"), "success"))
-      .catch(() => showStatus(t("copyFailed"), "error"));
-    return;
-  }
-
-  showStatus(t("copyFailed"), "error");
 }
 
 onMounted(() => {
@@ -333,106 +142,44 @@ onMounted(() => {
   min-height: 100vh;
 }
 
-/* Eco Component Overrides */
-:deep(.neo-card) {
-  background: var(--eco-card-bg) !important;
-  border: 1px solid var(--eco-card-border) !important;
-  border-radius: 12px !important;
-  box-shadow: var(--eco-card-shadow) !important;
-  color: var(--eco-text) !important;
-
-  &.variant-erobo-neo {
-    background: var(--eco-card-bg) !important;
-    border-color: var(--eco-card-accent-border) !important;
-  }
-
-  &.variant-danger {
-    background: var(--eco-danger-bg) !important;
-    border-color: var(--eco-danger-border) !important;
-    color: var(--eco-danger-text) !important;
-  }
-
-  &.variant-success {
-    background: var(--eco-success-bg) !important;
-    border-color: var(--eco-success-border) !important;
-    color: var(--eco-success-text) !important;
-  }
-}
-
-:deep(.neo-button) {
-  border-radius: 99px !important;
-  font-weight: 700 !important;
-
-  &.variant-primary {
-    background: var(--eco-button-primary-bg) !important;
-    color: var(--eco-button-primary-text) !important;
-    border: none !important;
-    box-shadow: var(--eco-button-primary-shadow) !important;
-
-    &:active {
-      transform: translateY(1px);
-      box-shadow: none !important;
-    }
-  }
-
-  &.variant-secondary {
-    background: var(--eco-button-secondary-bg) !important;
-    color: var(--eco-button-secondary-text) !important;
-    border: 1px solid var(--eco-button-secondary-border) !important;
-  }
-}
-
 .tab-content {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.status-title {
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 12px;
-  color: var(--eco-status-title);
-  letter-spacing: 0.08em;
+.mb-4 {
+  margin-bottom: 16px;
 }
 
-.status-detail {
-  font-size: 12px;
+.text-center {
   text-align: center;
-  color: var(--eco-status-detail);
-  opacity: 0.85;
 }
 
-.pool-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $space-6;
-  border-bottom: 2px dashed var(--eco-divider);
-  padding-bottom: $space-3;
+.font-bold {
+  font-weight: 700;
 }
-.pool-title {
-  font-weight: 800;
-  font-size: 20px;
-  color: var(--eco-text);
+
+.uppercase {
+  text-transform: uppercase;
 }
-.pool-round-glass {
-  font-size: 10px;
-  font-weight: bold;
-  border: 1px solid var(--eco-accent);
-  padding: 4px 12px;
-  background: var(--eco-accent-soft);
-  border-radius: 20px;
-  color: var(--eco-text);
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+
+.pool-overview-card {
+  margin-bottom: 16px;
 }
 
 .pool-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: $space-4;
+  gap: 16px;
 }
+
 .pool-stat-glass {
-  padding: $space-4;
+  padding: 16px;
   background: var(--eco-pool-stat-bg);
   border: 1px solid var(--eco-pool-stat-border);
   border-radius: 8px;
@@ -441,13 +188,15 @@ onMounted(() => {
   align-items: center;
   text-align: center;
 }
+
 .stat-label-glass {
   font-size: 10px;
-  font-weight: $font-weight-bold;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--eco-text-muted);
   margin-bottom: 4px;
 }
+
 .stat-value-glass {
   font-weight: 700;
   font-size: 18px;
@@ -457,165 +206,11 @@ onMounted(() => {
   }
 }
 
-.section-title-glass {
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 12px;
-  margin-bottom: $space-4;
-  color: var(--eco-text-muted);
-  border-left: 3px solid var(--eco-accent);
-  padding-left: 8px;
-  display: block;
-}
-
-.empty-state {
-  padding: 32px;
-  text-align: center;
-  background: var(--eco-empty-bg);
-  border-radius: 12px;
-  border: 1px dashed var(--eco-empty-border);
-}
-.empty-text {
-  color: var(--eco-text-muted);
-  font-size: 14px;
-}
-
-.grant-card-neo {
-  margin-bottom: 0;
-}
-.grant-card-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: $space-4;
-  align-items: flex-start;
-}
-.grant-title-glass {
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--eco-text);
-  display: block;
-  margin-bottom: 4px;
-}
-.grant-creator-glass {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--eco-text-muted);
-}
-
-.grant-badge-glass {
-  padding: 4px 10px;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  border-radius: 20px;
-
-  &.active {
-    background: var(--eco-badge-active-bg);
-    color: var(--eco-badge-active-text);
-  }
-  &.review,
-  &.voting,
-  &.discussion {
-    background: var(--eco-badge-review-bg);
-    color: var(--eco-badge-review-text);
-  }
-  &.executed {
-    background: var(--eco-badge-executed-bg);
-    color: var(--eco-badge-executed-text);
-  }
-  &.cancelled,
-  &.rejected,
-  &.expired {
-    background: var(--eco-badge-cancel-bg);
-    color: var(--eco-badge-cancel-text);
-  }
-}
-
-.grants-list {
-  display: flex;
-  flex-direction: column;
-  gap: $space-4;
-}
-
-.proposal-meta {
-  display: flex;
-  gap: 8px;
-  margin-bottom: $space-3;
-}
-.meta-item {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--eco-meta-text);
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: var(--eco-meta-bg);
-}
-
-.proposal-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: $space-3;
-}
-.stat-chip {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 6px;
-}
-.stat-chip.accept {
-  background: var(--eco-chip-accept-bg);
-  color: var(--eco-chip-accept-text);
-  border: 1px solid var(--eco-chip-accept-border);
-}
-.stat-chip.reject {
-  background: var(--eco-chip-reject-bg);
-  color: var(--eco-chip-reject-text);
-  border: 1px solid var(--eco-chip-reject-border);
-}
-.stat-chip.comments {
-  background: var(--eco-chip-neutral-bg);
-  color: var(--eco-chip-neutral-text);
-  border: 1px solid var(--eco-chip-neutral-border);
-}
-
-.proposal-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .scrollable {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-// Responsive styles
-@media (max-width: 767px) {
-  .app-container { padding: 12px; }
-  .pool-stats {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .proposal-stats {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .grant-card-header {
-    flex-direction: column;
-    gap: 8px;
-  }
-}
-@media (min-width: 1024px) {
-  .app-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
-  .grants-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-}
-
-
-// Desktop sidebar
 .desktop-sidebar {
   display: flex;
   flex-direction: column;
@@ -628,5 +223,21 @@ onMounted(() => {
   color: var(--text-secondary, rgba(248, 250, 252, 0.7));
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+@media (max-width: 767px) {
+  .app-container { padding: 12px; }
+  .pool-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-container { 
+    padding: 24px; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+  }
 }
 </style>

@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { onLaunch } from "@dcloudio/uni-app";
-onLaunch(() => console.log("Social Karma App Launch"));
+onLaunch(() => {});
 </script>
 
 <style lang="scss">

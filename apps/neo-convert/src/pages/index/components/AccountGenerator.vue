@@ -22,8 +22,8 @@
             <text class="label">{{ t('address') }}</text>
             <view class="value-row">
               <text class="value">{{ account.address }}</text>
-              <view class="copy-btn" @click="copy(account.address)">
-                <text class="icon">📋</text>
+              <view class="copy-btn" @click="copy(account.address)" role="button" :aria-label="t('copyAddress')">
+                <text class="icon" aria-hidden="true">📋</text>
               </view>
             </view>
           </view>
@@ -34,8 +34,8 @@
             <text class="label">{{ t('pubKey') }}</text>
             <view class="value-row">
               <text class="value truncate">{{ account.publicKey }}</text>
-              <view class="copy-btn" @click="copy(account.publicKey)">
-                <text class="icon">📋</text>
+              <view class="copy-btn" @click="copy(account.publicKey)" role="button" :aria-label="t('copyPublicKey')">
+                <text class="icon" aria-hidden="true">📋</text>
               </view>
             </view>
           </view>
@@ -49,11 +49,11 @@
             </view>
             <view class="value-row">
               <text class="value blur" :class="{ revealed: showSecrets }">{{ account.privateKey }}</text>
-              <view class="action-btn" @click="showSecrets = !showSecrets">
-                <text class="icon">{{ showSecrets ? '🙈' : '👁️' }}</text>
+              <view class="action-btn" @click="showSecrets = !showSecrets" role="button" :aria-label="showSecrets ? t('hideSecrets') : t('showSecrets')">
+                <text class="icon" aria-hidden="true">{{ showSecrets ? '🙈' : '👁️' }}</text>
               </view>
-              <view class="copy-btn" @click="copy(account.privateKey)">
-                <text class="icon">📋</text>
+              <view class="copy-btn" @click="copy(account.privateKey)" role="button" :aria-label="t('copyPrivateKey')">
+                <text class="icon" aria-hidden="true">📋</text>
               </view>
             </view>
           </view>
@@ -67,8 +67,8 @@
             </view>
             <view class="value-row">
               <text class="value blur" :class="{ revealed: showSecrets }">{{ account.wif }}</text>
-              <view class="copy-btn" @click="copy(account.wif)">
-                <text class="icon">📋</text>
+              <view class="copy-btn" @click="copy(account.wif)" role="button" :aria-label="t('copyWif')">
+                <text class="icon" aria-hidden="true">📋</text>
               </view>
             </view>
           </view>
@@ -79,13 +79,13 @@
              <view class="qr-card">
                <text class="qr-label">{{ t('address') }}</text>
                <view class="qr-bg">
-                 <image :src="addressQr" class="qr-img" />
+                 <image :src="addressQr" class="qr-img" :alt="t('addressQrCode')" />
                </view>
              </view>
              <view class="qr-card">
                <text class="qr-label">{{ t('wifLabel') }}</text>
                <view class="qr-bg">
-                 <image :src="wifQr" class="qr-img blur" :class="{ revealed: showSecrets }" />
+                 <image :src="wifQr" class="qr-img blur" :class="{ revealed: showSecrets }" :alt="t('wifQrCode')" />
                </view>
              </view>
           </view>
@@ -142,7 +142,7 @@ const generateNew = async () => {
         addressQr.value = await QRCode.toDataURL(account.value.address, { margin: 1 });
         wifQr.value = await QRCode.toDataURL(account.value.wif, { margin: 1 });
       } catch(e) {
-        console.error("QR Error", e);
+        // QR generation error - silent fail
       }
     }
     isGenerating.value = false;

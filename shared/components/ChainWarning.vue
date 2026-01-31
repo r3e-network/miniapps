@@ -30,21 +30,13 @@ import { useChainValidation } from "../composables/useChainValidation";
  * and provides a button to switch to the correct chain.
  *
  * @example
- * ```vue
- * <script setup lang="ts">
- * import { ChainWarning } from "@shared/components";
- * import { useI18n } from "@/composables/useI18n";
- *
- * const { t } = useI18n();
- * </script>
- *
- * <template>
- *   <ChainWarning
- *     :title="t('wrongChain')"
- *     :message="t('wrongChainMessage')"
- *     :button-text="t('switchToNeo')"
- *   />
- * </template>
+ * ```ts
+ * // In your component:
+ * // <ChainWarning
+ * //   :title="t('wrongChain')"
+ * //   :message="t('wrongChainMessage')"
+ * //   :button-text="t('switchToNeo')"
+ * // />
  * ```
  */
 

@@ -128,7 +128,10 @@ describe("Template Miniapp - Contract Interactions", () => {
     });
 
     it("should have wallet address after connection", () => {
-      const connectedWallet = mockWallet({ connected: true, address: "NConnectedWallet123" });
+      const connectedWallet = mockWallet({
+        connected: true,
+        address: "NConnectedWallet123",
+      });
 
       expect(connectedWallet.address.value).toBe("NConnectedWallet123");
     });
@@ -192,7 +195,9 @@ describe("Template Miniapp - Contract Interactions", () => {
 
 describe("Async Operations", () => {
   it("should handle successful operation", async () => {
-    const operation = vi.fn().mockResolvedValue({ success: true, data: "result" });
+    const operation = vi
+      .fn()
+      .mockResolvedValue({ success: true, data: "result" });
 
     const result = await operation();
 
@@ -227,25 +232,37 @@ describe("Async Operations", () => {
 describe("Error Handling", () => {
   it("should handle wallet connection error", async () => {
     const errorWallet = mockWallet();
-    errorWallet.__mocks.connect.mockRejectedValueOnce(new Error("Connection failed"));
+    errorWallet.__mocks.connect.mockRejectedValueOnce(
+      new Error("Connection failed"),
+    );
 
     await expect(errorWallet.connect()).rejects.toThrow("Connection failed");
   });
 
   it("should handle payment failure", async () => {
     const errorPayments = mockPayments();
-    errorPayments.__mocks.payGAS.mockRejectedValueOnce(new Error("Insufficient balance"));
+    errorPayments.__mocks.payGAS.mockRejectedValueOnce(
+      new Error("Insufficient balance"),
+    );
 
-    await expect(errorPayments.payGAS("10", "memo")).rejects.toThrow("Insufficient balance");
+    await expect(errorPayments.payGAS("10", "memo")).rejects.toThrow(
+      "Insufficient balance",
+    );
   });
 
   it("should handle contract invocation failure", async () => {
     const errorWallet = mockWallet();
-    errorWallet.__mocks.invokeContract.mockRejectedValueOnce(new Error("Contract reverted"));
-
-    await expect(errorWallet.invokeContract({ scriptHash: "0x123", operation: "buy", args: [] })).rejects.toThrow(
-      "Contract reverted",
+    errorWallet.__mocks.invokeContract.mockRejectedValueOnce(
+      new Error("Contract reverted"),
     );
+
+    await expect(
+      errorWallet.invokeContract({
+        scriptHash: "0x123",
+        operation: "buy",
+        args: [],
+      }),
+    ).rejects.toThrow("Contract reverted");
   });
 });
 

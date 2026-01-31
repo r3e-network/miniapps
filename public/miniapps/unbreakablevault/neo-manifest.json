@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Hacker bounty vaults secured by secret hashes.",
   "description_zh": "无法破碎的金库 - Neo N3 去中心化应用",
-  "category": "games",
-  "category_name": "Games",
-  "category_name_zh": "游戏",
+  "category": "tools",
+  "category_name": "Tools",
+  "category_name_zh": "工具",
   "tags": [],
   "developer": {
     "name": "R3E Network",

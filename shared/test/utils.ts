@@ -10,7 +10,7 @@
  * ```
  */
 
-import { vi, beforeEach } from "vitest";
+import { vi, beforeEach, expect } from "vitest";
 import { ref, computed } from "vue";
 import { mount } from "@vue/test-utils";
 
@@ -36,7 +36,11 @@ export function mockWallet(
     connected?: boolean;
   } = {},
 ) {
-  const { address = "NTestWalletAddress1234567890", chainType = "neo", connected = true } = options;
+  const {
+    address = "NTestWalletAddress1234567890",
+    chainType = "neo",
+    connected = true,
+  } = options;
 
   const mockConnect = vi.fn().mockResolvedValue(undefined);
   const mockInvokeContract = vi.fn().mockResolvedValue({
@@ -45,7 +49,9 @@ export function mockWallet(
   const mockInvokeRead = vi.fn().mockResolvedValue(null);
   const mockGetContractAddress = vi
     .fn()
-    .mockResolvedValue("0x" + Math.random().toString(16).slice(2).padStart(40, "0"));
+    .mockResolvedValue(
+      "0x" + Math.random().toString(16).slice(2).padStart(40, "0"),
+    );
   const mockSwitchToAppChain = vi.fn().mockResolvedValue(undefined);
 
   return {
@@ -84,7 +90,10 @@ export function mockPayments(
     isLoading?: boolean;
   } = {},
 ) {
-  const { receiptId = "test-receipt-" + Math.random().toString(36), isLoading = false } = options;
+  const {
+    receiptId = "test-receipt-" + Math.random().toString(36),
+    isLoading = false,
+  } = options;
 
   const mockPayGAS = vi.fn().mockResolvedValue({
     request_id: "test-request-" + Math.random().toString(36),
@@ -187,7 +196,12 @@ export function renderWithSetup(
     i18n?: ReturnType<typeof mockI18n>;
   } = {},
 ) {
-  const { wallet = mockWallet(), payments = mockPayments(), events = mockEvents(), i18n = mockI18n() } = mocks;
+  const {
+    wallet = mockWallet(),
+    payments = mockPayments(),
+    events = mockEvents(),
+    i18n = mockI18n(),
+  } = mocks;
 
   // Setup global mocks
   vi.mock("@neo/uniapp-sdk", () => ({
@@ -288,7 +302,11 @@ export async function flushPromises(): Promise<void> {
  * expectText(wrapper, ".status", "Success");
  * ```
  */
-export function expectText(wrapper: ReturnType<typeof mount>, selector: string, text: string) {
+export function expectText(
+  wrapper: ReturnType<typeof mount>,
+  selector: string,
+  text: string,
+) {
   const element = wrapper.find(selector);
   expect(element.exists()).toBe(true);
   expect(element.text()).toContain(text);
@@ -302,7 +320,10 @@ export function expectText(wrapper: ReturnType<typeof mount>, selector: string, 
  * expectElement(wrapper, ".submit-button");
  * ```
  */
-export function expectElement(wrapper: ReturnType<typeof mount>, selector: string) {
+export function expectElement(
+  wrapper: ReturnType<typeof mount>,
+  selector: string,
+) {
   const element = wrapper.find(selector);
   expect(element.exists()).toBe(true);
 }
@@ -315,7 +336,10 @@ export function expectElement(wrapper: ReturnType<typeof mount>, selector: strin
  * expectDisabled(wrapper, ".submit-button");
  * ```
  */
-export function expectDisabled(wrapper: ReturnType<typeof mount>, selector: string) {
+export function expectDisabled(
+  wrapper: ReturnType<typeof mount>,
+  selector: string,
+) {
   const element = wrapper.find(selector);
   expect(element.exists()).toBe(true);
   expect(element.attributes("disabled")).toBeDefined();

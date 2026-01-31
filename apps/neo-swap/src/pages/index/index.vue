@@ -23,8 +23,8 @@
             @click="selectedPair = pair.id"
           >
             <view class="pair-icons">
-              <image :src="pair.fromIcon" class="pair-icon" />
-              <image :src="pair.toIcon" class="pair-icon overlap" />
+              <image :src="pair.fromIcon" class="pair-icon" :alt="pair.fromSymbol || t('tokenIcon')" />
+              <image :src="pair.toIcon" class="pair-icon overlap" :alt="pair.toSymbol || t('tokenIcon')" />
             </view>
             <view class="pair-info">
               <text class="pair-name">{{ pair.name }}</text>

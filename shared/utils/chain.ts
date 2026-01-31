@@ -23,11 +23,16 @@ export function requireNeoChain(
   let message = fallbackMessage || "";
   if (!message && typeof t === "function") {
     const primary = t("wrongChainMessage");
-    message = primary && primary !== "wrongChainMessage" ? primary : t("wrongChain");
+    message =
+      primary && primary !== "wrongChainMessage" ? primary : t("wrongChain");
   }
   if (!message) message = "Wrong network";
 
-  const ui = (globalThis as { uni?: { showToast?: (args: { title: string; icon?: string }) => void } }).uni;
+  const ui = (
+    globalThis as {
+      uni?: { showToast?: (args: { title: string; icon?: string }) => void };
+    }
+  ).uni;
   if (ui?.showToast) {
     ui.showToast({ title: message, icon: "none" });
   }

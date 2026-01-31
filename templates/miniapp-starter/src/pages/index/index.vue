@@ -76,11 +76,11 @@ const CONTRACT_HASH = "";
 
 const { t } = useI18n();
 const { address, connect, invokeContract, invokeRead } = useWallet() as any;
-const { payGAS } = usePayments(APP_ID);
+const { payGAS } = usePayments();
 const { list: listEvents } = useEvents();
 
 // Page state management
-const { isLoading, error: pageError, setError, clearError } = usePageState("main");
+const { isLoading, error: pageError, setError, clearError, activeTab } = usePageState("main");
 
 // Contract interaction helper (if using contracts)
 const contract = useContractInteraction(CONTRACT_HASH);
@@ -108,7 +108,7 @@ const isValid = computed(() => {
 
 const navTabs = computed<NavTab[]>(() => [
   { id: "main", icon: "game", label: t("tabMain") },
-  { id: "docs", icon: "book", label: t("docs") },
+  { id: "docs", icon: "book", label: t("docsTab") },
 ]);
 
 // ============================================================

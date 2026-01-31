@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "@/composables/useI18n";
+import { useI18n } from "@shared/composables/useI18n";
 import ScrollReveal from "./ScrollReveal.vue";
 
 const { t } = useI18n();

@@ -24,7 +24,7 @@ import { ref } from "vue";
 import NeoModal from "./NeoModal.vue";
 import NeoButton from "./NeoButton.vue";
 import AppIcon from "./AppIcon.vue";
-import { useI18n } from "@/composables/useI18n";
+import { useI18n } from "@shared/composables/useI18n";
 
 const { t } = useI18n();
 

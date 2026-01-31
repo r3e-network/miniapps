@@ -7,13 +7,39 @@
 
 import { ref, type Ref } from "vue";
 import type {
-  WalletSDK,
   ChainType,
   InvokeContractOptions,
   InvokeReadOptions,
   InvokeResult,
   WalletBalanceValue,
 } from "@neo/types";
+
+/**
+ * Return type for useWallet composable
+ * Uses Ref types for reactive state properties
+ */
+export interface UseWalletReturn {
+  /** Current wallet address (reactive) */
+  address: Ref<string | null>;
+  /** Current chain type (reactive) */
+  chainType: Ref<ChainType>;
+  /** Chain ID (reactive) */
+  chainId: Ref<string | undefined>;
+  /** App's required chain ID (reactive) */
+  appChainId: Ref<string | undefined>;
+  /** Connect wallet */
+  connect(): Promise<void>;
+  /** Invoke contract method (write) */
+  invokeContract(options: InvokeContractOptions): Promise<InvokeResult>;
+  /** Read from contract (read-only) */
+  invokeRead(options: InvokeReadOptions): Promise<unknown>;
+  /** Get balance for a token */
+  getBalance(symbol: string): Promise<WalletBalanceValue>;
+  /** Get contract address for the current app */
+  getContractAddress(): Promise<string | null>;
+  /** Switch to the app's required chain */
+  switchToAppChain(): Promise<void>;
+}
 
 /**
  * Wallet composable for Neo blockchain interactions
@@ -38,7 +64,7 @@ import type {
  * });
  * ```
  */
-export function useWallet(): Partial<WalletSDK> {
+export function useWallet(): UseWalletReturn {
   // Reactive state
   const address: Ref<string | null> = ref(null);
   const chainType: Ref<ChainType> = ref("neo" as ChainType);
@@ -68,7 +94,9 @@ export function useWallet(): Partial<WalletSDK> {
    * @param options - Contract invocation options
    * @returns Transaction result with txid
    */
-  const invokeContract = async (options: InvokeContractOptions): Promise<InvokeResult> => {
+  const invokeContract = async (
+    options: InvokeContractOptions,
+  ): Promise<InvokeResult> => {
     if (typeof window !== "undefined" && (window as any).neo) {
       const neo = (window as any).neo;
       return await neo.invoke(options);

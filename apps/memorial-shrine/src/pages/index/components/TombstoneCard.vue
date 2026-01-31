@@ -2,7 +2,7 @@
   <view class="tombstone-card" @click="$emit('click')">
     <view class="tombstone-top">
       <view class="photo-frame" v-if="memorial.photoHash">
-        <image :src="memorial.photoHash" mode="aspectFill" />
+        <image :src="memorial.photoHash" mode="aspectFill" :alt="memorial.name || t('memorialPhoto')" />
       </view>
       <view class="icon-frame" v-else>
         <text class="candle-icon" :class="{ burning: memorial.hasRecentTribute }">🕯️</text>

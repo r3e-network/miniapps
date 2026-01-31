@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Set deadlines and countdown timers with on-chain consequences",
   "description_zh": "末日时钟 - Neo N3 去中心化应用",
-  "category": "games",
-  "category_name": "Games",
-  "category_name_zh": "游戏",
+  "category": "tools",
+  "category_name": "Tools",
+  "category_name_zh": "工具",
   "tags": [
     "timer",
     "deadline",

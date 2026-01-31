@@ -134,7 +134,6 @@ const loadRequest = async (id: string) => {
     request.value = await api.get(id);
     broadcastTxId.value = request.value?.broadcast_txid || "";
   } catch (e: any) {
-    console.error(e);
     error.value = t("toastLoadFailed");
   } finally {
     loading.value = false;
@@ -156,7 +155,6 @@ const orderedSigners = computed(() => {
       address: getPublicKeyAddress(key),
     }));
   } catch (e) {
-    console.error(e);
     return [];
   }
 });
@@ -236,7 +234,6 @@ const sign = async () => {
     request.value = updated;
     uni.showToast({ title: t("toastSignSuccess"), icon: "success" });
   } catch (e: any) {
-    console.error(e);
     uni.showToast({ title: t("toastSignFailed"), icon: "none" });
   } finally {
     isProcessing.value = false;
@@ -292,7 +289,6 @@ const broadcast = async () => {
 
     uni.showToast({ title: t("toastBroadcastSuccess"), icon: "success" });
   } catch (e: any) {
-    console.error(e);
     uni.showToast({ title: t("toastBroadcastFailed"), icon: "none" });
   } finally {
     isProcessing.value = false;

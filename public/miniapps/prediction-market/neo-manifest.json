@@ -6,9 +6,9 @@
   "version": "1.0.0",
   "description": "Prediction Market miniapp on Neo N3",
   "description_zh": "预测市场 - Neo N3 去中心化应用",
-  "category": "finance",
-  "category_name": "Finance",
-  "category_name_zh": "金融",
+  "category": "games",
+  "category_name": "Games",
+  "category_name_zh": "游戏",
   "tags": [
     "other"
   ],

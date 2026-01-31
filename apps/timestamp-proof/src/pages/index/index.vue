@@ -183,7 +183,6 @@ const loadProofs = async () => {
       }));
     }
   } catch (e: any) {
-    console.error("Failed to load proofs:", e);
   }
 };
 

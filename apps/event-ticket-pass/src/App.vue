@@ -60,26 +60,10 @@ const updateDimensions = () => {
   }
 };
 
-// Watch for breakpoint changes
-watch(isMobile, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    console.log('Responsive: Mobile mode changed:', newVal);
-  }
-});
-
-watch(isDesktop, (newVal, oldVal) => {
-  if (newVal !== oldVal) {
-    console.log('Responsive: Desktop mode changed:', newVal);
-  }
-});
-
 // Lifecycle hooks
-onLaunch(() => {
-  console.log("Event Ticket Pass launched");
-});
+onLaunch(() => {});
 
 onShow(() => {
-  console.log("Event Ticket Pass shown");
   if (typeof window !== "undefined") {
     window.addEventListener("resize", updateDimensions);
     window.addEventListener("orientationchange", updateDimensions);
@@ -88,7 +72,6 @@ onShow(() => {
 });
 
 onHide(() => {
-  console.log("Event Ticket Pass hidden");
   if (typeof window !== "undefined") {
     window.removeEventListener("resize", updateDimensions);
     window.removeEventListener("orientationchange", updateDimensions);

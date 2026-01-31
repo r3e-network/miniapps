@@ -9,7 +9,7 @@
       <!-- Tombstone Header -->
       <view class="tombstone-header">
         <view class="photo-frame">
-          <image v-if="memorial.photoHash" :src="memorial.photoHash" mode="aspectFill" />
+          <image v-if="memorial.photoHash" :src="memorial.photoHash" mode="aspectFill" :alt="memorial.name || t('memorialPhoto')" />
           <text v-else class="default-icon">🕯️</text>
         </view>
         <text class="name">{{ memorial.name }}</text>

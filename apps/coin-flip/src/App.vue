@@ -3,17 +3,11 @@ import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { onMounted } from "vue";
 import { initTheme, listenForThemeChanges } from "@shared/utils/theme";
 
-onLaunch(() => {
-  console.log("Coin Flip launched");
-});
+onLaunch(() => {});
 
-onShow(() => {
-  console.log("Coin Flip shown");
-});
+onShow(() => {});
 
-onHide(() => {
-  console.log("Coin Flip hidden");
-});
+onHide(() => {});
 
 onMounted(() => {
   initTheme();
