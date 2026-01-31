@@ -17,7 +17,10 @@
     "email": "dev@r3e.network",
     "website": "https://r3e.network"
   },
-  "contracts": {},
+  "contracts": {
+    "neo-n3-mainnet": "0xfe4b06a3b0e2b8d0c7a6c67b4b6c3d8e1f5a2c3d4",
+    "neo-n3-testnet": ""
+  },
   "supported_networks": [
     "neo-n3-mainnet"
   ],

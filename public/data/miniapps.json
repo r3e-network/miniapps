@@ -287,7 +287,10 @@
       "entry_url": "/miniapps/social-karma/index.html",
       "category": "social",
       "status": "active",
-      "supportedChains": [],
+      "supportedChains": [
+        "neo-n3-mainnet",
+        "neo-n3-testnet"
+      ],
       "chainContracts": {},
       "permissions": {
         "payments": false,
@@ -701,7 +704,7 @@
       "icon": "/miniapps/doomsday-clock/static/logo.png",
       "banner": "/miniapps/doomsday-clock/static/banner.png",
       "entry_url": "/miniapps/doomsday-clock/index.html",
-      "category": "games",
+      "category": "tools",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",
@@ -1380,7 +1383,7 @@
       "icon": "/miniapps/unbreakable-vault/static/logo.png",
       "banner": "/miniapps/unbreakable-vault/static/banner.png",
       "entry_url": "/miniapps/unbreakable-vault/index.html",
-      "category": "games",
+      "category": "tools",
       "status": "active",
       "supportedChains": [
         "neo-n3-mainnet",

@@ -10,7 +10,9 @@
   "category_name": "Tools",
   "category_name_zh": "工具",
   "tags": [
-    "other"
+    "timestamp",
+    "proof",
+    "tools"
   ],
   "developer": {
     "name": "R3E Network",
