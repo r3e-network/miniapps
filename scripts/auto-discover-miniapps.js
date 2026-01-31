@@ -18,10 +18,31 @@ const path = require("path");
 
 const APPS_DIR = path.join(__dirname, "../apps");
 const OUTPUT_FILE = path.join(__dirname, "../public/data/miniapps.json");
-const CONTRACT_CONFIGS = {
-  "neo-n3-testnet": path.join(__dirname, "../../deploy/config/testnet_contracts.json"),
-  "neo-n3-mainnet": path.join(__dirname, "../../deploy/config/mainnet_contracts.json"),
-};
+const REPO_ROOT = path.resolve(__dirname, "..");
+
+function resolveContractConfigs({ rootDir = REPO_ROOT } = {}) {
+  const candidates = [
+    path.join(rootDir, "deploy", "config"),
+    path.join(rootDir, "sdk", "deploy", "config"),
+  ];
+
+  const result = {};
+  for (const dir of candidates) {
+    const testnet = path.join(dir, "testnet_contracts.json");
+    const mainnet = path.join(dir, "mainnet_contracts.json");
+
+    if (!result["neo-n3-testnet"] && fs.existsSync(testnet)) {
+      result["neo-n3-testnet"] = testnet;
+    }
+    if (!result["neo-n3-mainnet"] && fs.existsSync(mainnet)) {
+      result["neo-n3-mainnet"] = mainnet;
+    }
+  }
+
+  return result;
+}
+
+const CONTRACT_CONFIGS = resolveContractConfigs();
 
 function loadContractAddresses(configPath, label) {
   const result = {};
@@ -281,4 +302,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { discoverMiniapp };
+module.exports = { discoverMiniapp, loadContractAddresses, resolveContractConfigs };

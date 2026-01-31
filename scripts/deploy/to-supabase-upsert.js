@@ -17,18 +17,37 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const TABLE_NAME = "miniapp_stats";
 const CDN_URL = process.env.NEXT_PUBLIC_CDN_URL || process.env.CDN_URL;
 
+function resolveAssetDir(appPath) {
+  const staticDir = path.join(appPath, "static");
+  const publicDir = path.join(appPath, "public");
+
+  const hasStatic =
+    fs.existsSync(path.join(staticDir, "logo.png")) || fs.existsSync(path.join(staticDir, "banner.png"));
+  if (hasStatic) return staticDir;
+
+  const hasPublic =
+    fs.existsSync(path.join(publicDir, "logo.png")) || fs.existsSync(path.join(publicDir, "banner.png"));
+  if (hasPublic) return publicDir;
+
+  return null;
+}
+
+function normalizeStateSource(manifest) {
+  return manifest.state_source || manifest.stateSource || {};
+}
+
 /**
  * Get all manifests from apps directory
  */
-function getAllManifests() {
+function getAllManifests({ appsDir = APPS_DIR } = {}) {
   const manifests = [];
-  const appDirs = fs.readdirSync(APPS_DIR).filter((dir) => {
-    const appPath = path.join(APPS_DIR, dir);
+  const appDirs = fs.readdirSync(appsDir).filter((dir) => {
+    const appPath = path.join(appsDir, dir);
     return fs.statSync(appPath).isDirectory() && !dir.startsWith(".");
   });
 
   for (const appName of appDirs) {
-    const appPath = path.join(APPS_DIR, appName);
+    const appPath = path.join(appsDir, appName);
     const manifestPath = path.join(appPath, "neo-manifest.json");
 
     if (!fs.existsSync(manifestPath)) {
@@ -38,10 +57,10 @@ function getAllManifests() {
     try {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
 
-      // Add file paths
-      const staticDir = path.join(appPath, "static");
-      manifest.hasLogo = fs.existsSync(path.join(staticDir, "logo.png"));
-      manifest.hasBanner = fs.existsSync(path.join(staticDir, "banner.png"));
+      const assetDir = resolveAssetDir(appPath);
+      manifest.assetDir = assetDir;
+      manifest.hasLogo = assetDir ? fs.existsSync(path.join(assetDir, "logo.png")) : false;
+      manifest.hasBanner = assetDir ? fs.existsSync(path.join(assetDir, "banner.png")) : false;
       manifest.appDir = appName;
 
       manifests.push(manifest);
@@ -117,6 +136,8 @@ function manifestToRecord(manifest, chainId) {
     .filter(Boolean)
     .join(" ");
 
+  const stateSource = normalizeStateSource(manifest);
+
   return {
     // Primary identifiers
     app_id: appId,
@@ -161,8 +182,8 @@ function manifestToRecord(manifest, chainId) {
     feature_deeplink: manifest.features?.deeplink || null,
 
     // State source
-    state_source_type: manifest.state_source?.type,
-    state_source_endpoints: JSON.stringify(manifest.state_source?.endpoints || []),
+    state_source_type: stateSource.type,
+    state_source_endpoints: JSON.stringify(stateSource.endpoints || []),
 
     // Platform features
     platform_analytics: manifest.platform?.analytics !== false,
@@ -287,16 +308,17 @@ async function registerAll() {
 
         // Upload assets (only once per app, not per chain)
         if (chainId === supportedNetworks[0]) {
+          const assetDir = manifest.assetDir || path.join(APPS_DIR, manifest.appDir, "static");
           if (manifest.hasLogo) {
             await uploadAsset(
-              path.join(APPS_DIR, manifest.appDir, "static", "logo.png"),
+              path.join(assetDir, "logo.png"),
               "miniapps",
               `${app_id_for_path}/logo.png`,
             );
           }
           if (manifest.hasBanner) {
             await uploadAsset(
-              path.join(APPS_DIR, manifest.appDir, "static", "banner.png"),
+              path.join(assetDir, "banner.png"),
               "miniapps",
               `${app_id_for_path}/banner.png`,
             );
@@ -395,4 +417,10 @@ if (require.main === module) {
   });
 }
 
-module.exports = { registerAll, getAllManifests, manifestToRecord };
+module.exports = {
+  registerAll,
+  getAllManifests,
+  manifestToRecord,
+  resolveAssetDir,
+  normalizeStateSource,
+};
