@@ -25,20 +25,20 @@ import { mount } from "@vue/test-utils";
  * ```ts
  * const wallet = mockWallet({
  *   address: "Nxyz...",
- *   chainType: "neo"
+ *   chainType: "neo-n3"
  * });
  * ```
  */
 export function mockWallet(
   options: {
     address?: string;
-    chainType?: "neo" | "evm";
+    chainType?: "neo-n3";
     connected?: boolean;
   } = {},
 ) {
   const {
     address = "NTestWalletAddress1234567890",
-    chainType = "neo",
+    chainType = "neo-n3",
     connected = true,
   } = options;
 

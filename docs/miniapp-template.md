@@ -22,7 +22,7 @@ and contract requirements.
 - Keep error messages short and actionable.
 
 ## Chain Guard (Neo-only)
-- Use `requireNeoChain(chainType, t)` before any Neo N3 contract action.
+- Use `useChainValidation()` to gate contract actions when you need mainnet/testnet checks.
 - For reads in background, use the silent option when appropriate.
 
 ## Amount Handling

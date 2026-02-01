@@ -48,8 +48,11 @@ function processApp(appDir) {
             assets_allowed: srcManifest.assets_allowed || neoManifest.assets_allowed || ['GAS'],
             governance_assets_allowed:
                 srcManifest.governance_assets_allowed || neoManifest.governance_assets_allowed || ['NEO'],
-            supported_chains: srcManifest.supported_chains || neoManifest.supported_chains || ['neo-n3-mainnet', 'neo-n3-testnet'],
-            contracts: neoManifest.contracts || {},
+            contracts: srcManifest.contracts || neoManifest.contracts || {
+                'neo-n3-mainnet': { address: null },
+                'neo-n3-testnet': { address: null }
+            },
+            default_network: srcManifest.default_network || neoManifest.default_network || 'neo-n3-mainnet',
             card: srcManifest.card || neoManifest.card || {
                 display: {
                     type: 'icon_title',

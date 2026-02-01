@@ -1,5 +1,7 @@
 type Translator = (key: string) => string;
 
+const N3_CHAIN_TYPES = new Set(["neo-n3", "neo-n3-mainnet", "neo-n3-testnet"]);
+
 function resolveChainType(chainType: unknown): string {
   if (typeof chainType === "string") return chainType;
   const value = (chainType as { value?: unknown } | null)?.value;
@@ -7,7 +9,8 @@ function resolveChainType(chainType: unknown): string {
 }
 
 export function isEvmChain(chainType: unknown): boolean {
-  return resolveChainType(chainType) === "evm";
+  void chainType;
+  return false;
 }
 
 export function requireNeoChain(
@@ -16,7 +19,8 @@ export function requireNeoChain(
   fallbackMessage?: string,
   options?: { silent?: boolean },
 ): boolean {
-  if (!isEvmChain(chainType)) return true;
+  const resolved = resolveChainType(chainType);
+  if (N3_CHAIN_TYPES.has(resolved)) return true;
 
   if (options?.silent) return false;
 

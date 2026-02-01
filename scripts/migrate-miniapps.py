@@ -60,7 +60,7 @@ APPS = [
 # Pattern for the chain validation template block
 # Handles various structural variations including missing elements and custom implementations
 TEMPLATE_PATTERN = re.compile(
-    r'''<view v-if="chainType === 'evm'"[^>]*>.*?</view>\s*(?=<view v-if=|<!--|<NeoCard|</AppLayout>)''',
+    r'''<view v-if="[^"]*chainType[^"]*"[^>]*>.*?</view>\s*(?=<view v-if=|<!--|<NeoCard|</AppLayout>)''',
     re.MULTILINE | re.DOTALL,
 )
 

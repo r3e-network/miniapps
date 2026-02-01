@@ -24,7 +24,6 @@
     "crypto-js": "^4.2.0",
     "dijkstrajs": "^1.0.3",
     "dompurify": "^3.3.1",
-    "ethereum-cryptography": "^2.2.1",
     "fflate": "^0.8.2",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.0.0",

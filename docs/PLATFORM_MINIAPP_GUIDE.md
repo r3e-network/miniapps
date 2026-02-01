@@ -332,7 +332,7 @@ interface Miniapp {
 
     // Contract
     contract_address: string;
-    supported_networks: string[];
+    contracts: Record<string, { address: string | null; active: boolean }>;
     default_network: string;
 
     // Features
@@ -371,9 +371,8 @@ interface MiniAppSDKConfig {
     appId: string;
     contractAddress?: string | null;
     chainId?: string | null;
-    chainType?: string;
-    supportedChains?: string[];
-    chainContracts?: Record<string, any>;
+    contracts?: Record<string, any>;
+    defaultNetwork?: string;
     layout?: "web" | "mobile";
     debug?: boolean;
 }
@@ -549,7 +548,8 @@ class MiniappLoader {
             appId: metadata.app_id,
             contractAddress: metadata.contract_address || null,
             chainId: metadata.default_network || metadata.chain_id || null,
-            supportedChains: metadata.supported_networks || [],
+            contracts: metadata.contracts || {},
+            defaultNetwork: metadata.default_network || null,
             ...options?.config,
             layout: options?.layout ?? options?.config?.layout ?? "web",
         };
@@ -688,7 +688,6 @@ NEO miniapps use a small, fixed bridge protocol over `window.postMessage`:
   connected: boolean,
   address?: string | null,
   chainId?: string | null,
-  chainType?: string | null,
   balance?: {
     native?: string;
     nativeSymbol?: string;

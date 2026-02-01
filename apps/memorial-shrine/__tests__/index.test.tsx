@@ -129,7 +129,7 @@ describe("Memorial Shrine - Index Page", () => {
       
       expect(requireNeoChain(chainType.value)).toBe(true);
       
-      chainType.value = "ethereum";
+      chainType.value = "unknown-chain";
       expect(requireNeoChain(chainType.value)).toBe(false);
     });
 

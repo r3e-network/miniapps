@@ -39,7 +39,7 @@ Migrating an existing miniapp involves:
         @tab-change="activeTab = $event"
     >
         <!-- ❌ DUPLICATED CHAIN VALIDATION CODE -->
-        <view v-if="chainType === 'evm'" class="px-4 mb-4">
+        <view v-if="showWarning" class="px-4 mb-4">
             <NeoCard variant="danger">
                 <view class="flex flex-col items-center gap-2 py-1">
                     <text class="text-center font-bold text-red-400">{{
@@ -68,9 +68,9 @@ Migrating an existing miniapp involves:
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useWallet, useEvents } from "@neo/uniapp-sdk";
 import { formatNumber } from "@shared/utils/format";
-import { requireNeoChain } from "@shared/utils/chain";
 import { useI18n } from "@/composables/useI18n";
 import { AppLayout, NeoDoc, NeoCard, NeoButton } from "@shared/components";
 
@@ -80,10 +80,11 @@ const {
     connect,
     invokeContract,
     invokeRead,
-    chainType,
     getContractAddress,
     switchToAppChain,
 } = useWallet() as any;
+
+const showWarning = computed(() => false);
 
 // ... rest of code
 </script>
@@ -129,7 +130,7 @@ import {
 } from "@shared/components";
 
 const { t } = useI18n();
-// ✅ NO NEED FOR chainType, switchToAppChain IN TEMPLATE
+// ✅ NO NEED FOR chainType checks in template
 const { address, connect, invokeContract, invokeRead, getContractAddress } =
     useWallet() as any;
 
@@ -140,7 +141,7 @@ const { address, connect, invokeContract, invokeRead, getContractAddress } =
 ### What Changed?
 
 1. **Removed**: 13 lines of duplicated template code
-2. **Removed**: `chainType`, `switchToAppChain` from destructured `useWallet`
+2. **Removed**: `chainType` from destructured `useWallet`
 3. **Added**: Single `ChainWarning` component
 4. **Updated**: Imports to include `ChainWarning` from `@shared/components`
 
@@ -220,7 +221,7 @@ For a more complete refactoring, adopt the `MiniAppLayout` component:
         :active-tab="activeTab"
         @tab-change="activeTab = $event"
     >
-        <view v-if="chainType === 'evm'" class="px-4 mb-4">
+        <view v-if="showWarning" class="px-4 mb-4">
             <NeoCard variant="danger">
                 <!-- chain warning code -->
             </NeoCard>
@@ -327,13 +328,13 @@ export { default as ChainWarning } from "./ChainWarning.vue";
 
 ### Issue 2: Type Errors with useWallet
 
-**Problem**: `chainType` or `switchToAppChain` no longer available
+**Problem**: `chainType` no longer available
 
 **Solution**: Use `useChainValidation` composable instead:
 
 ```typescript
 // Before
-const { chainType, switchToAppChain } = useWallet() as any;
+const { switchToAppChain } = useWallet() as any;
 
 // After
 import { useChainValidation } from "@shared/composables/useChainValidation";
@@ -362,7 +363,7 @@ const showWarning = computed(() => {
 ### Checklist
 
 1. **Chain Switching Test**
-    - [ ] Switch from EVM to Neo N3
+    - [ ] Switch between Neo N3 testnet and mainnet (if applicable)
     - [ ] Verify warning disappears after switch
     - [ ] Verify button shows loading state
 
@@ -388,7 +389,7 @@ If issues arise, you can quickly rollback:
 ```vue
 <!-- Keep old code commented for quick rollback -->
 <!--
-<view v-if="chainType === 'evm'" class="px-4 mb-4">
+<view v-if="showWarning" class="px-4 mb-4">
   <NeoCard variant="danger">
     <view class="flex flex-col items-center gap-2 py-1">
       <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>

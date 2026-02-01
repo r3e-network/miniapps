@@ -68,7 +68,7 @@ SUPABASE_URL=your_supabase_project_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 # Application URLs
-NEXT_PUBLIC_RPC_URL=https://neoxrpc1.blackholelabs.io
+NEXT_PUBLIC_RPC_URL=https://testnet1.neo.coz.io:443
 NEXT_PUBLIC_NETWORK=neo-n3-mainnet
 ```
 

@@ -2,8 +2,8 @@
 """
 Update all neo-manifest.json files to include:
 - Chinese name and description
-- Multi-network contract addresses
-- Supported networks
+- Neo N3 contract addresses
+- Default network
 """
 import json
 import os
@@ -128,15 +128,20 @@ def update_manifest(app_dir):
             "website": data.get("developer", {}).get("website", "https://r3e.network") if isinstance(data.get("developer"), dict) else "https://r3e.network"
         },
         
-        # Contracts (support multiple networks)
+        # Contracts (Neo N3 only)
         "contracts": {
-            "neo-n3-mainnet": data.get("contracts", {}).get("neo-n3-mainnet", {}).get("address", 
-                        data.get("contracts", {}).get("primary", "0x0000000000000000000000000000000000000000")),
-            "neo-n3-testnet": data.get("contracts", {}).get("neo-n3-testnet", {}).get("address", "")
+            "neo-n3-mainnet": {
+                "address": data.get("contracts", {}).get("neo-n3-mainnet", {}).get(
+                    "address",
+                    data.get("contracts", {}).get("primary", "0x0000000000000000000000000000000000000000")
+                )
+            },
+            "neo-n3-testnet": {
+                "address": data.get("contracts", {}).get("neo-n3-testnet", {}).get("address", "")
+            }
         },
-        
-        # Supported networks
-        "supported_networks": ["neo-n3-mainnet"],
+
+        # Default network
         "default_network": "neo-n3-mainnet",
         
         # URLs
@@ -160,7 +165,7 @@ def update_manifest(app_dir):
         "stateSource": {
             "type": data.get("stateSource", {}).get("type", "smart-contract"),
             "chain": data.get("stateSource", {}).get("chain", "neo-n3-mainnet"),
-            "endpoints": data.get("stateSource", {}).get("endpoints", ["https://neoxrpc1.blackholelabs.io"])
+            "endpoints": data.get("stateSource", {}).get("endpoints", ["https://mainnet1.neo.coz.io:443"])
         },
         
         # Platform tracking

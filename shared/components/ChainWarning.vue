@@ -26,7 +26,7 @@ import { useChainValidation } from "../composables/useChainValidation";
 /**
  * ChainWarning Component
  *
- * Displays a warning when the user is connected to the wrong chain (EVM instead of Neo N3)
+ * Displays a warning when the user is connected to the wrong chain
  * and provides a button to switch to the correct chain.
  *
  * @example

@@ -150,7 +150,7 @@ describe("Heritage Trust - Index Page", () => {
       
       expect(requireNeoChain(chainType.value)).toBe(true);
       
-      chainType.value = "ethereum";
+      chainType.value = "unknown-chain";
       expect(requireNeoChain(chainType.value)).toBe(false);
     });
   });
@@ -482,7 +482,7 @@ describe("Heritage Trust - Index Page", () => {
     });
 
     it("should validate chain before operations", () => {
-      const chainType = ref("ethereum");
+      const chainType = ref("unknown-chain");
       const isNeoChain = chainType.value === "neo-n3-mainnet";
       
       expect(isNeoChain).toBe(false);

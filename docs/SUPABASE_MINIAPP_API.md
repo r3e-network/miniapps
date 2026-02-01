@@ -39,7 +39,7 @@ The miniapp registration system stores comprehensive data about each miniapp to 
 | `entry_url`               | TEXT        | Entry point URL                               |
 | **Network**               |             |                                               |
 | `contract_address`        | TEXT        | Smart contract address                        |
-| `supported_networks`      | JSONB       | Array of supported networks                   |
+| `contracts`               | JSONB       | Per-network contract metadata                 |
 | `default_network`         | TEXT        | Default network ID                            |
 | **Features**              |             |                                               |
 | `permissions`             | JSONB       | Required permissions                          |
@@ -218,7 +218,10 @@ curl "${SUPABASE_URL}/rest/v1/miniapp_stats?app_id=eq.miniapp-prediction-market&
   "banner_url": "https://...",
   "entry_url": "https://meshmini.app/miniapps/prediction-market/index.html",
   "contract_address": "0x0000000000000000000000000000000000000000",
-  "supported_networks": ["neo-n3-mainnet"],
+  "contracts": {
+    "neo-n3-mainnet": { "address": "0x0000000000000000000000000000000000000000", "active": true },
+    "neo-n3-testnet": { "address": null, "active": false }
+  },
   "default_network": "neo-n3-mainnet",
   "permissions": ["invoke:primary", "read:blockchain"],
   "feature_stateless": true,

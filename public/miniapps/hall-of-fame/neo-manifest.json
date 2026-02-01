@@ -41,7 +41,7 @@
     "type": "smart-contract",
     "chain": "neo-n3-mainnet",
     "endpoints": [
-      "https://neoxrpc1.blackholelabs.io"
+      "https://neo.coz.io/mainnet"
     ]
   },
   "platform": {

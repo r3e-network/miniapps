@@ -24,7 +24,7 @@ The manifest is the **source of truth** for miniapp metadata.
   "description": "Decentralized lottery game with transparent drawing",
   "description_zh": "去中心化彩票游戏，透明开奖",
   
-  "category": "games",
+  "category": "gaming",
   "category_name": "Games",
   "category_name_zh": "游戏",
   "tags": ["lottery", "gaming", "neo-n3"],
@@ -36,11 +36,10 @@ The manifest is the **source of truth** for miniapp metadata.
   },
   
   "contracts": {
-    "neo-n3-mainnet": "0x1234567890abcdef1234567890abcdef12345678",
-    "neo-n3-testnet": "0xabcdef1234567890abcdef1234567890abcdef12"
+    "neo-n3-mainnet": { "address": "0x1234567890abcdef1234567890abcdef12345678" },
+    "neo-n3-testnet": { "address": "0xabcdef1234567890abcdef1234567890abcdef12" }
   },
-  
-  "supported_networks": ["neo-n3-mainnet"],
+
   "default_network": "neo-n3-mainnet",
   
   "urls": {
@@ -60,7 +59,7 @@ The manifest is the **source of truth** for miniapp metadata.
   "stateSource": {
     "type": "smart-contract",
     "chain": "neo-n3-mainnet",
-    "endpoints": ["https://neoxrpc1.blackholelabs.io"]
+    "endpoints": ["https://mainnet1.neo.coz.io:443"]
   },
   
   "platform": {
@@ -89,7 +88,6 @@ The manifest is the **source of truth** for miniapp metadata.
 | `category_name_zh` | string | Chinese category name |
 | `contracts.neo-n3-mainnet` | address | Mainnet contract address |
 | `contracts.neo-n3-testnet` | address | Testnet contract address |
-| `supported_networks` | array | List of supported networks |
 | `default_network` | string | Default network to use |
 
 ## Stateless MiniApp Design

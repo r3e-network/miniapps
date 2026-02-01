@@ -17,7 +17,7 @@ const mockT = (key: string) => {
     statusConnected: "Connected",
     statusDisconnected: "Disconnected",
     statusUnknown: "Unknown",
-    statusEvm: "EVM",
+    statusEvm: "Unsupported",
     statusNeo: "Neo N3",
     riskLow: "Low Risk",
     riskMedium: "Medium Risk",
@@ -41,7 +41,7 @@ vi.mock("@neo/uniapp-sdk", () => ({
     address: { value: "0x1234567890123456789012345678901234567890" },
     connect: vi.fn().mockResolvedValue(undefined),
     invokeRead: vi.fn().mockResolvedValue("1000000000000000000"),
-    chainType: { value: "neo" },
+    chainType: { value: "neo-n3" },
     switchToAppChain: vi.fn().mockResolvedValue(undefined),
   }),
 }));

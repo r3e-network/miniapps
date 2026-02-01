@@ -3,7 +3,7 @@
  */
 
 /** Supported chain types */
-export type ChainType = "neo" | "evm" | unknown;
+export type ChainType = "neo-n3";
 
 /** Wallet connection state */
 export interface WalletState {

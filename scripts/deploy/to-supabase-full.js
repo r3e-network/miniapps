@@ -91,7 +91,7 @@ function manifestToRecord(manifest) {
   const entryUrl = `${CDN_URL}/miniapps/${manifest.id}/index.html`;
 
   // Get contract address for default network
-  const contractAddress = manifest.contracts?.[manifest.default_network] || null;
+  const contractAddress = manifest.contracts?.[manifest.default_network]?.address || null;
 
   // Build searchable text
   const searchableParts = [
@@ -133,7 +133,6 @@ function manifestToRecord(manifest) {
 
     // Contract and network
     contract_address: contractAddress,
-    supported_networks: JSON.stringify(manifest.supported_networks || ["neo-n3-mainnet"]),
     default_network: manifest.default_network || "neo-n3-mainnet",
 
     // Permissions

@@ -22,7 +22,6 @@ export default createAppConfig(__dirname, {
       "snarkjs",
       "circomlibjs",
       "pinia",
-      "@walletconnect/ethereum-provider",
       "@walletconnect/modal",
     ],
   },

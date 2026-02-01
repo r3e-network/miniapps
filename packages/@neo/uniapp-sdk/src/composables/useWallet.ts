@@ -67,7 +67,7 @@ export interface UseWalletReturn {
 export function useWallet(): UseWalletReturn {
   // Reactive state
   const address: Ref<string | null> = ref(null);
-  const chainType: Ref<ChainType> = ref("neo" as ChainType);
+  const chainType: Ref<ChainType> = ref("neo-n3");
   const chainId = ref<string | undefined>(undefined);
   const appChainId = ref<string | undefined>(undefined);
 
@@ -81,7 +81,7 @@ export function useWallet(): UseWalletReturn {
       const neo = (window as any).neo;
       await neo.connect();
       address.value = neo.address || null;
-      chainType.value = neo.chainType || "neo";
+      chainType.value = "neo-n3";
       chainId.value = neo.chainId;
     } else {
       console.warn("[useWallet] NeoHub wallet not available");
@@ -162,7 +162,7 @@ export function useWallet(): UseWalletReturn {
   if (typeof window !== "undefined" && (window as any).neo) {
     const neo = (window as any).neo;
     address.value = neo.address || null;
-    chainType.value = neo.chainType || "neo";
+    chainType.value = "neo-n3";
     chainId.value = neo.chainId;
     appChainId.value = neo.appChainId;
   }

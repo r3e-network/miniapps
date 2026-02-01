@@ -1,6 +1,6 @@
 <template>
   <view class="risk-alerts">
-    <view v-if="isEvm" class="mb-4">
+    <view v-if="isUnsupported" class="mb-4">
       <NeoCard variant="danger">
         <view class="flex flex-col items-center gap-2 py-1">
           <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
@@ -34,7 +34,7 @@ interface Status {
 }
 
 defineProps<{
-  isEvm: boolean;
+  isUnsupported: boolean;
   status: Status | null;
   riskLabel: string;
   riskClass: string;

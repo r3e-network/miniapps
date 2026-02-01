@@ -40,7 +40,7 @@ Wallet Health provides a complete security and readiness checkup for your Neo N3
 
 1. **Connection Status Card**:
    - Shows wallet connection state (Connected/Disconnected)
-   - Displays current network (Neo N3 / EVM)
+   - Displays current network (Neo N3)
    - Visual indicators for healthy/unhealthy states
 
 2. **Balance Card**:

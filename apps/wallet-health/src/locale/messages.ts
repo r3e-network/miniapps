@@ -17,7 +17,7 @@ export const messages = {
   statusConnected: { en: "Connected", zh: "已连接" },
   statusDisconnected: { en: "Disconnected", zh: "未连接" },
   statusNeo: { en: "Neo N3", zh: "Neo N3" },
-  statusEvm: { en: "EVM", zh: "EVM" },
+  statusEvm: { en: "Unsupported", zh: "不支持" },
   statusUnknown: { en: "Unknown", zh: "未知" },
 
   statConnection: { en: "Connection", zh: "连接" },

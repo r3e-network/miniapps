@@ -12,7 +12,7 @@
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <!-- Vote Tab -->
-    <view v-if="activeTab === 'vote' && chainType !== 'evm'" class="tab-content scrollable">
+    <view v-if="activeTab === 'vote'" class="tab-content scrollable">
       <NeoCard
         v-if="status"
         :variant="status.type === 'error' ? 'danger' : 'success'"

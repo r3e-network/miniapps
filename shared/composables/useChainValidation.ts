@@ -21,14 +21,14 @@ import { useWallet } from "@neo/uniapp-sdk";
  * ```
  */
 export function useChainValidation() {
-  const { chainType, switchToAppChain: _switchToAppChain } = useWallet();
+  const { switchToAppChain: _switchToAppChain } = useWallet();
 
   /**
    * Whether to show the wrong chain warning
-   * Returns true when connected to EVM chain instead of Neo N3
+   * Neo N3-only platform: no additional warning needed
    */
   const showWarning = computed(() => {
-    return chainType.value === "evm";
+    return false;
   });
 
   /**
@@ -50,24 +50,23 @@ export function useChainValidation() {
 }
 
 /**
- * Type guard for checking if current chain is EVM
+ * Type guard for checking if current chain is non-N3
  *
  * @example
  * ```ts
  * if (isEvmChain(chainType)) {
- *   // Handle EVM chain case
+ *   // Handle unsupported chain case
  * }
  * ```
  */
 export function isEvmChain(chainType: unknown): boolean {
-  if (typeof chainType === "string") return chainType === "evm";
-  const value = (chainType as { value?: unknown } | null)?.value;
-  return typeof value === "string" ? value === "evm" : false;
+  void chainType;
+  return false;
 }
 
 /**
  * Check if Neo N3 chain is connected
- * Returns true when NOT on EVM chain
+ * Returns true when running on Neo N3 networks
  *
  * @example
  * ```ts
@@ -77,5 +76,6 @@ export function isEvmChain(chainType: unknown): boolean {
  * ```
  */
 export function requireNeoChain(chainType: unknown): boolean {
-  return !isEvmChain(chainType);
+  void chainType;
+  return true;
 }

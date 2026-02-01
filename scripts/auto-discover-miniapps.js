@@ -19,6 +19,7 @@ const path = require("path");
 const APPS_DIR = path.join(__dirname, "../apps");
 const OUTPUT_FILE = path.join(__dirname, "../public/data/miniapps.json");
 const REPO_ROOT = path.resolve(__dirname, "..");
+const SUPPORTED_CHAINS = ["neo-n3-mainnet", "neo-n3-testnet"];
 
 function resolveContractConfigs({ rootDir = REPO_ROOT } = {}) {
   const candidates = [
@@ -197,13 +198,12 @@ function discoverMiniapp(appDir) {
     `/miniapps/${appDir}/static/banner.png`,
   );
   const entryUrl = toString(neoManifest?.entry_url) || `/miniapps/${appDir}/index.html`;
-  const supportedChainsRaw = Array.isArray(neoManifest?.supported_chains) ? neoManifest.supported_chains : [];
-  const supportedChainsSet = new Set(supportedChainsRaw.map((c) => toString(c).toLowerCase()).filter(Boolean));
   const rawContracts =
     neoManifest?.contracts && typeof neoManifest.contracts === "object" && !Array.isArray(neoManifest.contracts)
       ? neoManifest.contracts
       : {};
   Object.entries(contractAddressMapByChain).forEach(([chainId, addressMap]) => {
+    if (!SUPPORTED_CHAINS.includes(chainId)) return;
     const address = addressMap[appId];
     if (!address) return;
     const existing = rawContracts[chainId];
@@ -214,25 +214,26 @@ function discoverMiniapp(appDir) {
       address,
     };
   });
-  Object.keys(rawContracts).forEach((chainId) => {
-    supportedChainsSet.add(chainId);
-  });
-
-  const supportedChains = Array.from(supportedChainsSet).filter(Boolean);
-
-  const chainContracts = {};
-  for (const [chainId, config] of Object.entries(rawContracts)) {
-    if (!config || typeof config !== "object") continue;
-    const address = toString(config.address) || null;
-    const active = config.active !== false;
+  const contracts = {};
+  for (const chainId of SUPPORTED_CHAINS) {
+    const config = rawContracts[chainId];
+    const configObj = config && typeof config === "object" ? config : {};
+    const address = toString(configObj.address) || null;
+    const active = configObj.active !== false;
     const entryUrl =
-      typeof config.entry_url === "string"
-        ? config.entry_url
-        : typeof config.entryUrl === "string"
-          ? config.entryUrl
+      typeof configObj.entry_url === "string"
+        ? configObj.entry_url
+        : typeof configObj.entryUrl === "string"
+          ? configObj.entryUrl
           : undefined;
-    chainContracts[chainId] = { address, active, ...(entryUrl ? { entryUrl } : {}) };
+    contracts[chainId] = { address, active, ...(entryUrl ? { entryUrl } : {}) };
   }
+  const defaultNetworkRaw = toString(neoManifest?.default_network ?? neoManifest?.defaultNetwork).toLowerCase();
+  const defaultNetwork = SUPPORTED_CHAINS.includes(defaultNetworkRaw)
+    ? defaultNetworkRaw
+    : contracts["neo-n3-mainnet"]?.active !== false
+      ? "neo-n3-mainnet"
+      : "neo-n3-testnet";
   const permissions = normalizePermissions(neoManifest?.permissions);
 
   return {
@@ -246,8 +247,8 @@ function discoverMiniapp(appDir) {
     entry_url: entryUrl,
     category,
     status: toString(neoManifest?.status) || "active",
-    supportedChains,
-    chainContracts,
+    contracts,
+    default_network: defaultNetwork,
     permissions,
     limits: neoManifest?.limits ?? null,
     stats_display: neoManifest?.stats_display ?? null,

@@ -12,7 +12,7 @@
     <ChainWarning :title="t('wrongChain')" :message="t('wrongChainMessage')" :button-text="t('switchToNeo')" />
 
     <ActiveProposalsTab
-      v-if="activeTab === 'active' && chainType !== 'evm'"
+      v-if="activeTab === 'active'"
       :proposals="activeProposals"
       :status="status"
       :loading="loadingProposals"

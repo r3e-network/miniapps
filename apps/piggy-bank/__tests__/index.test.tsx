@@ -2,10 +2,10 @@
  * Piggy Bank Miniapp - Comprehensive Tests
  *
  * Demonstrates testing patterns for:
- * - EVM wallet connection (WalletConnect)
+ * - Neo N3 wallet connection
  * - Piggy bank creation and management
  * - Savings goal tracking
- * - Multi-chain support
+ * - Network configuration
  * - Settings configuration
  * - Lock time calculations
  */
@@ -36,7 +36,7 @@ beforeEach(() => {
   setupMocks();
 
   vi.mock("@neo/uniapp-sdk", () => ({
-    useWallet: () => mockWallet({ chainType: "evm" }),
+    useWallet: () => mockWallet({ chainType: "neo-n3" }),
     usePayments: () => mockPayments(),
     useEvents: () => mockEvents(),
   }));
@@ -64,13 +64,13 @@ beforeEach(() => {
             title: { en: "Settings", zh: "设置" },
             network: { en: "Network", zh: "网络" },
             select_network: { en: "Select Network", zh: "选择网络" },
-            alchemy_key: { en: "Alchemy API Key", zh: "Alchemy API密钥" },
-            alchemy_placeholder: { en: "Enter Alchemy key", zh: "输入Alchemy密钥" },
+            alchemy_key: { en: "RPC API Key", zh: "RPC API密钥" },
+            alchemy_placeholder: { en: "Enter RPC key", zh: "输入RPC密钥" },
             walletconnect: { en: "WalletConnect Project ID", zh: "WalletConnect项目ID" },
             walletconnect_placeholder: { en: "Enter Project ID", zh: "输入项目ID" },
             contract_address: { en: "Contract Address", zh: "合约地址" },
             missing_config: { en: "Configuration Required", zh: "需要配置" },
-            issue_alchemy: { en: "Missing Alchemy API Key", zh: "缺少Alchemy API密钥" },
+            issue_alchemy: { en: "Missing RPC API Key", zh: "缺少RPC API密钥" },
             issue_contract: { en: "Missing Contract Address", zh: "缺少合约地址" },
           },
           common: { confirm: { en: "Confirm", zh: "确认" } },
@@ -83,8 +83,8 @@ beforeEach(() => {
           docStep5: { en: "Withdraw when unlocked", zh: "解锁后提取" },
           docFeature1Name: { en: "Secure", zh: "安全" },
           docFeature1Desc: { en: "Funds locked until target date", zh: "资金锁定至目标日期" },
-          docFeature2Name: { en: "Multi-chain", zh: "多链" },
-          docFeature2Desc: { en: "Support for Ethereum, Polygon, BSC", zh: "支持以太坊、Polygon、BSC" },
+          docFeature2Name: { en: "Neo N3 Network", zh: "Neo N3 网络" },
+          docFeature2Desc: { en: "Support for Neo N3 mainnet/testnet", zh: "支持 Neo N3 主网/测试网" },
           docFeature3Name: { en: "Visual Progress", zh: "视觉进度" },
           docFeature3Desc: { en: "Track your savings journey", zh: "追踪储蓄进度" },
           docFeature4Name: { en: "Custom Goals", zh: "自定义目标" },
@@ -107,34 +107,30 @@ afterEach(() => {
 // ============================================================
 
 describe("Chain Configuration", () => {
-  const EVM_CHAINS = [
-    { id: "eth-mainnet", name: "Ethereum", shortName: "ETH", chainId: "0x1" },
-    { id: "polygon-mainnet", name: "Polygon", shortName: "MATIC", chainId: "0x89" },
-    { id: "bsc-mainnet", name: "BSC", shortName: "BSC", chainId: "0x38" },
-    { id: "arbitrum-mainnet", name: "Arbitrum", shortName: "ARB", chainId: "0xa4b1" },
-    { id: "optimism-mainnet", name: "Optimism", shortName: "OP", chainId: "0xa" },
+  const N3_CHAINS = [
+    { id: "neo-n3-mainnet", name: "Neo N3 Mainnet", shortName: "N3", chainId: "neo-n3-mainnet" },
+    { id: "neo-n3-testnet", name: "Neo N3 Testnet", shortName: "N3 Testnet", chainId: "neo-n3-testnet" },
   ];
 
   describe("Chain Options", () => {
     it("should have defined chain options", () => {
-      expect(EVM_CHAINS.length).toBe(5);
+      expect(N3_CHAINS.length).toBe(2);
     });
 
     it("should have unique chain IDs", () => {
-      const ids = EVM_CHAINS.map((c) => c.id);
+      const ids = N3_CHAINS.map((c) => c.id);
       const uniqueIds = new Set(ids);
-      expect(uniqueIds.size).toBe(5);
+      expect(uniqueIds.size).toBe(2);
     });
 
-    it("should have valid chainId hex values", () => {
-      EVM_CHAINS.forEach((chain) => {
-        expect(chain.chainId.startsWith("0x")).toBe(true);
-        expect(chain.chainId.length).toBeGreaterThan(2);
+    it("should have valid Neo N3 chain IDs", () => {
+      N3_CHAINS.forEach((chain) => {
+        expect(chain.chainId.startsWith("neo-n3-")).toBe(true);
       });
     });
 
     it("should have display names", () => {
-      EVM_CHAINS.forEach((chain) => {
+      N3_CHAINS.forEach((chain) => {
         expect(chain.name).toBeTruthy();
         expect(chain.shortName).toBeTruthy();
       });
@@ -143,22 +139,22 @@ describe("Chain Configuration", () => {
 
   describe("Chain Selection", () => {
     it("should validate chain ID", () => {
-      const chainId = "0x1";
-      const isValidChain = EVM_CHAINS.some((c) => c.chainId === chainId);
+      const chainId = "neo-n3-mainnet";
+      const isValidChain = N3_CHAINS.some((c) => c.chainId === chainId);
       expect(isValidChain).toBe(true);
     });
 
     it("should get chain by ID", () => {
-      const currentChainId = ref("eth-mainnet");
-      const currentChain = computed(() => EVM_CHAINS.find((chain) => chain.id === currentChainId.value));
+      const currentChainId = ref("neo-n3-mainnet");
+      const currentChain = computed(() => N3_CHAINS.find((chain) => chain.id === currentChainId.value));
 
-      expect(currentChain.value?.name).toBe("Ethereum");
-      expect(currentChain.value?.shortName).toBe("ETH");
+      expect(currentChain.value?.name).toBe("Neo N3 Mainnet");
+      expect(currentChain.value?.shortName).toBe("N3");
     });
 
     it("should return undefined for invalid chain ID", () => {
       const currentChainId = ref("invalid-chain");
-      const currentChain = computed(() => EVM_CHAINS.find((chain) => chain.id === currentChainId.value));
+      const currentChain = computed(() => N3_CHAINS.find((chain) => chain.id === currentChainId.value));
 
       expect(currentChain.value).toBeUndefined();
     });
@@ -166,8 +162,8 @@ describe("Chain Configuration", () => {
 
   describe("Chain Switching", () => {
     it("should switch chain correctly", () => {
-      const currentChainId = ref("eth-mainnet");
-      const newChainId = "polygon-mainnet";
+      const currentChainId = ref("neo-n3-mainnet");
+      const newChainId = "neo-n3-testnet";
 
       currentChainId.value = newChainId;
 
@@ -176,26 +172,22 @@ describe("Chain Configuration", () => {
 
     it("should update contract address when chain changes", () => {
       const contractAddresses = ref<Record<string, string>>({
-        "eth-mainnet": "0x1234567890123456789012345678901234567890",
-        "polygon-mainnet": "0xabcdef1234567890abcdef1234567890abcdef12",
-        "bsc-mainnet": "0xfedcba0987654321fedcba0987654321fedcba09",
+        "neo-n3-mainnet": "0x1234567890123456789012345678901234567890",
+        "neo-n3-testnet": "0xabcdef1234567890abcdef1234567890abcdef12",
       });
 
-      const currentChainId = ref("eth-mainnet");
+      const currentChainId = ref("neo-n3-mainnet");
       const contractAddress = computed(() => contractAddresses.value[currentChainId.value] || "");
 
       expect(contractAddress.value).toBe("0x1234567890123456789012345678901234567890");
 
-      currentChainId.value = "polygon-mainnet";
+      currentChainId.value = "neo-n3-testnet";
       expect(contractAddress.value).toBe("0xabcdef1234567890abcdef1234567890abcdef12");
-
-      currentChainId.value = "bsc-mainnet";
-      expect(contractAddress.value).toBe("0xfedcba0987654321fedcba0987654321fedcba09");
     });
 
     it("should return empty for missing chain contract", () => {
       const contractAddresses = ref<Record<string, string>>({});
-      const currentChainId = ref("eth-mainnet");
+      const currentChainId = ref("neo-n3-mainnet");
       const contractAddress = computed(() => contractAddresses.value[currentChainId.value] || "");
 
       expect(contractAddress.value).toBe("");
@@ -458,7 +450,7 @@ describe("Wallet Connection", () => {
       expect(formatAddress(address)).toBe("0x1234...5678");
     });
 
-    it("should handle EVM addresses", () => {
+    it("should handle contract addresses", () => {
       const address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
       const shortAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
 
@@ -486,19 +478,19 @@ describe("Wallet Connection", () => {
     });
   });
 
-  describe("EVM Chain Detection", () => {
-    it("should identify EVM chain", () => {
-      const chainType = "evm";
-      const isEVM = chainType === "evm";
+  describe("Network Detection", () => {
+    it("should identify N3 chain", () => {
+      const chainType = "neo-n3";
+      const isN3 = chainType === "neo-n3";
 
-      expect(isEVM).toBe(true);
+      expect(isN3).toBe(true);
     });
 
-    it("should detect wrong chain", () => {
-      const chainType = ref("neo");
-      const isEvmChain = computed(() => chainType.value === "evm");
+    it("should detect unsupported chain", () => {
+      const chainType = ref("unknown-chain");
+      const isN3 = computed(() => chainType.value === "neo-n3");
 
-      expect(isEvmChain.value).toBe(false);
+      expect(isN3.value).toBe(false);
     });
   });
 });

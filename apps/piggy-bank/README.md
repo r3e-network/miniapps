@@ -1,6 +1,6 @@
 # ZK Piggy Bank 零知识存钱罐
 
-A privacy-focused savings account using Zero-Knowledge proofs. Supports any ERC-20 token.
+A privacy-focused savings account using Zero-Knowledge proofs. Supports any NEP-17 token.
 
 ## Overview
 
@@ -13,17 +13,17 @@ A privacy-focused savings account using Zero-Knowledge proofs. Supports any ERC-
 
 ## Summary
 
-Private goal-based savings vaults on EVM
+Private goal-based savings vaults on Neo N3
 
-ZK Piggy Bank allows you to save any ERC-20 token toward a target and lock it until a chosen date. Zero-knowledge proofs keep balances private until you decide to smash the bank. Connect an EVM wallet and configure Alchemy RPC before use.
+ZK Piggy Bank allows you to save any NEP-17 token toward a target and lock it until a chosen date. Zero-knowledge proofs keep balances private until you decide to smash the bank. Connect an Neo N3 wallet and configure RPC RPC before use.
 
 ## Features
 
 - **🔒 Zero-Knowledge Privacy**: Balances remain hidden until withdrawal using zk-SNARKs
-- **🪙 Any ERC-20**: Deposit ETH, stablecoins, or any token contract address
+- **🪙 Any NEP-17**: Deposit ETH, stablecoins, or any token contract address
 - **⏰ Time-Locked Vaults**: Funds are locked until your chosen unlock date
 - **🎯 Goal Tracking**: Set and track savings targets privately
-- **🌐 Multi-Chain Ready**: Works across major EVM networks with RPC config
+- **🌐 Multi-Chain Ready**: Works across major Neo N3 networks with RPC config
 - **🔐 Local Secrets**: Savings secrets stay on your device for safety
 - **✅ ZK Verification**: Check goal progress without exposing actual amounts
 - **💥 Smash to Withdraw**: Break the piggy bank when you're ready to access funds
@@ -36,10 +36,10 @@ ZK Piggy Bank allows you to save any ERC-20 token toward a target and lock it un
 1. **Launch the App**: Open ZK Piggy Bank from your Neo MiniApp dashboard
 2. **Configure Settings**: 
    - Go to Settings tab
-   - Enter Alchemy API key
-   - Select your EVM network
+   - Enter RPC API key
+   - Select your Neo N3 network
    - Save configuration
-3. **Connect Wallet**: Click "Connect Wallet" to link your EVM wallet
+3. **Connect Wallet**: Click "Connect Wallet" to link your Neo N3 wallet
 4. **Create a Piggy Bank**: Start saving with privacy
 
 ### Creating a Piggy Bank
@@ -92,15 +92,15 @@ When unlock date arrives:
 ### Managing Settings
 
 **Settings Tab:**
-1. **Network Selection**: Choose from supported EVM chains:
-   - Ethereum Mainnet
+1. **Network Selection**: Choose from supported Neo N3 chains:
+   - Neo N3 Mainnet
    - Polygon
    - Arbitrum
    - Optimism
    - Base
    - And more...
 
-2. **Alchemy API Key**:
+2. **RPC API Key**:
    - Get free key from alchemy.com
    - Required for blockchain data
    - Stored locally on your device
@@ -143,7 +143,7 @@ When unlock date arrives:
 │   │                    User Device                       │  │
 │   │  ┌──────────────┐    ┌──────────────────────────┐   │  │
 │   │  │   Wallet     │    │   ZK Circuit Client      │   │  │
-│   │  │   (EVM)      │◄──►│   - Secret generation    │   │  │
+│   │  │   (Neo N3)      │◄──►│   - Secret generation    │   │  │
 │   │  └──────────────┘    │   - Proof generation     │   │  │
 │   │                      │   - Balance encryption   │   │  │
 │   │                      └──────────────────────────┘   │  │
@@ -151,7 +151,7 @@ When unlock date arrives:
 │                              │                              │
 │                              ▼                              │
 │   ┌─────────────────────────────────────────────────────┐  │
-│   │              EVM Blockchain                         │  │
+│   │              Neo N3 Blockchain                         │  │
 │   │  ┌─────────────────────────────────────────────┐   │  │
 │   │  │  ZK Piggy Bank Smart Contract               │   │  │
 │   │  │  - Commitments: hash(amount, secret)        │   │  │
@@ -177,7 +177,7 @@ When unlock date arrives:
 - **PiggyBank Factory**: Creates individual savings vaults
 - **Vault Contract**: Holds deposits with time locks
 - **Verifier Contract**: Validates zk-SNARK proofs
-- **Token Integration**: Standard ERC-20 interactions
+- **Token Integration**: Standard NEP-17 interactions
 
 **Zero-Knowledge Circuits:**
 - **Deposit Circuit**: Proves valid deposit amount
@@ -200,12 +200,12 @@ When unlock date arrives:
 **What's Visible:**
 - Piggy bank exists (on-chain)
 - Time lock status (expired/active)
-- Token type (ERC-20 contract)
+- Token type (NEP-17 contract)
 - Goal amount (if set publicly)
 
 ### Supported Networks
 
-- Ethereum Mainnet
+- Neo N3 Mainnet
 - Polygon (PoS)
 - Arbitrum One
 - Optimism
@@ -299,12 +299,12 @@ apps/piggy-bank/
 
 ### Key Dependencies
 
-- `ethers`: Ethereum interactions
+- `ethers`: Neo N3 interactions
 - `snarkjs`: Zero-knowledge proof generation
 - `circomlibjs`: ZK circuit utilities
 - `@reown/appkit`: Wallet connection
 - `pinia`: State management
-- `viem`: Modern Ethereum library
+- `viem`: Modern Neo N3 library
 
 ### ZK Circuit Files
 
@@ -322,7 +322,7 @@ public/circuits/
 ## Troubleshooting
 
 **"Missing config" warning:**
-- Add Alchemy API key in Settings
+- Add RPC API key in Settings
 - Select a network
 - Save settings before proceeding
 

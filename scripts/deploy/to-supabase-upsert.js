@@ -122,7 +122,7 @@ function manifestToRecord(manifest, chainId) {
   const entryUrl = `${CDN_URL}/miniapps/${appShortId}/index.html`;
 
   // Get contract address for this specific chain
-  const contractAddress = manifest.contracts?.[chainId] || null;
+  const contractAddress = manifest.contracts?.[chainId]?.address || null;
 
   // Build searchable text
   const searchableParts = [
@@ -170,7 +170,6 @@ function manifestToRecord(manifest, chainId) {
     // Contract and network (specific to this chain)
     contract_address: contractAddress,
     contract_hash: contractAddress, // For backward compatibility
-    supported_networks: JSON.stringify(manifest.supported_networks || [chainId]),
     default_network: manifest.default_network || chainId,
 
     // Permissions

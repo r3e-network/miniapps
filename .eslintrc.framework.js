@@ -25,7 +25,7 @@ module.exports = {
       "error",
       {
         selector:
-          'VElement[matches=/^view$/] > VExpressionContainer[expression.object.name="chainType"][expression.property.name="==="][expression.value.value="evm"]',
+          'VElement[matches=/^view$/] > VExpressionContainer[expression.object.name="chainType"][expression.property.name="==="]',
         message:
           "Use ChainWarning component instead of manual chain validation. " +
           "Import from @shared/components and use: <ChainWarning :title=\"t('wrongChain')\" :message=\"t('wrongChainMessage')\" :button-text=\"t('switchToNeo')\" />",

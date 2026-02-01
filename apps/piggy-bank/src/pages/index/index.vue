@@ -17,7 +17,7 @@
           <text class="subtitle">{{ t("app.subtitle") }}</text>
         </view>
         <view class="status-row">
-          <text class="status-chip">{{ currentChain?.shortName || "EVM" }}</text>
+          <text class="status-chip">{{ currentChain?.shortName || "Neo N3" }}</text>
           <text class="status-chip" :class="{ connected: isConnected }">
             {{ isConnected ? formatAddress(userAddress) : t("wallet.not_connected") }}
           </text>

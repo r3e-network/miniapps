@@ -94,7 +94,7 @@ CF_PAGES_PROJECT=miniappsuction
 ```env
 # Public URLs (accessible in browser via NEXT_PUBLIC_ prefix)
 NEXT_PUBLIC_CDN_URL=https://your-domain.com
-NEXT_PUBLIC_RPC_URL=https://neoxrpc1.blackholelabs.io
+NEXT_PUBLIC_RPC_URL=https://testnet1.neo.coz.io:443
 NEXT_PUBLIC_NETWORK=neo-n3-mainnet
 ```
 
@@ -127,7 +127,7 @@ REGISTRY_ENDPOINT=/data/miniapps.json
 
 # URLs
 NEXT_PUBLIC_CDN_URL=http://localhost:5173
-NEXT_PUBLIC_RPC_URL=https://neoxrpc1.blackholelabs.io
+NEXT_PUBLIC_RPC_URL=https://testnet1.neo.coz.io:443
 NEXT_PUBLIC_NETWORK=neo-n3-mainnet
 ```
 

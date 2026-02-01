@@ -563,8 +563,8 @@ describe("Error Handling", () => {
   });
 
   it("should handle wrong chain error", () => {
-    const chainType = ref("ethereum");
-    const isNeoChain = computed(() => chainType.value === "neo");
+    const chainType = ref("unknown-chain");
+    const isNeoChain = computed(() => chainType.value === "neo-n3");
 
     expect(isNeoChain.value).toBe(false);
   });

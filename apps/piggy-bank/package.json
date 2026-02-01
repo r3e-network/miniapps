@@ -32,7 +32,6 @@
     "@scure/bip39": "^1.6.0",
     "abitype": "^1.2.3",
     "@walletconnect/core": "^2.23.3",
-    "@walletconnect/ethereum-provider": "^2.12.2",
     "@walletconnect/jsonrpc-http-connection": "^1.0.8",
     "@walletconnect/jsonrpc-provider": "^1.0.14",
     "@walletconnect/jsonrpc-types": "^1.0.4",

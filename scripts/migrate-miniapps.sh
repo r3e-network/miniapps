@@ -69,7 +69,7 @@ for app in "${APPS[@]}"; do
 
   # Use sed for pattern replacement (more reliable than multi-line edits)
   # Replace the chain validation block with ChainWarning component
-  sed -i '/v-if="chainType === .evm."/,/<\/view>/c\
+  sed -i '/v-if=".*chainType.*"/,/<\/view>/c\
   <!-- Chain Warning - Framework Component -->\
   <ChainWarning :title="t('\''wrongChain'\'')"\
     :message="t('\''wrongChainMessage'\'')"\

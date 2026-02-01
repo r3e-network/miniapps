@@ -118,7 +118,7 @@ describe("Masquerade DAO - Index Page", () => {
       
       expect(requireNeoChain(chainType.value)).toBe(true);
       
-      chainType.value = "ethereum";
+      chainType.value = "unknown-chain";
       expect(requireNeoChain(chainType.value)).toBe(false);
     });
 

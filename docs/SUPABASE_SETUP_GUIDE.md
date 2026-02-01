@@ -14,7 +14,7 @@ ADD COLUMN IF NOT EXISTS developer_name TEXT,
 ADD COLUMN IF NOT EXISTS developer_email TEXT,
 ADD COLUMN IF NOT EXISTS developer_website TEXT,
 ADD COLUMN IF NOT EXISTS contract_address TEXT,
-ADD COLUMN IF NOT EXISTS supported_networks JSONB DEFAULT '["neo-n3-mainnet"]'::jsonb,
+ADD COLUMN IF NOT EXISTS contracts JSONB DEFAULT '{}'::jsonb,
 ADD COLUMN IF NOT EXISTS default_network TEXT DEFAULT 'neo-n3-mainnet',
 ADD COLUMN IF NOT EXISTS permissions JSONB DEFAULT '[]'::jsonb,
 ADD COLUMN IF NOT EXISTS feature_stateless BOOLEAN DEFAULT false,
@@ -77,7 +77,7 @@ pnpm register:full
 | **Category Display**  | category_name, category_name_zh                                                |
 | **Tags**              | tags (JSONB)                                                                   |
 | **Developer Info**    | developer_name, developer_email, developer_website                             |
-| **Network/Contract**  | contract_address, supported_networks, default_network                          |
+| **Network/Contract**  | contract_address, contracts, default_network                                   |
 | **Features**          | permissions, feature_stateless, feature_offline_support, feature_deeplink      |
 | **State Source**      | state_source_type, state_source_endpoints                                      |
 | **Platform Features** | platform_analytics, platform_comments, platform_ratings, platform_transactions |

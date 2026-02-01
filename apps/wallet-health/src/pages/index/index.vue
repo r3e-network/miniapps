@@ -8,7 +8,7 @@
 
     <view v-if="activeTab === 'health'" class="tab-content">
       <RiskAlerts
-        :is-evm="isEvm"
+        :is-unsupported="isUnsupported"
         :status="status"
         :risk-label="riskLabel"
         :risk-class="riskClass"
@@ -110,7 +110,7 @@ const {
   address,
   status,
   isRefreshing,
-  isEvm,
+  isUnsupported,
   neoDisplay,
   gasDisplay,
   chainLabel,

@@ -43,7 +43,7 @@ Successfully extracted a common miniapp framework from 47 existing miniapps, eli
 
 ```typescript
 // Repeated in 42+ miniapps
-<view v-if="chainType === 'evm'" class="px-4 mb-4">
+<view v-if="showWarning" class="px-4 mb-4">
   <NeoCard variant="danger">
     <view class="flex flex-col items-center gap-2 py-1">
       <text class="text-center font-bold text-red-400">{{ t("wrongChain") }}</text>
@@ -56,7 +56,7 @@ Successfully extracted a common miniapp framework from 47 existing miniapps, eli
 </view>
 
 // Plus destructured imports
-const { chainType, switchToAppChain } = useWallet() as any;
+const { switchToAppChain } = useWallet() as any;
 ```
 
 ### After Framework

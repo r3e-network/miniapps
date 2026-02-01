@@ -12,6 +12,7 @@ const path = require("path");
 
 const APPS_DIR = path.join(__dirname, "../apps");
 const OUTPUT_FILE = path.join(__dirname, "../../platform/host-app/data/miniapps.json");
+const SUPPORTED_CHAINS = ["neo-n3-mainnet", "neo-n3-testnet"];
 
 // Default permissions for miniapps - SECURE BY DEFAULT
 // Apps must explicitly request permissions in neo-manifest.json
@@ -106,11 +107,25 @@ function discoverMiniApps() {
         neoManifest = JSON.parse(fs.readFileSync(neoManifestPath, "utf-8"));
       }
 
-      const supportedChains = Array.isArray(neoManifest.supported_chains) ? neoManifest.supported_chains : [];
-      const chainContracts =
+      const rawContracts =
         neoManifest.contracts && typeof neoManifest.contracts === "object" && !Array.isArray(neoManifest.contracts)
           ? neoManifest.contracts
           : {};
+      const contracts = {};
+      for (const chainId of SUPPORTED_CHAINS) {
+        const config = rawContracts[chainId];
+        const configObj = config && typeof config === "object" ? config : {};
+        contracts[chainId] = {
+          address: typeof configObj.address === "string" ? configObj.address : null,
+          active: configObj.active !== false,
+        };
+      }
+      const defaultNetworkRaw = String(neoManifest.default_network ?? neoManifest.defaultNetwork ?? "").toLowerCase();
+      const defaultNetwork = SUPPORTED_CHAINS.includes(defaultNetworkRaw)
+        ? defaultNetworkRaw
+        : contracts["neo-n3-mainnet"]?.active !== false
+          ? "neo-n3-mainnet"
+          : "neo-n3-testnet";
 
       const app = {
         app_id: neoManifest.app_id || manifest.appid || `miniapp-${appDir}`,
@@ -140,8 +155,8 @@ function discoverMiniApps() {
         status: neoManifest.status || "active",
         category: neoManifest.category || "utility",
         tags: neoManifest.tags || [],
-        supportedChains,
-        chainContracts,
+        contracts,
+        default_network: defaultNetwork,
         permissions: normalizePermissions(neoManifest.permissions) || DEFAULT_PERMISSIONS,
       };
 

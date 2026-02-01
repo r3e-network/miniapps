@@ -2,7 +2,7 @@ import { computed, reactive, ref, watch } from "vue";
 import { useWallet } from "@neo/uniapp-sdk";
 import type { WalletSDK } from "@neo/types";
 import { useI18n } from "@/composables/useI18n";
-import { requireNeoChain, isEvmChain } from "@shared/utils/chain";
+import { requireNeoChain } from "@shared/utils/chain";
 import { formatFixed8 } from "@shared/utils/format";
 import { parseInvokeResult } from "@shared/utils/neo";
 
@@ -22,16 +22,16 @@ export function useWalletAnalysis() {
     gas: 0n,
   });
 
-  const isEvm = computed(() => isEvmChain(chainType));
+  const isUnsupported = computed(() => false);
   const chainLabel = computed(() => {
     const value = (chainType as any)?.value ?? chainType ?? "";
     if (!value) return t("statusUnknown");
-    return isEvm.value ? t("statusEvm") : t("statusNeo");
+    return t("statusNeo");
   });
   const chainVariant = computed(() => {
     const value = (chainType as any)?.value ?? chainType ?? "";
     if (!value) return "warning";
-    return isEvm.value ? "warning" : "accent";
+    return "accent";
   });
 
   const gasOk = computed(() => balances.gas >= GAS_LOW_THRESHOLD);
@@ -105,7 +105,7 @@ export function useWalletAnalysis() {
     status,
     isRefreshing,
     balances,
-    isEvm,
+    isUnsupported,
     chainLabel,
     chainVariant,
     gasOk,

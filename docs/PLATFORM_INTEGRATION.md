@@ -33,7 +33,7 @@ miniapps/
 │   └── ...
 ├── scripts/
 │   └── auto-discover-miniapps.js  # Registry generator
-├── platform/host-app/
+├── sdk/platform/host-app/
 │   └── data/
 │       └── miniapps.json         # Generated registry
 └── shared/                   # Shared components
@@ -65,7 +65,7 @@ This script:
 node scripts/auto-discover-miniapps.js
 ```
 
-**Output:** `platform/host-app/data/miniapps.json`
+**Output:** `sdk/platform/host-app/data/miniapps.json`
 
 This script scans `apps/` directory and creates a categorized registry of all miniapps.
 
@@ -87,13 +87,17 @@ This script scans `apps/` directory and creates a categorized registry of all mi
       "entry_url": "/miniapps/lottery/index.html",
       "category": "gaming",
       "status": "active",
-      "supportedChains": ["neo-n3-testnet", "neo-n3-mainnet"],
-      "chainContracts": {
+      "contracts": {
+        "neo-n3-mainnet": {
+          "address": "0x...",
+          "active": true
+        },
         "neo-n3-testnet": {
           "address": "0x...",
           "active": true
         }
       },
+      "default_network": "neo-n3-mainnet",
       "permissions": {
         "payments": true,
         "governance": false,
@@ -192,7 +196,6 @@ Each miniapp can have a `neo-manifest.json` in its root:
   "entry_url": "/miniapps/lottery/index.html",
   "category": "gaming",
   "status": "active" | "inactive" | "deprecated",
-  "supported_chains": ["neo-n3-testnet", "neo-n3-mainnet"],
   "contracts": {
     "neo-n3-testnet": {
       "address": "0x...",
@@ -200,6 +203,7 @@ Each miniapp can have a `neo-manifest.json` in its root:
       "entry_url": "/miniapps/lottery/index.html?chain=testnet"
     }
   },
+  "default_network": "neo-n3-testnet",
   "permissions": ["payments", "governance"],
   "limits": {
     "daily_calls": 100,
@@ -246,7 +250,7 @@ deploy/config/
 
 The platform can:
 
-1. **Read from registry** - Use `chainContracts` field from miniapps.json
+1. **Read from registry** - Use `contracts` field from miniapps.json
 2. **Resolve dynamically** - Query contract configs based on `app_id`
 3. **Cache addresses** - Store resolved addresses for performance
 
@@ -255,7 +259,7 @@ The platform can:
 function getAppContract(appId: string, chainId: string): string | null {
     // From registry
     const app = registry.find((a) => a.app_id === appId);
-    const contract = app?.chainContracts?.[chainId]?.address;
+    const contract = app?.contracts?.[chainId]?.address;
 
     // Or from deploy config
     if (!contract) {
@@ -304,8 +308,8 @@ When updating the platform to support new miniapps:
 
 - [ ] Resolve contract addresses from registry
 - [ ] Inject contract addresses into miniapp context
-- [ ] Handle multi-chain scenarios
-- [ ] Switch contract based on active chain
+- [ ] Handle mainnet/testnet routing
+- [ ] Switch contract based on active deployment
 
 ## Theme Integration
 
@@ -355,7 +359,7 @@ cd ../..
 node scripts/auto-discover-miniapps.js
 
 # 4. Test in platform
-cd platform/host-app
+cd sdk/platform/host-app
 pnpm dev
 ```
 
@@ -370,7 +374,7 @@ node scripts/auto-discover-miniapps.js
 
 # 3. Deploy to platform
 # - Copy public/miniapps/* to platform CDN
-# - Deploy platform/host-app/data/miniapps.json to API
+# - Deploy sdk/platform/host-app/data/miniapps.json to API
 ```
 
 ### CI/CD Pipeline Example
@@ -414,7 +418,7 @@ jobs:
                   # Deploy registry to API
                   curl -X POST $PLATFORM_API/registry \
                     -H "Content-Type: application/json" \
-                    -d @platform/host-app/data/miniapps.json
+                    -d @sdk/platform/host-app/data/miniapps.json
 ```
 
 ## Miniapp Lifecycle
@@ -474,7 +478,7 @@ window.addEventListener("message", (event) => {
 
 ```bash
 # Terminal 1: Host platform
-cd platform/host-app
+cd sdk/platform/host-app
 pnpm dev
 # → http://localhost:3000
 
@@ -491,7 +495,7 @@ pnpm dev
 node scripts/auto-discover-miniapps.js
 
 # Validate output
-cat platform/host-app/data/miniapps.json | jq '.gaming | length'
+cat sdk/platform/host-app/data/miniapps.json | jq '.gaming | length'
 # Should show number of gaming apps
 ```
 
@@ -512,7 +516,7 @@ cat platform/host-app/data/miniapps.json | jq '.gaming | length'
 
 1. App ID matches deploy config (`app_id` vs `miniapp-[app_id]`)
 2. Deploy config has entry for the app
-3. Network matches supported chains
+3. Network matches default_network or active contracts
 
 ### Permissions Not Working
 
@@ -588,15 +592,15 @@ interface MiniAppManifest {
     entry_url: string; // HTML entry point
     category: MiniAppCategory; // Category
     status: "active" | "inactive" | "deprecated";
-    supportedChains: string[]; // Supported networks
-    chainContracts: {
+    contracts: {
         // Per-chain contracts
         [chainId: string]: {
-            address: string;
+            address: string | null;
             active: boolean;
             entryUrl?: string;
         };
     };
+    default_network: string;
     permissions: {
         // Required permissions
         payments: boolean;

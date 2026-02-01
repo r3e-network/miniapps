@@ -11,28 +11,16 @@ export type ContractParam =
   | { type: "Any"; value: null }
   | { type: "Array"; value: ContractParam[] };
 
-export type ChainType = "neo-n3" | "evm";
+export type ChainType = "neo-n3";
 export type ChainId = string;
 
-export type InvocationIntent =
-  | {
-      chain_id: ChainId;
-      chain_type: "neo-n3";
-      contract_address: string;
-      method: string;
-      params: ContractParam[];
-    }
-  | {
-      chain_id: ChainId;
-      chain_type: "evm";
-      contract_address: string;
-      data: string;
-      value?: string;
-      gas?: string;
-      gas_price?: string;
-      method?: string;
-      args?: unknown[];
-    };
+export type InvocationIntent = {
+  chain_id: ChainId;
+  chain_type: "neo-n3";
+  contract_address: string;
+  method: string;
+  params: ContractParam[];
+};
 
 export type PayGASResponse = {
   request_id: string;
@@ -46,18 +34,16 @@ export type PayGASResponse = {
   receipt_id?: string | null;
 };
 
-export type VoteBNEOResponse = {
+export type VoteNEOResponse = {
   request_id: string;
   user_id: string;
   intent: "governance";
-  constraints: { governance: "BNEO_ONLY" };
+  constraints: { governance: "NEO_ONLY" };
   chain_id: ChainId;
   chain_type: ChainType;
   invocation: InvocationIntent;
   txid?: string | null;
 };
-
-export type VoteNEOResponse = VoteBNEOResponse;
 
 export type RNGResponse = {
   request_id: string;
@@ -106,13 +92,13 @@ export type MiniAppSDK = {
       proposalId: string,
       neoAmount: string,
       support?: boolean,
-    ): Promise<VoteBNEOResponse>;
+    ): Promise<VoteNEOResponse>;
     voteAndInvoke?: (
       appId: string,
       proposalId: string,
       neoAmount: string,
       support?: boolean,
-    ) => Promise<VoteBNEOResponse>;
+    ) => Promise<VoteNEOResponse>;
   };
   rng: {
     requestRandom(appId: string): Promise<RNGResponse>;

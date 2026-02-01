@@ -52,7 +52,7 @@ def create_manifest(app_dir):
         "stateSource": {
             "type": "smart-contract",
             "chain": "neo-n3-mainnet",
-            "endpoints": ["https://neoxrpc1.blackholelabs.io"]
+            "endpoints": ["https://neo.coz.io/mainnet"]
         },
         "platform": {
             "analytics": True,

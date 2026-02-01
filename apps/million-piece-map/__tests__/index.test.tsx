@@ -574,8 +574,8 @@ describe("Error Handling", () => {
   });
 
   it("should handle wrong chain error", () => {
-    const chainType = "evm";
-    const requireNeoChain = (chain: string) => chain === "neo";
+    const chainType = "unknown-chain";
+    const requireNeoChain = (chain: string) => chain === "neo-n3";
 
     expect(requireNeoChain(chainType)).toBe(false);
   });

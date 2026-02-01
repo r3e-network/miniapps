@@ -558,7 +558,7 @@ Create `.env.local` in miniapp root:
 
 ```env
 # Neo N3 RPC
-NEXT_PUBLIC_RPC_URL=https://neoxrpc1.blackholelabs.io
+NEXT_PUBLIC_RPC_URL=https://testnet1.neo.coz.io:443
 NEXT_PUBLIC_NETWORK=neo-n3-mainnet
 
 # CDN URL

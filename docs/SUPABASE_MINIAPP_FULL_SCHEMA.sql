@@ -20,7 +20,7 @@ ADD COLUMN IF NOT EXISTS developer_name TEXT,                   -- Developer nam
 ADD COLUMN IF NOT EXISTS developer_email TEXT,                  -- Developer email
 ADD COLUMN IF NOT EXISTS developer_website TEXT,                -- Developer website
 ADD COLUMN IF NOT EXISTS contract_address TEXT,                 -- Smart contract address
-ADD COLUMN IF NOT EXISTS supported_networks JSONB DEFAULT '["neo-n3-mainnet"]'::jsonb,
+ADD COLUMN IF NOT EXISTS contracts JSONB DEFAULT '{}'::jsonb,   -- Per-network contracts
 ADD COLUMN IF NOT EXISTS default_network TEXT DEFAULT 'neo-n3-mainnet',
 ADD COLUMN IF NOT EXISTS permissions JSONB DEFAULT '[]'::jsonb, -- Required permissions
 ADD COLUMN IF NOT EXISTS feature_stateless BOOLEAN DEFAULT false,
@@ -62,9 +62,9 @@ CREATE INDEX IF NOT EXISTS miniapp_stats_rating_idx ON public.miniapp_stats(rati
 CREATE INDEX IF NOT EXISTS miniapp_stats_created_at_idx ON public.miniapp_stats(created_at DESC);
 CREATE INDEX IF NOT EXISTS miniapp_stats_updated_at_idx ON public.miniapp_stats(updated_at DESC);
 
--- JSONB indexes for tag and network queries
+-- JSONB indexes for tag and contract queries
 CREATE INDEX IF NOT EXISTS miniapp_stats_tags_idx ON public.miniapp_stats USING GIN (tags);
-CREATE INDEX IF NOT EXISTS miniapp_stats_networks_idx ON public.miniapp_stats USING GIN (supported_networks);
+CREATE INDEX IF NOT EXISTS miniapp_stats_contracts_idx ON public.miniapp_stats USING GIN (contracts);
 
 -- Full-text search index
 CREATE INDEX IF NOT EXISTS miniapp_stats_search_idx ON public.miniapp_stats USING GIN (to_tsvector('english', searchable_text));
@@ -124,7 +124,7 @@ SELECT
   banner_url,
   entry_url,
   contract_address,
-  supported_networks,
+  contracts,
   default_network,
   is_featured,
   is_verified,
