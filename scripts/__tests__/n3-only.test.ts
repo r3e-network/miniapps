@@ -7,7 +7,17 @@ const ALLOWED_CHAINS = new Set(["neo-n3-mainnet", "neo-n3-testnet"]);
 const FORBIDDEN_ENDPOINT = "https://neo.coz.io/mainnet";
 
 const CODE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".vue", ".py", ".sh", ".md"]);
-const SKIP_DIRS = new Set(["node_modules", ".git", "sdk", ".worktrees", "dist", "build", "coverage", "shims"]);
+const SKIP_DIRS = new Set([
+  "node_modules",
+  ".git",
+  "sdk",
+  ".worktrees",
+  "dist",
+  "build",
+  "coverage",
+  "shims",
+  "plans",
+]);
 const SELF_SUFFIX = path.join("scripts", "__tests__", "n3-only.test.ts");
 
 function walkFiles(rootDir: string, predicate: (filePath: string) => boolean): string[] {
